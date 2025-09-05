@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catan - Level-Up Gamer</title>
+    
+    <!-- La ruta al CSS es correcta desde esta ubicación -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <!-- La ruta al index y al logo son correctas desde esta ubicación -->
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+        <nav class="main-nav">
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="blog.html">Blog</a>
+            <a href="registro.html">Registro</a>
+            <a href="carrito.html">Carrito</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Layout para el detalle del producto -->
+        <section class="producto-detalle-layout">
+
+            <!-- Columna de la Imagen -->
+            <div class="producto-imagen-container">
+                <img src="../img/catan.jpg" alt="Caja del juego de mesa Catan">
+            </div>
+
+            <!-- Columna de la Información -->
+            <div class="producto-info-container">
+                <h1 class="page-title" style="text-align: left; margin-top: 0;">Catan</h1>
+                <p class="producto-detalle-precio">$29.990 CLP</p>
+                
+                <p class="producto-descripcion">
+                    Un clásico juego de estrategia donde los jugadores compiten por colonizar y expandirse en la isla de Catan. Ideal para 3-4 jugadores y perfecto para noches de juego en familia o con amigos.
+                </p>
+
+                <h3>Especificaciones</h3>
+                <ul class="producto-especs">
+                    <li><strong>Categoría:</strong> Juegos de Mesa</li>
+                    <li><strong>Jugadores:</strong> 3-4</li>
+                    <li><strong>Tipo:</strong> Estrategia, Colonización</li>
+                    <li><strong>Ideal para:</strong> Noches en familia o con amigos</li>
+                </ul>
+
+                <!-- Acciones: Cantidad y Botón -->
+                <div class="producto-acciones">
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad:</label>
+                        <input class="cart-item-quantity" type="number" id="cantidad" value="1" min="1" style="width: 80px;">
+                    </div>
+                    <button class="btn btn-primary">Añadir al Carrito</button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
