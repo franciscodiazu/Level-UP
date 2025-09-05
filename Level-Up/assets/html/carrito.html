@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras - Level-Up Gamer</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+        <nav class="main-nav">
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="blog.html">Blog</a>
+            <a href="registro.html">Registro</a>
+            <a href="carrito.html">Carrito</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Carrito de Compras</h1>
+        <div class="cart-layout">
+            <section class="cart-items">
+                <div class="cart-item">
+                    <img src="../img/ps5.jpg" alt="PlayStation 5" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-title">PlayStation 5</h3>
+                        <p class="cart-item-price">$549.990 CLP</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" class="cart-item-quantity" value="1" min="1">
+                        <button class="btn-remove">Eliminar</button>
+                    </div>
+                </div>
+            </section>
+            <aside class="cart-summary">
+                <h2>Resumen del Pedido</h2>
+                <div class="summary-line">
+                    <span>Subtotal:</span><span id="subtotal">$549.990</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total:</span><span id="total">$554.980</span>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;">Proceder al Pago</button>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../../js/carrito.js"></script>
+</body>
+</html>
