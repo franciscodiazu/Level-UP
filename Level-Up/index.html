@@ -3,76 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tienda online Level-Up Gamer: productos, comunidad y experiencias para gamers en Chile.">
-    <title>Level-Up Gamer</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
+    
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="images/logo.png" alt="Level-Up Gamer">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="html/catalogo.html">Catálogo</a></li>
-                <li><a href="html/blog.html">Blog</a></li>
-                <li><a href="html/comunidad.html">Comunidad</a></li>
-                <li><a href="html/soporte.html">Soporte</a></li>
-                <li><a href="html/registro.html">Registro</a></li>
-                <li><a href="html/carrito.html">Carrito</a></li>
-            </ul>
+    <header class="main-header">
+        <a href="index.html">
+            <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+        <nav class="main-nav">
+            <a href="index.html">Inicio</a>
+            <a href="assets/html/catalogo.html">Catálogo</a>
+            <a href="assets/html/blog.html">Blog</a>
+            <a href="assets/html/registro.html">Registro</a>
+            <a href="assets/html/carrito.html">Carrito</a>
         </nav>
     </header>
+
     <main>
         <section class="hero">
             <h1>Level-Up Gamer</h1>
             <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn-principal" href="html/catalogo.html">Ver Catálogo</a>
+            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
         </section>
-        <section class="categorias">
-            <h2>Categorías Destacadas</h2>
+        
+        <section class="categorias container">
+            <h2 class="page-title">Categorías Destacadas</h2>
             <div class="grid-categorias">
                 <article>
-                    <h3>Consolas</h3>
-                    <img src="images/productos/ps5.jpg" alt="PlayStation 5">
-                    <a href="html/catalogo.html?cat=consolas">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Computadores Gamers</h3>
-                    <img src="images/productos/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="html/catalogo.html?cat=pc">Ver productos</a>
+                    <h3>Computadores Gamer</h3>
+                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
+                    <a href="assets/html/catalogo.html">Ver productos</a>
                 </article>
                 <article>
                     <h3>Sillas Gamers</h3>
-                    <img src="images/productos/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="html/catalogo.html?cat=sillas">Ver productos</a>
+                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
+                    <a href="assets/html/catalogo.html">Ver productos</a>
                 </article>
-                <!-- Agrega más artículos para otras categorías -->
             </div>
         </section>
-        <section class="comunidad">
-            <h2>Noticias y Comunidad</h2>
-            <article>
-                <h3>Nuevo evento gamer nacional</h3>
-                <p>Participa en torneos y gana puntos LevelUp para premios exclusivos.</p>
-                <a href="html/blog.html">Ver más</a>
-            </article>
-        </section>
     </main>
+    
     <footer>
-        <div class="info">
+        <div class="container">
             <p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p>
-            <p>
-                <a href="https://www.whatsapp.com">Chat Soporte Técnico</a> |
-                <a href="https://facebook.com/levelupgamer">Facebook</a> |
-                <a href="https://twitter.com/levelupgamer">Twitter</a>
-            </p>
-            <p>Contacto: soporte@levelupgamer.cl</p>
         </div>
     </footer>
-    <script src="js/scripts.js"></script>
 </body>
 </html>
