@@ -96,9 +96,12 @@ footer {
     background: #181818;
     color: var(--text-secondary);
     text-align: center;
-    padding: 2em 1em 1em 1em;
+    padding: 0.5em 1em 1em 1em;
     margin-top: 2em;
-    font-size: 1em;
+    position: fixed;
+    bottom: 0;
+    left:0;
+    width: 100%;
 }
 /* ==========================================================================
    3. ESTILOS PARA FORMULARIO DE REGISTRO
@@ -565,3 +568,4 @@ footer {
 .team-member-card p {
     color: var(--text-secondary);
 }
+
