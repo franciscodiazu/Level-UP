@@ -4,43 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto - Level-Up Gamer</title>
-    
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header class="main-header">
-        <a href="../../index.html">
-            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-        </a>
-            <nav class="main-nav">
-                <a href="../../index.html">Inicio</a>
-                <a href="catalogo.html">Catálogo</a>
-                <a href="blog.html">Blog</a>
-                <a href="nosotros.html">Nosotros</a>
-                <a href="contacto.html">Contacto</a>
-                <a href="login.html">Iniciar Sesión</a> <!-- ENLACE AÑADIDO -->
-                <a href="carrito.html">Carrito</a>          
-            </nav>
+        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
+        <nav class="main-nav">
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="blog.html">Blog</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="carrito.html">Carrito</a>
+        </nav>
     </header>
 
     <main class="container">
-        <h1 class="page-title">Contáctanos</h1>
-        <p style="text-align: center; max-width: 600px; margin: 0 auto 40px; color: var(--text-secondary);">¿Tienes alguna duda, sugerencia o necesitas soporte? Completa el formulario y nuestro equipo se pondrá en contacto contigo a la brevedad.</p>
-
-        <!-- Reutilizamos las clases del formulario de registro para mantener la consistencia -->
         <section class="form-container">
+            <h1 class="form-title">Contacto</h1>
+            <p class="form-subtitle">¿Tienes alguna duda? Envíanos un mensaje.</p>
             <form id="contactForm">
                 <div class="form-group">
-                    <label for="nombre">Nombre Completo</label>
+                    <label for="nombre">Tu Nombre</label>
                     <input type="text" id="nombre" name="nombre" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Correo Electrónico</label>
+                    <label for="email">Tu Correo Electrónico</label>
                     <input type="email" id="email" name="email" required>
                 </div>
                 <div class="form-group">
                     <label for="comentario">Comentario</label>
-                    <textarea id="comentario" name="comentario" rows="6" required></textarea>
+                    <!-- Este es el textarea clave. Le damos un ID y un número de filas inicial. -->
+                    <textarea id="comentario" name="comentario" rows="4" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
             </form>
@@ -52,6 +48,8 @@
             <p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p>
         </div>
     </footer>
-            <script src="../../js/contacto.js"></script>
+    
+    <!-- Enlazamos el nuevo script que crearemos -->
+    <script src="../../js/contacto.js"></script>
 </body>
 </html>

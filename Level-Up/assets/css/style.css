@@ -569,3 +569,93 @@ footer {
     color: var(--text-secondary);
 }
 
+/* ==========================================================================
+   7. ESTILOS PARA BLOG (DISEÑO HORIZONTAL)
+   ========================================================================== */
+
+/* Contenedor principal de la lista de blogs */
+.blog-lista {
+    margin-top: 2em;
+}
+
+/* Estilo para cada post individual */
+.blog-post-horizontal {
+    display: flex; /* La clave para el diseño de dos columnas */
+    background: #181818;
+    border-radius: 16px;
+    border: 2px solid var(--color-accent-blue);
+    margin-bottom: 2.5em; /* Espacio entre cada post */
+    overflow: hidden; /* Asegura que la imagen no se salga de las esquinas redondeadas */
+    transition: box-shadow 0.3s;
+}
+
+.blog-post-horizontal:hover {
+    box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+/* Columna de la imagen */
+.blog-post-imagen {
+    flex: 1; /* Ocupa 1 parte del espacio */
+    min-width: 300px; /* Evita que la imagen se encoja demasiado */
+}
+.blog-post-imagen a {
+    display: block;
+    height: 100%;
+}
+.blog-post-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Hace que la imagen llene el contenedor sin deformarse */
+}
+
+/* Columna del contenido */
+.blog-post-contenido {
+    flex: 1.5; /* Ocupa 1.5 partes del espacio, dándole más prioridad al texto */
+    padding: 2em;
+    display: flex;
+    flex-direction: column; /* Apila el título, texto y botón verticalmente */
+}
+.blog-post-contenido h3 {
+    font-family: var(--font-title);
+    margin-bottom: 0.5em;
+}
+.blog-post-contenido h3 a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+.blog-post-contenido p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex-grow: 1; /* Empuja el botón hacia abajo */
+}
+.blog-post-contenido .btn {
+    align-self: flex-start; /* Evita que el botón ocupe todo el ancho */
+    margin-top: 1em;
+}
+
+/* --- Responsive para el Blog --- */
+@media (max-width: 768px) {
+    .blog-post-horizontal {
+        flex-direction: column; /* En pantallas pequeñas, apila la imagen encima del texto */
+    }
+    .blog-post-contenido {
+        padding: 1.5em;
+    }
+}
+
+/* Ajustes para el textarea del formulario de contacto */
+.form-group textarea {
+    /* Hereda todos los estilos de los inputs normales */
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-family: var(--font-body); /* Aseguramos que use la misma fuente */
+
+    /* Reglas específicas para el auto-crecimiento */
+    resize: none; /* Deshabilita el redimensionamiento manual del usuario */
+    overflow-y: hidden; /* Oculta el scrollbar vertical */
+}
