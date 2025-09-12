@@ -98,10 +98,6 @@ footer {
     text-align: center;
     padding: 0.5em 1em 1em 1em;
     margin-top: 2em;
-    position: fixed;
-    bottom: 0;
-    left:0;
-    width: 100%;
 }
 /* ==========================================================================
    3. ESTILOS PARA FORMULARIO DE REGISTRO
@@ -772,3 +768,4 @@ footer {
   .social-links a:hover img {
     filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(130deg);
   }
+
