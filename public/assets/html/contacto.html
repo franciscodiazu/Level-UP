@@ -3,57 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
-    
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Contacto - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
+    <header class="main-header">
+        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
         <nav class="main-nav">
-            <a href="index.html">Inicio</a>
-            <a href="assets/html/catalogo.html">Catálogo</a>
-            <a href="assets/html/blog.html">Blog</a>
-            <a href="assets/html/nosotros.html">Nosotros</a>
-            <a href="assets/html/contacto.html">Contacto</a>
-            <a href="assets/html/login.html">Iniciar Sesión</a>  <!-- ENLACE AÑADIDO -->
-            <a href="assets/html/carrito.html">Carrito</a>
-    </nav>
-</header>
-    <main>
-        <section class="hero">
-            <h1>Level-Up Gamer</h1>
-            <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
-        </section>
-        
-        <section class="categorias container">
-            <h2 class="page-title">Categorías Destacadas</h2>
-            <div class="grid-categorias">
-                <article>
-                    <h3>Computadores Gamer</h3>
-                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Sillas Gamers</h3>
-                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-            </div>
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="blog.html">Blog</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="carrito.html">Carrito</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="form-container">
+            <h1 class="form-title">Contacto</h1>
+            <p class="form-subtitle">¿Tienes alguna duda? Envíanos un mensaje.</p>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="nombre">Tu Nombre</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Tu Correo Electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="comentario">Comentario</label>
+                    <!-- Este es el textarea clave. Le damos un ID y un número de filas inicial. -->
+                    <textarea id="comentario" name="comentario" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+            </form>
         </section>
     </main>
-    
+
     <footer>
         <div class="footer-container">
           <div class="footer-left">
             <span class="site-name">Level-Up</span>
             <div class="payment-methods">
-              <img src="assets/img/visa.png" alt="Visa"/>
-              <img src="assets/img/mastercard.png" alt="MasterCard" />
-              <img src="assets/img/amex.png" alt="AMEX" />
+              <img src="../img/visa.png" alt="Visa"/>
+              <img src="../img/mastercard.png" alt="MasterCard" />
+              <img src="../img/amex.png" alt="AMEX" />
             </div>
           </div>
           <div class="social-links">
@@ -82,5 +79,10 @@
           </div>
         </div>
       </footer>
+    
+    <!-- Enlazamos el nuevo script que crearemos -->
+    <script src="../../js/contacto.js"></script>
 </body>
+
 </html>
+

@@ -3,57 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
+    <title>Blog - Level-Up Gamer</title>
     
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
-        <nav class="main-nav">
-            <a href="index.html">Inicio</a>
-            <a href="assets/html/catalogo.html">Catálogo</a>
-            <a href="assets/html/blog.html">Blog</a>
-            <a href="assets/html/nosotros.html">Nosotros</a>
-            <a href="assets/html/contacto.html">Contacto</a>
-            <a href="assets/html/login.html">Iniciar Sesión</a>  <!-- ENLACE AÑADIDO -->
-            <a href="assets/html/carrito.html">Carrito</a>
-    </nav>
-</header>
-    <main>
-        <section class="hero">
-            <h1>Level-Up Gamer</h1>
-            <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
-        </section>
+    <header class="main-header">
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+            <nav class="main-nav">
+                <a href="../../index.html">Inicio</a>
+                <a href="catalogo.html">Catálogo</a>
+                <a href="blog.html">Blog</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="contacto.html">Contacto</a>
+                <a href="login.html">Iniciar Sesión</a> <!-- ENLACE AÑADIDO -->
+                <a href="carrito.html">Carrito</a>
+            </nav>
+    </header>
+
+    <main class="container">
+    <h1 class="page-title">Noticias Importantes</h1>
+
+    <!-- Contenedor para las nuevas entradas del blog -->
+    <section class="blog-lista">
         
-        <section class="categorias container">
-            <h2 class="page-title">Categorías Destacadas</h2>
-            <div class="grid-categorias">
-                <article>
-                    <h3>Computadores Gamer</h3>
-                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Sillas Gamers</h3>
-                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
+        <!-- Entrada de Blog 1 (Torneo) -->
+        <article class="blog-post-horizontal">
+            <div class="blog-post-imagen">
+                <a href="articulo-torneo.html">
+                    <img src="../img/blog-evento.png" alt="Jugadores compitiendo en un evento de eSports">
+                </a>
             </div>
-        </section>
-    </main>
-    
+            <div class="blog-post-contenido">
+                <h3><a href="articulo-torneo.html">Anunciado el Torneo Nacional de Verano</a></h3>
+                <p>Prepárate para competir por grandes premios y puntos LevelUp. Las inscripciones ya están abiertas para equipos de todo el país.</p>
+                <a href="articulo-torneo.html" class="btn btn-primary">Ver Caso</a>
+            </div>
+        </article>
+
+        <!-- Entrada de Blog 2 (Review) -->
+        <article class="blog-post-horizontal">
+            <div class="blog-post-imagen">
+                <a href="articulo-razer-firefly.html">
+                    <img src="../img/blog-review.png" alt="Un nuevo mouse gamer sobre un mousepad iluminado">
+                </a>
+            </div>
+            <div class="blog-post-contenido">
+                <h3><a href="articulo-razer-firefly.html">Review: Razer Firefly V2 Pro, ¿vale la pena?</a></h3>
+                <p>Analizamos a fondo el nuevo lanzamiento de Razer. Descubre si su precio justifica su rendimiento y tecnología de punta.</p>
+                <a href="articulo-razer-firefly.html" class="btn btn-primary">Ver Caso</a>
+            </div>
+        </article>
+
+        <!-- Entrada de Blog 3 (Guía PC) -->
+        <article class="blog-post-horizontal">
+            <div class="blog-post-imagen">
+                <a href="articulo-guia-pc.html">
+                    <img src="../img/blog-guia.png" alt="Una persona armando un PC gamer pieza por pieza">
+                </a>
+            </div>
+            <div class="blog-post-contenido">
+                <h3><a href="articulo-guia-pc.html">Guía Definitiva 2025: Cómo armar tu primer PC Gamer</a></h3>
+                <p>Te llevamos paso a paso en el proceso de seleccionar componentes, ensamblarlos y configurar tu nuevo equipo para el máximo rendimiento.</p>
+                <a href="articulo-guia-pc.html" class="btn btn-primary">Ver Caso</a>
+            </div>
+        </article>
+
+    </section>
+</main>
+
     <footer>
         <div class="footer-container">
           <div class="footer-left">
             <span class="site-name">Level-Up</span>
             <div class="payment-methods">
-              <img src="assets/img/visa.png" alt="Visa"/>
-              <img src="assets/img/mastercard.png" alt="MasterCard" />
-              <img src="assets/img/amex.png" alt="AMEX" />
+              <img src="../img/visa.png" alt="Visa"/>
+              <img src="../img/mastercard.png" alt="MasterCard" />
+              <img src="../img/amex.png" alt="AMEX" />
             </div>
           </div>
           <div class="social-links">
@@ -83,4 +111,6 @@
         </div>
       </footer>
 </body>
+
 </html>
+

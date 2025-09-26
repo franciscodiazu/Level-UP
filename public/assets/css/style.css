@@ -1,0 +1,771 @@
+/* ==========================================================================
+   1. CONFIGURACIÓN GLOBAL
+   ========================================================================== */
+
+/* Importa fuentes Google */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@600&display=swap');
+
+/* Variables de colores y fuente */
+:root {
+    --color-bg: #000000;
+    --color-accent-blue: #1E90FF;
+    --color-accent-green: #39FF14;
+    --text-main: #FFFFFF;
+    --text-secondary: #D3D3D3;
+    --font-body: 'Roboto', sans-serif;
+    --font-title: 'Orbitron', sans-serif;
+}
+/* Estilos Globales */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background: var(--color-bg);
+    color: var(--text-main);
+    font-family: var(--font-body);
+}
+a {
+    color: var(--color-accent-blue);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+a:hover {
+    color: var(--color-accent-green);
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* ==========================================================================
+   2. HEADER, FOOTER Y COMPONENTES REUTILIZABLES
+   ========================================================================== */
+
+/* Header & Nav (Adaptado a tu HTML) */
+.main-header {
+    background: var(--color-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+    border-bottom: 2px solid var(--color-accent-blue);
+}
+.logo {
+    height: 50px;
+}
+.main-nav {
+    display: flex;
+    gap: 2em;
+}
+.main-nav a {
+    font-family: var(--font-title);
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--text-main);
+}
+/* Botones (Usando tu estilo .btn-principal para .btn-primary) */
+.btn {
+    display: inline-block;
+    border: none;
+    padding: 0.8em 2em;
+    border-radius: 10px;
+    font-family: var(--font-title);
+    font-size: 1em;
+    margin-top: 1em;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s, transform 0.2s;
+}
+.btn-primary {
+    background: var(--color-accent-blue);
+    color: var(--text-main);
+}
+.btn-primary:hover {
+    background: var(--color-accent-green);
+    color: var(--color-bg); /* Cambiado para mejor contraste */
+    transform: scale(1.05);
+}
+/* Footer */
+footer {
+    background: #181818;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 0.5em 1em 1em 1em;
+    margin-top: 2em;
+}
+/* ==========================================================================
+   3. ESTILOS PARA FORMULARIO DE REGISTRO
+   ========================================================================== */
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1a1a1a;
+    border: 1px solid var(--color-accent-blue);
+    border-radius: 8px;
+}
+.form-title {
+    font-family: var(--font-title);
+    color: var(--color-accent-green);
+    text-align: center;
+    margin-bottom: 10px;
+}
+.form-subtitle {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 10px var(--color-accent-green);
+}
+.form-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+.form-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+.form-logo {
+    display: block;
+    width: 150px;
+    margin: 0 auto 20px;
+}
+/* ==========================================================================
+   4. ESTILOS PARA CARRITO DE COMPRAS 
+   ========================================================================== */
+.page-title {
+    font-family: var(--font-title);
+    text-align: center;
+    color: var(--color-accent-green);
+    margin: 20px 0 40px 0;
+}
+.cart-layout {
+    display: flex;
+    gap: 30px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.cart-items {
+    flex: 2;
+}
+.cart-summary {
+    flex: 1;
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+}
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #333;
+}
+.cart-item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.cart-item-details {
+    flex-grow: 1;
+}
+.cart-item-title {
+    font-family: var(--font-title);
+    margin-bottom: 5px;
+}
+.cart-item-price {
+    color: var(--color-accent-green);
+    font-weight: bold;
+}
+.cart-item-quantity {
+    width: 60px;
+    padding: 5px;
+    background-color: #333;
+    border: 1px solid #555;
+    color: var(--text-main);
+    text-align: center;
+}
+.btn-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 0.9em;
+}
+.cart-empty {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+}
+.cart-summary h2 {
+    font-family: var(--font-title);
+    margin-bottom: 20px;
+}
+.summary-line, .summary-total {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.summary-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.cart-summary hr {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 15px 0;
+}
+.link-secondary {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+}
+/* ==========================================================================
+   5. SECCIONES DE LA PÁGINA PRINCIPAL 
+   ========================================================================== */
+.hero {
+    text-align: center;
+    padding: 3em 1em;
+    background: linear-gradient(90deg, var(--color-bg), var(--color-accent-blue) 60%, var(--color-accent-green) 100%);
+}
+.hero h1 {
+    font-family: var(--font-title);
+    font-size: 3em;
+    margin: 0 0 0.2em 0;
+}
+.hero p {
+    font-size: 1.2em;
+    color: var(--text-secondary);
+}
+.categorias {
+    padding: 2em;
+}
+.grid-categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2em;
+    margin-top: 1em;
+}
+.grid-categorias article {
+    background: #181818;
+    border-radius: 16px;
+    padding: 1.2em;
+    box-shadow: 0 2px 8px #222;
+    text-align: center;
+    border: 2px solid var(--color-accent-blue);
+}
+.grid-categorias img {
+    width: 100%;
+    max-width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 1em 0;
+}
+.comunidad, .noticias {
+    padding: 1.5em 2em;
+    background: #101010;
+    border-radius: 18px;
+    margin: 2em 0;
+}
+.comunidad h2, .noticias h2 {
+    font-family: var(--font-title);
+    color: var(--color-accent-green);
+}
+/* ==========================================================================
+   NUEVOS ESTILOS PARA LA PÁGINA DE CATÁLOGO PRODUCTOS!!!
+   ========================================================================== */
+.product-grid {
+    display: grid;
+    /* Crea una cuadrícula flexible que se adapta al tamaño */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2em;
+    margin-top: 1em;
+}
+.product-card {
+    background: #181818;
+    border-radius: 16px;
+    padding: 1.5em;
+    box-shadow: 0 4px 8px #111;
+    text-align: center;
+    border: 2px solid var(--color-accent-blue);
+    display: flex;
+    flex-direction: column; /* Organiza el contenido en columna */
+    justify-content: space-between; /* Empuja el botón hacia abajo */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-green);
+}
+.product-card img {
+    width: 100%;
+    height: 200px; /* Altura fija para todas las imágenes */
+    object-fit: contain; /* 'contain' asegura que se vea toda la imagen sin recortar */
+    margin-bottom: 1em;
+}
+.product-card h3 {
+    font-family: var(--font-title);
+    min-height: 50px; /* Espacio para títulos de 2 líneas */
+    margin-bottom: 0.5em;
+}
+.product-price {
+    color: var(--color-accent-green);
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1em;
+}
+/* ==========================================================================
+   6. RESPONSIVE DESIGN (COMBINADO)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .main-header {
+        flex-direction: column;
+        gap: 1em;
+    }
+    
+    .grid-categorias {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-layout {
+        flex-direction: column;
+    }
+    
+    .hero, .categorias, .comunidad, footer, .main-header {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+}
+/* ==========================================================================
+   7. ESTILOS PARA BLOG
+   ========================================================================== */
+   .blog-grid {
+    display: grid;
+    /* Crea una cuadrícula flexible que se adapta al tamaño */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2em;
+}
+
+.blog-card {
+    background: #181818;
+    border-radius: 16px;
+    overflow: hidden; /* Esconde lo que se salga de la tarjeta (ej. imagen) */
+    border: 2px solid var(--color-accent-blue);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+.blog-card a {
+    text-decoration: none;
+    color: var(--text-main);
+}
+
+.blog-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* Recorta la imagen para que siempre llene el espacio */
+}
+
+.blog-card-content {
+    padding: 1.5em;
+}
+
+.blog-category {
+    display: inline-block;
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    padding: 0.3em 0.8em;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.blog-card-content h3 {
+    font-family: var(--font-title);
+    margin-bottom: 0.5em;
+    color: var(--text-main);
+}
+
+.blog-card-content p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.read-more {
+    display: block;
+    margin-top: 1em;
+    font-weight: bold;
+    color: var(--color-accent-green);
+}
+/* ==========================================================================
+   ESTILO PARA ARTICULO TORNEO
+   ========================================================================== */
+.articulo-individual {
+    max-width: 800px; /* Ancho máximo para facilitar la lectura */
+    margin: 2em auto; /* Centra el artículo en la página */
+}
+
+.articulo-header {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+.articulo-header h1 {
+    font-family: var(--font-title);
+    font-size: 2.5em;
+    color: var(--color-accent-green);
+    margin-bottom: 0.5em;
+}
+
+.articulo-meta {
+    color: var(--text-secondary);
+    margin-bottom: 2em;
+}
+
+.articulo-header img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.articulo-contenido p {
+    font-size: 1.1em;
+    line-height: 1.7;
+    margin-bottom: 1.5em;
+    color: var(--text-secondary);
+}
+
+.articulo-contenido h3 {
+    font-family: var(--font-title);
+    color: var(--text-main);
+    margin-top: 2em;
+    margin-bottom: 1em;
+    border-left: 4px solid var(--color-accent-blue);
+    padding-left: 0.5em;
+}
+
+.articulo-contenido .btn {
+    margin-top: 2em;
+}
+
+/* ==========================================================================
+    ESTILO PARA EL NOSOTROS.HTML
+   ========================================================================== */
+.about-intro {
+    display: flex;
+    gap: 2em;
+    align-items: center;
+    margin-bottom: 4em;
+}
+
+.about-intro img {
+    flex-basis: 50%;
+    border-radius: 8px;
+}
+
+.about-intro-text h2 {
+    font-family: var(--font-title);
+    color: var(--color-accent-green);
+    margin-bottom: 1em;
+}
+
+.mission-vision {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2em;
+    margin-bottom: 4em;
+}
+
+.mission-card, .vision-card {
+    background-color: #181818;
+    padding: 2em;
+    border-left: 4px solid var(--color-accent-blue);
+    border-radius: 8px;
+}
+
+.mission-card h3, .vision-card h3 {
+    font-family: var(--font-title);
+    margin-bottom: 0.5em;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2em;
+    margin-top: 2em;
+}
+
+.team-member-card {
+    background: #181818;
+    border-radius: 16px;
+    padding: 1.5em;
+    text-align: center;
+    border: 1px solid #333;
+}
+
+.team-member-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1em;
+    border: 3px solid var(--color-accent-green);
+}
+
+.team-member-card h3 {
+    font-family: var(--font-title);
+}
+
+.team-member-card span {
+    display: block;
+    color: var(--color-accent-blue);
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.team-member-card p {
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   7. ESTILOS PARA BLOG (DISEÑO HORIZONTAL)
+   ========================================================================== */
+
+/* Contenedor principal de la lista de blogs */
+.blog-lista {
+    margin-top: 2em;
+}
+
+/* Estilo para cada post individual */
+.blog-post-horizontal {
+    display: flex; /* La clave para el diseño de dos columnas */
+    background: #181818;
+    border-radius: 16px;
+    border: 2px solid var(--color-accent-blue);
+    margin-bottom: 2.5em; /* Espacio entre cada post */
+    overflow: hidden; /* Asegura que la imagen no se salga de las esquinas redondeadas */
+    transition: box-shadow 0.3s;
+}
+
+.blog-post-horizontal:hover {
+    box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+/* Columna de la imagen */
+.blog-post-imagen {
+    flex: 1; /* Ocupa 1 parte del espacio */
+    min-width: 300px; /* Evita que la imagen se encoja demasiado */
+}
+.blog-post-imagen a {
+    display: block;
+    height: 100%;
+}
+.blog-post-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Hace que la imagen llene el contenedor sin deformarse */
+}
+
+/* Columna del contenido */
+.blog-post-contenido {
+    flex: 1.5; /* Ocupa 1.5 partes del espacio, dándole más prioridad al texto */
+    padding: 2em;
+    display: flex;
+    flex-direction: column; /* Apila el título, texto y botón verticalmente */
+}
+.blog-post-contenido h3 {
+    font-family: var(--font-title);
+    margin-bottom: 0.5em;
+}
+.blog-post-contenido h3 a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+.blog-post-contenido p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex-grow: 1; /* Empuja el botón hacia abajo */
+}
+.blog-post-contenido .btn {
+    align-self: flex-start; /* Evita que el botón ocupe todo el ancho */
+    margin-top: 1em;
+}
+
+/* --- Responsive para el Blog --- */
+@media (max-width: 768px) {
+    .blog-post-horizontal {
+        flex-direction: column; /* En pantallas pequeñas, apila la imagen encima del texto */
+    }
+    .blog-post-contenido {
+        padding: 1.5em;
+    }
+}
+
+/* Ajustes para el textarea del formulario de contacto */
+.form-group textarea {
+    /* Hereda todos los estilos de los inputs normales */
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-family: var(--font-body); /* Aseguramos que use la misma fuente */
+
+    /* Reglas específicas para el auto-crecimiento */
+    resize: none; /* Deshabilita el redimensionamiento manual del usuario */
+    overflow-y: hidden; /* Oculta el scrollbar vertical */
+
+}
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: flex-start;
+}
+
+.site-name {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.payment-methods img {
+  height: 32px;
+  margin-right: 0.5em;
+  filter: grayscale(30%);
+  vertical-align: middle;
+}
+
+.footer-links {
+    height: 32px;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+
+.footer-links a {
+  color: var(--color-accent-blue);
+  font-weight: bold;
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  align-items: flex-end;
+}
+
+.newsletter-text {
+  margin-bottom: 0.2em;
+  color: var(--text-secondary);
+  font-size: 0.95em;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5em;
+}
+
+.newsletter-form input[type="email"] {
+  padding: 0.4em 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+}
+
+.newsletter-form button {
+  padding: 0.4em 1.2em;
+  border: none;
+  background: var(--color-accent-blue);
+  color: white;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.newsletter-form button:hover {
+  background: var(--color-accent-green);
+  color: var(--color-bg);
+}
+
+/* Responsive para footer */
+@media (max-width: 900px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 1em 0;
+  }
+  .footer-right {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+.social-links {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    margin-top: 0.5em;
+  }
+  
+  .social-links a img {
+    height: 24px; /* Tamaño íconos */
+    width: 24px;
+    filter: brightness(0) invert(1); /* Si los íconos SVG pueden cambiar color blanco */
+    transition: filter 0.3s;
+  }
+  
+  .social-links a:hover img {
+    filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(130deg);
+  }
+

@@ -3,57 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
-    
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Carrito de Compras - Level-Up Gamer</title>
+
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
-        <nav class="main-nav">
-            <a href="index.html">Inicio</a>
-            <a href="assets/html/catalogo.html">Catálogo</a>
-            <a href="assets/html/blog.html">Blog</a>
-            <a href="assets/html/nosotros.html">Nosotros</a>
-            <a href="assets/html/contacto.html">Contacto</a>
-            <a href="assets/html/login.html">Iniciar Sesión</a>  <!-- ENLACE AÑADIDO -->
-            <a href="assets/html/carrito.html">Carrito</a>
-    </nav>
-</header>
-    <main>
-        <section class="hero">
-            <h1>Level-Up Gamer</h1>
-            <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
-        </section>
-        
-        <section class="categorias container">
-            <h2 class="page-title">Categorías Destacadas</h2>
-            <div class="grid-categorias">
-                <article>
-                    <h3>Computadores Gamer</h3>
-                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Sillas Gamers</h3>
-                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-            </div>
-        </section>
+    <header class="main-header">
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+            <nav class="main-nav">
+                <a href="../../index.html">Inicio</a>
+                <a href="catalogo.html">Catálogo</a>
+                <a href="blog.html">Blog</a>
+                <a href="nosotros.html">Nosotros</a>
+                <a href="contacto.html">Contacto</a>
+                <a href="login.html">Iniciar Sesión</a> <!-- ENLACE AÑADIDO -->
+                <a href="carrito.html">Carrito</a>          
+            </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Carrito de Compras</h1>
+        <div class="cart-layout">
+            <section class="cart-items">
+                <div class="cart-item">
+                    <img src="../img/ps5.jpg" alt="PlayStation 5" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-title">PlayStation 5</h3>
+                        <p class="cart-item-price">$549.990 CLP</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" class="cart-item-quantity" value="1" min="1">
+                        <button class="btn-remove">Eliminar</button>
+                    </div>
+                </div>
+            </section>
+            <aside class="cart-summary">
+                <h2>Resumen del Pedido</h2>
+                <div class="summary-line">
+                    <span>Subtotal:</span><span id="subtotal">$549.990</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total:</span><span id="total">$554.980</span>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;">Proceder al Pago</button>
+            </aside>
+        </div>
     </main>
-    
+
     <footer>
         <div class="footer-container">
           <div class="footer-left">
             <span class="site-name">Level-Up</span>
             <div class="payment-methods">
-              <img src="assets/img/visa.png" alt="Visa"/>
-              <img src="assets/img/mastercard.png" alt="MasterCard" />
-              <img src="assets/img/amex.png" alt="AMEX" />
+              <img src="../img/visa.png" alt="Visa"/>
+              <img src="../img/mastercard.png" alt="MasterCard" />
+              <img src="../img/amex.png" alt="AMEX" />
             </div>
           </div>
           <div class="social-links">
@@ -82,5 +88,9 @@
           </div>
         </div>
       </footer>
+
+    <script src="../../js/carrito.js"></script>
 </body>
+
 </html>
+

@@ -3,57 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
-    
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Panel de Administración - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
+    <header class="main-header">
+        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
         <nav class="main-nav">
-            <a href="index.html">Inicio</a>
-            <a href="assets/html/catalogo.html">Catálogo</a>
-            <a href="assets/html/blog.html">Blog</a>
-            <a href="assets/html/nosotros.html">Nosotros</a>
-            <a href="assets/html/contacto.html">Contacto</a>
-            <a href="assets/html/login.html">Iniciar Sesión</a>  <!-- ENLACE AÑADIDO -->
-            <a href="assets/html/carrito.html">Carrito</a>
-    </nav>
-</header>
-    <main>
-        <section class="hero">
-            <h1>Level-Up Gamer</h1>
-            <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
-        </section>
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <!-- Podríamos añadir más enlaces de admin aquí en el futuro -->
+            <a href="#">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Panel de Administración</h1>
+        <p>Bienvenido, Administrador. Desde aquí podrás gestionar el contenido de la tienda.</p>
         
-        <section class="categorias container">
-            <h2 class="page-title">Categorías Destacadas</h2>
-            <div class="grid-categorias">
-                <article>
-                    <h3>Computadores Gamer</h3>
-                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Sillas Gamers</h3>
-                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-            </div>
-        </section>
+        <div class="admin-actions">
+            <h2>Acciones Rápidas:</h2>
+            <ul>
+                <li><a href="catalogo.html" class="btn">Gestionar Productos</a></li>
+                <li><a href="#" class="btn">Ver Usuarios Registrados</a></li>
+                <li><a href="#" class="btn">Revisar Pedidos</a></li>
+            </ul>
+        </div>
     </main>
-    
+
     <footer>
         <div class="footer-container">
           <div class="footer-left">
             <span class="site-name">Level-Up</span>
             <div class="payment-methods">
-              <img src="assets/img/visa.png" alt="Visa"/>
-              <img src="assets/img/mastercard.png" alt="MasterCard" />
-              <img src="assets/img/amex.png" alt="AMEX" />
+              <img src="../img/visa.png" alt="Visa"/>
+              <img src="../img/mastercard.png" alt="MasterCard" />
+              <img src="../img/amex.png" alt="AMEX" />
             </div>
           </div>
           <div class="social-links">

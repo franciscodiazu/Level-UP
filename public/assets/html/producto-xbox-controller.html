@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
-    
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Controlador Inalámbrico Xbox - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
+    <header class="main-header">
+        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
         <nav class="main-nav">
-            <a href="index.html">Inicio</a>
-            <a href="assets/html/catalogo.html">Catálogo</a>
-            <a href="assets/html/blog.html">Blog</a>
-            <a href="assets/html/nosotros.html">Nosotros</a>
-            <a href="assets/html/contacto.html">Contacto</a>
-            <a href="assets/html/login.html">Iniciar Sesión</a>  <!-- ENLACE AÑADIDO -->
-            <a href="assets/html/carrito.html">Carrito</a>
-    </nav>
-</header>
-    <main>
-        <section class="hero">
-            <h1>Level-Up Gamer</h1>
-            <p>¡Desafía tus límites y únete a la comunidad gamer líder en Chile!</p>
-            <a class="btn btn-primary" href="assets/html/catalogo.html">Ver Catálogo</a>
-        </section>
-        
-        <section class="categorias container">
-            <h2 class="page-title">Categorías Destacadas</h2>
-            <div class="grid-categorias">
-                <article>
-                    <h3>Computadores Gamer</h3>
-                    <img src="assets/img/pc-asus.jpg" alt="PC Gamer ASUS">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
-                <article>
-                    <h3>Sillas Gamers</h3>
-                    <img src="assets/img/titan-chair.jpg" alt="Silla Gamer">
-                    <a href="assets/html/catalogo.html">Ver productos</a>
-                </article>
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="blog.html">Blog</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="login.html">Iniciar Sesión</a> <!-- ENLACE AÑADIDO -->
+            <a href="carrito.html">Carrito</a>      
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="producto-detalle-layout">
+            <div class="producto-imagen-container">
+                <img src="../img/controlInalambrico.jpg" alt="Controlador Inalámbrico Xbox Series X">
+            </div>
+            <div class="producto-info-container">
+                <h1 class="page-title" style="text-align: left; margin-top: 0;">Controlador Inalámbrico Xbox Series X</h1>
+                <p class="producto-detalle-precio">$59.990 CLP</p>
+                <p class="producto-descripcion">
+                    Ofrece una experiencia de juego cómoda con botones mapeables y una respuesta táctil mejorada. Compatible con consolas Xbox y PC.
+                </p>
+                <h3>Especificaciones</h3>
+                <ul class="producto-especs">
+                    <li><strong>Categoría:</strong> Accesorios</li>
+                    <li><strong>Compatibilidad:</strong> Xbox Series X|S, Xbox One, Windows 10/11, Android, iOS</li>
+                    <li><strong>Conectividad:</strong> Inalámbrica y Bluetooth</li>
+                    <li><strong>Batería:</strong> Pilas AA (incluidas)</li>
+                </ul>
+                <div class="producto-acciones">
+                    <div class="form-group">
+                        <label for="cantidad">Cantidad:</label>
+                        <input class="cart-item-quantity" type="number" id="cantidad" value="1" min="1" style="width: 80px;">
+                    </div>
+                    <button class="btn btn-primary">Añadir al Carrito</button>
+                </div>
             </div>
         </section>
     </main>
@@ -51,9 +54,9 @@
           <div class="footer-left">
             <span class="site-name">Level-Up</span>
             <div class="payment-methods">
-              <img src="assets/img/visa.png" alt="Visa"/>
-              <img src="assets/img/mastercard.png" alt="MasterCard" />
-              <img src="assets/img/amex.png" alt="AMEX" />
+              <img src="../img/visa.png" alt="Visa"/>
+              <img src="../img/mastercard.png" alt="MasterCard" />
+              <img src="../img/amex.png" alt="AMEX" />
             </div>
           </div>
           <div class="social-links">
