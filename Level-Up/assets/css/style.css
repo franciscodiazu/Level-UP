@@ -769,3 +769,25 @@ footer {
     filter: brightness(0) invert(0.6) sepia(1) saturate(5) hue-rotate(130deg);
   }
 
+/* ===== NUEVOS ESTILOS PARA LA BARRA SECUNDARIA (CON FLEXBOX) ===== */
+.top-bar-secondary {
+    background-color: #111; /* Color oscuro pero distinguible */
+    padding: 0.5em 2em;
+    border-bottom: 1px solid #2a2a2a;
+    
+    /* Usar Flexbox para alinear el contenido a la derecha */
+    display: flex;
+    justify-content: flex-end; /* Alinea los ítems al final (derecha) */
+    gap: 1.5em; /* Espacio entre los enlaces */
+}
+
+.top-bar-secondary a {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    font-family: var(--font-body); /* Roboto para texto secundario */
+    transition: color 0.3s;
+}
+
+.top-bar-secondary a:hover {
+    color: var(--color-accent-green);
+}
