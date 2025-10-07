@@ -1,10 +1,107 @@
 // js/validacion.js
+
+// --- FUNCIONES DE VALIDACIÓN (Declaradas una sola vez) ---
+
+/**
+ * Valida el formato y el dígito verificador de un RUT chileno.
+ */
+function validarRunCompleto(run) {
+    if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(run)) {
+        return false; // Formato inválido (debe tener guion)
+    }
+    const [rut, digitoVerificador] = run.split('-');
+    const dv = digitoVerificador.toLowerCase();
+    
+    let suma = 0;
+    let multiplo = 2;
+
+    for (let i = rut.length - 1; i >= 0; i--) {
+        suma += parseInt(rut.charAt(i), 10) * multiplo;
+        multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+
+    const dvCalculado = 11 - (suma % 11);
+
+    if (dvCalculado === 11 && dv === '0') return true;
+    if (dvCalculado === 10 && dv === 'k') return true;
+    return dvCalculado == dv;
+}
+
+/**
+ * Valida que el nombre no esté vacío y tenga una longitud máxima de 50 caracteres.
+ */
+function validarNombre(nombre) {
+    return nombre.trim() !== "" && nombre.length <= 50;
+}
+
+/**
+ * Valida que los apellidos no estén vacíos y tengan una longitud máxima de 100 caracteres.
+ */
+function validarApellidos(apellidos) {
+    return apellidos.trim() !== "" && apellidos.length <= 100;
+}
+
+/**
+ * Valida que el correo pertenezca a los dominios permitidos.
+ */
+function validarCorreo(correo) {
+    const regex = /^[\w.+-]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/i;
+    return regex.test(correo);
+}
+
+/**
+ * Valida que el usuario sea mayor de 18 años a partir de su fecha de nacimiento.
+ */
+function esMayorDeEdad(fecha) {
+    if (!fecha) return false;
+
+    const hoy = new Date();
+    const fechaNacimiento = new Date(fecha);
+    
+    // Corrige el desfase de zona horaria al interpretar la fecha del input
+    fechaNacimiento.setMinutes(fechaNacimiento.getMinutes() + fechaNacimiento.getTimezoneOffset());
+
+    let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+    const diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth();
+
+    if (diferenciaMeses < 0 || (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        edad--;
+    }
+    return edad >= 18;
+}
+
+/**
+ * Valida que la contraseña tenga la longitud correcta y que ambas contraseñas coincidan.
+ */
+function validarContrasenas(password, passwordConfirm) {
+    const longitudValida = password.length >= 4 && password.length <= 10;
+    const coinciden = password === passwordConfirm;
+    return longitudValida && coinciden;
+}
+
+/**
+ * Valida que se haya seleccionado una opción en un select (para región y comuna).
+ */
+function validarSeleccion(valor) {
+    return valor !== "";
+}
+
+/**
+ * Valida que la dirección no esté vacía y no exceda los 300 caracteres.
+ */
+function validarDireccion(direccion) {
+    return direccion.trim() !== "" && direccion.length <= 300;
+}
+
+
+// --- LÓGICA DEL DOM Y EVENTOS ---
+
 document.addEventListener('DOMContentLoaded', function () {
     const regionSelect = document.getElementById('region');
     const comunaSelect = document.getElementById('comuna');
     const formulario = document.getElementById('registroForm');
 
-    // Cargar regiones al cargar la página
+    // Cargar regiones al inicio (tu código original está perfecto aquí)
     regionesYComunas.regiones.forEach(region => {
         const option = document.createElement('option');
         option.value = region.nombre;
@@ -12,10 +109,10 @@ document.addEventListener('DOMContentLoaded', function () {
         regionSelect.appendChild(option);
     });
 
-    // Cargar comunas cuando se cambia la región
+    // Cargar comunas al cambiar la región (tu código original está perfecto aquí)
     regionSelect.addEventListener('change', function () {
         const regionSeleccionada = this.value;
-        comunaSelect.innerHTML = '<option value="">-- Seleccione una comuna --</option>'; // Limpiar comunas
+        comunaSelect.innerHTML = '<option value="">-- Seleccione una comuna --</option>';
 
         if (regionSeleccionada) {
             const region = regionesYComunas.regiones.find(r => r.nombre === regionSeleccionada);
@@ -28,26 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Función para validar el RUT chileno
-    function validarRun(run) {
-        if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(run)) return false;
-        var tmp = run.split('-');
-        var digv = tmp[1];
-        var rut = tmp[0];
-        if (digv == 'K') digv = 'k';
-        var M = 0, S = 1;
-        for (; rut; rut = Math.floor(rut / 10))
-            S = (S + rut % 10 * (9 - M++ % 6)) % 11;
-        return S ? S - 1 == digv : 'k' == digv;
-    }
-
     // Evento de envío del formulario
-    formulario.addEventListener('submit', function (evento) {
-        evento.preventDefault(); // Prevenir el envío automático
+    formulario.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevenir el envío automático
         
-        let errores = [];
+        const errores = [];
         
-        // Seleccionar todos los campos
+        // Seleccionar valores de los campos
         const run = document.getElementById('run').value;
         const nombre = document.getElementById('nombre').value;
         const apellidos = document.getElementById('apellidos').value;
@@ -59,40 +143,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const comuna = comunaSelect.value;
         const direccion = document.getElementById('direccion').value;
 
-        // 1. Validar RUN
-        if (run.length < 7 || run.length > 9) errores.push("El RUN debe tener entre 7 y 9 caracteres.");
-        // if (!validarRun(run)) errores.push("El RUN no es válido.");
-
-        // 2. Validar Nombre
-        if (nombre === "") errores.push("El nombre es requerido.");
-        if (nombre.length > 50) errores.push("El nombre no debe exceder los 50 caracteres.");
-        
-        // 3. Validar Apellidos
-        if (apellidos === "") errores.push("Los apellidos son requeridos.");
-        if (apellidos.length > 100) errores.push("Los apellidos no deben exceder los 100 caracteres.");
-        
-        // 4. Validar Correo
-        const correosPermitidos = ["@duoc.cl", "@profesor.duoc.cl", "@gmail.com"];
-        if (email === "") errores.push("El correo es requerido.");
-        if (email.length > 100) errores.push("El correo no debe exceder los 100 caracteres.");
-        if (!correosPermitidos.some(dominio => email.endsWith(dominio))) {
-            errores.push("El correo debe ser @duoc.cl, @profesor.duoc.cl o @gmail.com.");
-        }
-        
-        // 5. Validar Fecha de Nacimiento
-        if (fechaNacimiento === "") errores.push("La fecha de nacimiento es requerida.");
-
-        // 6. Validar Contraseñas
-        if (password.length < 4 || password.length > 10) errores.push("La contraseña debe tener entre 4 y 10 caracteres.");
-        if (password !== passwordConfirm) errores.push("Las contraseñas no coinciden.");
-
-        // 7. Validar Región y Comuna
-        if (region === "") errores.push("Debe seleccionar una región.");
-        if (comuna === "") errores.push("Debe seleccionar una comuna.");
-
-        // 8. Validar Dirección
-        if (direccion === "") errores.push("La dirección es requerida.");
-        if (direccion.length > 300) errores.push("La dirección no debe exceder los 300 caracteres.");
+        // --- Aplicar Validaciones ---
+        if (!validarRunCompleto(run)) errores.push("El RUN no es válido (formato: 12345678-9).");
+        if (!validarNombre(nombre)) errores.push("El nombre es requerido y no puede exceder 50 caracteres.");
+        if (!validarApellidos(apellidos)) errores.push("Los apellidos son requeridos y no pueden exceder 100 caracteres.");
+        if (!validarCorreo(email)) errores.push("El correo debe ser @duoc.cl, @profesor.duoc.cl o @gmail.com.");
+        if (!esMayorDeEdad(fechaNacimiento)) errores.push("Debes ser mayor de 18 años.");
+        if (!validarContrasenas(password, passwordConfirm)) errores.push("La contraseña debe tener entre 4 y 10 caracteres y ambas deben coincidir.");
+        if (!validarSeleccion(region)) errores.push("Debes seleccionar una región.");
+        if (!validarSeleccion(comuna)) errores.push("Debes seleccionar una comuna.");
+        if (!validarDireccion(direccion)) errores.push("La dirección es requerida y no puede exceder 300 caracteres.");
 
         // Mostrar errores o mensaje de éxito
         if (errores.length > 0) {
