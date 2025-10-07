@@ -72,5 +72,4 @@
             formulario.reset(); // Limpiar el formulario
             comunaSelect.innerHTML = '<option value="">-- Seleccione una comuna --</option>'; // Limpiar comunas
         }
-    });
-});
+    }); 
