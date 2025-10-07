@@ -1,9 +1,9 @@
 import React, { userState } from "react";
 import Input from "../atoms/Input";
 import Button from "../atoms/Button";
-import {validarRun} from..
+/*import {validarRun} from".." //Arreglar esto
 import{addUser}
-import {useHistory}
+import {useHistory}*/
 
 const UserFrom=()=>{
     const[from, setForm]=userState([run:"",nombre:"",correo:"",clave:"",fecha:""]);

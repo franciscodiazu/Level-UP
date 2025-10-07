@@ -1,34 +1,4 @@
-// js/validacion.js
-document.addEventListener('DOMContentLoaded', function () {
-    const regionSelect = document.getElementById('region');
-    const comunaSelect = document.getElementById('comuna');
-    const formulario = document.getElementById('registroForm');
-
-    // Cargar regiones al cargar la página
-    regionesYComunas.regiones.forEach(region => {
-        const option = document.createElement('option');
-        option.value = region.nombre;
-        option.textContent = region.nombre;
-        regionSelect.appendChild(option);
-    });
-
-    // Cargar comunas cuando se cambia la región
-    regionSelect.addEventListener('change', function () {
-        const regionSeleccionada = this.value;
-        comunaSelect.innerHTML = '<option value="">-- Seleccione una comuna --</option>'; // Limpiar comunas
-
-        if (regionSeleccionada) {
-            const region = regionesYComunas.regiones.find(r => r.nombre === regionSeleccionada);
-            region.comunas.forEach(comuna => {
-                const option = document.createElement('option');
-                option.value = comuna;
-                option.textContent = comuna;
-                comunaSelect.appendChild(option);
-            });
-        }
-    });
-
-    // Función para validar el RUT chileno
+// Función para validar el RUT chileno
     function validarRun(run) {
         if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(run)) return false;
         var tmp = run.split('-');

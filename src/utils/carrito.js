@@ -1,26 +1,4 @@
-// Espera a que todo el contenido del HTML se cargue antes de ejecutar el script.
-document.addEventListener('DOMContentLoaded', function() {
-
-    // Seleccionar todos los elementos del DOM que necesitaremos manipular.
-    const cartItemsContainer = document.querySelector('.cart-items');
-    const subtotalElem = document.getElementById('subtotal');
-    const totalElem = document.getElementById('total');
-    
-    // Si no estamos en la página del carrito, estos elementos no existirán. Salimos para evitar errores.
-    if (!cartItemsContainer) {
-        return;
-    }
-
-    // Costo de envío fijo. Podría venir de una configuración o API en un futuro.
-    const costoEnvio = 4990;
-
-    /**
-     * Función para formatear un número como moneda chilena (CLP).
-     * Ejemplo: 599980 se convierte en "$599.980".
-     * @param {number} valor - El número a formatear.
-     * @returns {string} El valor formateado como moneda.
-     */
-    function formatearMoneda(valor) {
+export function formatearMoneda(valor) {
         return new Intl.NumberFormat('es-CL', { 
             style: 'currency', 
             currency: 'CLP' 
@@ -32,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} texto - El texto con formato de moneda.
      * @returns {number} El valor numérico.
      */
-    function parsearMoneda(texto) {
+export function parsearMoneda(texto) {
         // Elimina todo lo que no sea un dígito numérico.
         const numeroLimpio = texto.replace(/[^0-9]/g, '');
         return parseInt(numeroLimpio, 10);
@@ -42,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Función principal para calcular y actualizar los totales del carrito.
      * Lee cada producto, multiplica su precio por la cantidad y suma los resultados.
      */
-    function actualizarTotales() {
+export function actualizarTotales() {
         let subtotal = 0;
         
         // Obtener todos los productos que están actualmente en el carrito.
@@ -73,35 +51,3 @@ document.addEventListener('DOMContentLoaded', function() {
         subtotalElem.textContent = formatearMoneda(subtotal);
         totalElem.textContent = formatearMoneda(total);
     }
-
-    /**
-     * Se utiliza la "delegación de eventos" en el contenedor principal del carrito.
-     * Esto es más eficiente que añadir un 'listener' a cada botón individualmente.
-     */
-
-    // Escuchador para los clics (ej: botón de eliminar).
-    cartItemsContainer.addEventListener('click', function(evento) {
-        // Comprobar si el elemento que originó el clic tiene la clase 'btn-remove'.
-        if (evento.target.classList.contains('btn-remove')) {
-            // .closest() encuentra el ancestro más cercano que sea un '.cart-item'.
-            const itemParaEliminar = evento.target.closest('.cart-item');
-            if (itemParaEliminar) {
-                itemParaEliminar.remove(); // Elimina el elemento del producto del DOM.
-                actualizarTotales(); // Vuelve a calcular todo.
-            }
-        }
-    });
-
-    // Escuchador para los cambios en los inputs (ej: cambiar la cantidad).
-    cartItemsContainer.addEventListener('input', function(evento) {
-        // Comprobar si el cambio ocurrió en un campo de cantidad.
-        if (evento.target.classList.contains('cart-item-quantity')) {
-            // Si cambia la cantidad, vuelve a calcular todo.
-            actualizarTotales();
-        }
-    });
-
-    // --- Ejecución Inicial ---
-    // Llama a la función una vez al cargar la página para calcular los totales de los productos de ejemplo.
-    actualizarTotales();
-});
