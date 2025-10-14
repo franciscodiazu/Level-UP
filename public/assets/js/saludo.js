@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const bienvenido = document.getElementById("Bienvenido");
+    const bienvenido = document.getElementById("bienvenido");
     if (!bienvenido) return;
 
     // Leer usuario desde localStorage
