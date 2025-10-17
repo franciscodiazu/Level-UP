@@ -1,18 +1,29 @@
 import { BrowserRouter as Router, Route,Switch } from "react-router-dom";
+import Catalogo from "../components/pages/Catalogo";
+import Carrito from "../components/pages/Carrito";
+import Checkout from "../components/pages/Checkout";
+import CompraExitosa from "../components/pages/CompraExitosa";
+import ErrorPago from "../components/pages/ErrorPago";
+
 
 import Home from"../component/pages/Home";
  import perfilAdmin from "../component/pages/admin-dashboard";
  import perfilCliente from "../component/pages/Perfil-Cliente";
 
- const RouterConfig = () => (
-    <Router>
+const RouterConfg = () => (
+    <>  
+        <Header />
         <Switch>
-            <Route exact path="/" compnent={Home}>
-            <Route exact path="/perfilAdmin" compnent={perfilAdmin}>
-            <Route exact path="/perfilCliente" compnent={perfilCliente}>
-            </Route>
-            </Route>
-            </Route>
+            <Route exact path="/" component={Home} />
+            <Route path="/perfil-admin" component={PerfilAdmin} />
+            <Route path="/perfil-cliente" component={PerfilCliente} />
+            <Route path="/catalogo" component={Catalogo} />
+            <Route path="/carrito" component={Carrito} />
+            <Route path="/checkout" component={Checkout} />
+            <Route path="/exito" component={CompraExitosa} />
+            <Route path="/error" component={ErrorPago} />
         </Switch>
-    </Router>
- )
+        <Footer />
+    </>
+);
+export default RouterConfg;

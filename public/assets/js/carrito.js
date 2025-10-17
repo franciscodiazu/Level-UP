@@ -1,107 +1,382 @@
-// Espera a que todo el contenido del HTML se cargue antes de ejecutar el script.
-document.addEventListener('DOMContentLoaded', function() {
+// Configuración de Firebase
+const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_AUTH_DOMAIN",
+    projectId: "TU_PROJECT_ID",
+};
 
-    // Seleccionar todos los elementos del DOM que necesitaremos manipular.
-    const cartItemsContainer = document.querySelector('.cart-items');
-    const subtotalElem = document.getElementById('subtotal');
-    const totalElem = document.getElementById('total');
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Variables globales
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+let productosOferta = [];
+
+// Inicializar la aplicación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarCarrito();
+    cargarProductosOferta();
+    configurarEventos();
+});
+
+/**
+ * Inicializa la interfaz del carrito
+ */
+function inicializarCarrito() {
+    actualizarCarritoHeader();
+    renderizarCarrito();
+    calcularTotal();
+}
+
+/**
+ * Carga productos en oferta desde Firestore
+ */
+async function cargarProductosOferta() {
+    try {
+        const snapshot = await db.collection("producto").get();
+        productosOferta = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        // Filtrar productos con oferta (precio anterior)
+        const productosConOferta = productosOferta.filter(producto => producto.precioAnterior);
+        renderizarProductosOferta(productosConOferta);
+    } catch (error) {
+        console.error("Error cargando productos en oferta:", error);
+    }
+}
+
+/**
+ * Renderiza los productos en oferta
+ */
+function renderizarProductosOferta(productos) {
+    const contenedor = document.getElementById('productosOferta');
     
-    // Si no estamos en la página del carrito, estos elementos no existirán. Salimos para evitar errores.
-    if (!cartItemsContainer) {
+    if (!contenedor) return;
+
+    if (productos.length === 0) {
+        contenedor.innerHTML = '<p>No hay productos en oferta en este momento.</p>';
         return;
     }
 
-    // Costo de envío fijo. Podría venir de una configuración o API en un futuro.
-    const costoEnvio = 4990;
+    contenedor.innerHTML = productos.map(producto => `
+        <div class="product-card">
+            <img src="${producto.imagen}" 
+                 alt="${producto.nombre}" 
+                 class="producto-imagen"
+                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
+            <div class="producto-info">
+                <h3 class="product-title">${producto.nombre}</h3>
+                <div class="precios-oferta">
+                    <span class="precio-anterior">$${producto.precioAnterior?.toLocaleString('es-CL')}</span>
+                    <span class="precio-actual">$${producto.precio?.toLocaleString('es-CL')}</span>
+                </div>
+                <p class="stock-disponible">Stock: ${producto.stock || 10}</p>
+                <button class="btn btn-primary btn-agregar-oferta" data-id="${producto.id}">
+                    Añadir
+                </button>
+            </div>
+        </div>
+    `).join('');
 
-    /**
-     * Función para formatear un número como moneda chilena (CLP).
-     * Ejemplo: 599980 se convierte en "$599.980".
-     * @param {number} valor - El número a formatear.
-     * @returns {string} El valor formateado como moneda.
-     */
-    function formatearMoneda(valor) {
-        return new Intl.NumberFormat('es-CL', { 
-            style: 'currency', 
-            currency: 'CLP' 
-        }).format(valor);
-    }
+    // Agregar eventos a los botones de añadir
+    document.querySelectorAll('.btn-agregar-oferta').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            agregarProductoAlCarrito(productId);
+        });
+    });
+}
 
-    /**
-     * Función para leer un texto de moneda (ej: "$549.990 CLP") y convertirlo a un número.
-     * @param {string} texto - El texto con formato de moneda.
-     * @returns {number} El valor numérico.
-     */
-    function parsearMoneda(texto) {
-        // Elimina todo lo que no sea un dígito numérico.
-        const numeroLimpio = texto.replace(/[^0-9]/g, '');
-        return parseInt(numeroLimpio, 10);
-    }
+/**
+ * Renderiza los productos en el carrito
+ */
+function renderizarCarrito() {
+    const tbody = document.getElementById('tablaCarritoBody');
+    if(!tbody) return;
     
-    /**
-     * Función principal para calcular y actualizar los totales del carrito.
-     * Lee cada producto, multiplica su precio por la cantidad y suma los resultados.
-     */
-    function actualizarTotales() {
-        let subtotal = 0;
-        
-        // Obtener todos los productos que están actualmente en el carrito.
-        const items = cartItemsContainer.querySelectorAll('.cart-item');
-        
-        // Si no hay productos, mostramos el carrito vacío y ponemos los totales en cero.
-        if (items.length === 0) {
-            subtotalElem.textContent = formatearMoneda(0);
-            totalElem.textContent = formatearMoneda(0); // El total sin productos es 0.
-            cartItemsContainer.innerHTML = '<p class="cart-empty">Tu carrito está vacío. <a href="productos.html">¡Añade productos!</a></p>';
+    if (carrito.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="carrito-vacio">
+                    <div class="icono">🛒</div>
+                    <h3>Tu carrito está vacío</h3>
+                    <p>Agrega algunos productos para continuar</p>
+                    <a href="catalogo.html" class="btn-ir-catalogo">Ir al Catálogo</a>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = carrito.map((producto, index) => `
+        <tr>
+            <td>
+                <img src="${producto.imagen}" 
+                     alt="${producto.nombre}" 
+                     class="imagen-tabla"
+                     onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Imagen'">
+            </td>
+            <td>${producto.nombre}</td>
+            <td>$${producto.precio?.toLocaleString('es-CL')}</td>
+            <td>
+                <div class="controles-cantidad">
+                    <button class="btn-cantidad" onclick="disminuirCantidad(${index})">-</button>
+                    <span class="cantidad-actual">${producto.cantidad || 1}</span>
+                    <button class="btn-cantidad" onclick="aumentarCantidad(${index})">+</button>
+                </div>
+            </td>
+            <td>$${((producto.precio || 0) * (producto.cantidad || 1)).toLocaleString('es-CL')}</td>
+            <td>
+                <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">
+                    Eliminar
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Agrega un producto al carrito
+ */
+function agregarProductoAlCarrito(productId) {
+    const producto = productosOferta.find(p => p.id === productId);
+    
+    if (producto) {
+        if (producto.stock <= 0) {
+            mostrarNotificacion('Producto sin stock disponible', 'error');
             return;
         }
-
-        // Recorrer cada item del carrito para sumar sus precios.
-        items.forEach(item => {
-            const precioTexto = item.querySelector('.cart-item-price').textContent;
-            const cantidad = parseInt(item.querySelector('.cart-item-quantity').value, 10);
-            const precio = parsearMoneda(precioTexto);
-            
-            // Sumamos al subtotal el resultado de (precio unitario * cantidad).
-            subtotal += precio * cantidad;
-        });
-
-        // Calculamos el total final sumando el envío.
-        const total = subtotal + costoEnvio;
-
-        // Actualizamos el HTML con los nuevos valores formateados.
-        subtotalElem.textContent = formatearMoneda(subtotal);
-        totalElem.textContent = formatearMoneda(total);
+        
+        const productoExistente = carrito.find(item => item.id === productId);
+        
+        if (productoExistente) {
+            productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
+        } else {
+            carrito.push({
+                ...producto,
+                cantidad: 1
+            });
+        }
+        
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        
+        actualizarStockFirebase(productId, 1);
+        
+        mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
     }
+}
 
-    /**
-     * Se utiliza la "delegación de eventos" en el contenedor principal del carrito.
-     * Esto es más eficiente que añadir un 'listener' a cada botón individualmente.
-     */
-
-    // Escuchador para los clics (ej: botón de eliminar).
-    cartItemsContainer.addEventListener('click', function(evento) {
-        // Comprobar si el elemento que originó el clic tiene la clase 'btn-remove'.
-        if (evento.target.classList.contains('btn-remove')) {
-            // .closest() encuentra el ancestro más cercano que sea un '.cart-item'.
-            const itemParaEliminar = evento.target.closest('.cart-item');
-            if (itemParaEliminar) {
-                itemParaEliminar.remove(); // Elimina el elemento del producto del DOM.
-                actualizarTotales(); // Vuelve a calcular todo.
-            }
+/**
+ * Actualizar stock en Firebase cuando se agrega al carrito
+ */
+async function actualizarStockFirebase(productId, cantidad) {
+    try {
+        const productoRef = db.collection("producto").doc(productId);
+        const productoDoc = await productoRef.get();
+        
+        if (productoDoc.exists) {
+            const stockActual = productoDoc.data().stock;
+            const nuevoStock = stockActual - cantidad;
+            
+            await productoRef.update({
+                stock: nuevoStock
+            });
+            
+            console.log(`Stock actualizado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
         }
-    });
+    } catch (error) {
+        console.error("Error actualizando stock en Firebase:", error);
+    }
+}
 
-    // Escuchador para los cambios en los inputs (ej: cambiar la cantidad).
-    cartItemsContainer.addEventListener('input', function(evento) {
-        // Comprobar si el cambio ocurrió en un campo de cantidad.
-        if (evento.target.classList.contains('cart-item-quantity')) {
-            // Si cambia la cantidad, vuelve a calcular todo.
-            actualizarTotales();
+/**
+ * Restaurar stock cuando se elimina del carrito
+ */
+async function restaurarStockFirebase(productId, cantidad) {
+    try {
+        const productoRef = db.collection("producto").doc(productId);
+        const productoDoc = await productoRef.get();
+        
+        if (productoDoc.exists) {
+            const stockActual = productoDoc.data().stock;
+            const nuevoStock = stockActual + cantidad;
+            
+            await productoRef.update({
+                stock: nuevoStock
+            });
+            
+            console.log(`Stock restaurado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
         }
-    });
+    } catch (error) {
+        console.error("Error restaurando stock en Firebase:", error);
+    }
+}
 
-    // --- Ejecución Inicial ---
-    // Llama a la función una vez al cargar la página para calcular los totales de los productos de ejemplo.
-    actualizarTotales();
-});
+
+/**
+ * Aumenta la cantidad de un producto en el carrito
+ */
+function aumentarCantidad(index) {
+    const producto = carrito[index];
+    
+    if (producto.stock <= producto.cantidad) {
+        mostrarNotificacion('No hay suficiente stock disponible', 'error');
+        return;
+    }
+    
+    carrito[index].cantidad = (carrito[index].cantidad || 1) + 1;
+    guardarCarrito();
+    renderizarCarrito();
+    calcularTotal();
+    
+    actualizarStockFirebase(producto.id, 1);
+}
+
+
+/**
+ * Disminuye la cantidad de un producto en el carrito
+ */
+function disminuirCantidad(index) {
+    const producto = carrito[index];
+    
+    if (carrito[index].cantidad > 1) {
+        carrito[index].cantidad--;
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        
+        restaurarStockFirebase(producto.id, 1);
+    }
+}
+
+/**
+ * Elimina un producto del carrito
+ */
+function eliminarDelCarrito(index) {
+    const producto = carrito[index];
+    const cantidadEliminada = producto.cantidad || 1;
+    
+    carrito.splice(index, 1);
+    guardarCarrito();
+    renderizarCarrito();
+    calcularTotal();
+    mostrarNotificacion(`"${producto.nombre}" eliminado del carrito`);
+
+    restaurarStockFirebase(producto.id, cantidadEliminada);
+}
+
+/**
+ * Calcula el total del carrito
+ */
+function calcularTotal() {
+    const total = carrito.reduce((sum, producto) => {
+        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
+    }, 0);
+    
+    const totalCarritoElement = document.getElementById('totalCarrito');
+    if (totalCarritoElement) {
+        totalCarritoElement.textContent = total.toLocaleString('es-CL');
+    }
+    actualizarCarritoHeader();
+}
+
+/**
+ * Actualiza el header del carrito
+ */
+function actualizarCarritoHeader() {
+    const total = carrito.reduce((sum, producto) => {
+        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
+    }, 0);
+    
+    const carritoTotalElement = document.querySelector('.carrito-total');
+    if (carritoTotalElement) {
+        carritoTotalElement.textContent = total.toLocaleString('es-CL');
+    }
+}
+
+/**
+ * Guarda el carrito en localStorage
+ */
+function guardarCarrito() {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+/**
+ * Limpia todo el carrito
+ */
+function limpiarCarrito() {
+    if (carrito.length === 0) {
+        alert('El carrito ya está vacío');
+        return;
+    }
+    
+    if (confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
+        carrito = [];
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        mostrarNotificacion('Carrito limpiado correctamente');
+    }
+}
+
+/**
+ * Redirige al checkout
+ */
+function irAlCheckout() {
+    if (carrito.length === 0) {
+        alert('Agrega productos al carrito antes de continuar');
+        return;
+    }
+    
+    window.location.href = 'checkout.html';
+}
+
+/**
+ * Muestra una notificación temporal
+ */
+function mostrarNotificacion(mensaje) {
+    const notificacion = document.createElement('div');
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        z-index: 10000;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        font-weight: 600;
+    `;
+    notificacion.textContent = mensaje;
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.remove();
+    }, 3000);
+}
+
+/**
+ * Configura los eventos de la página
+ */
+function configurarEventos() {
+    const btnLimpiar = document.getElementById('btnLimpiarCarrito');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarCarrito);
+    }
+    
+    const btnComprar = document.getElementById('btnComprarAhora');
+    if (btnComprar) {
+        btnComprar.addEventListener('click', irAlCheckout);
+    }
+}
+
+// Hacer funciones disponibles globalmente
+window.aumentarCantidad = aumentarCantidad;
+window.disminuirCantidad = disminuirCantidad;
+window.eliminarDelCarrito = eliminarDelCarrito;
