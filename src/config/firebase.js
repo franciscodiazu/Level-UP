@@ -2,8 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
+import { getAuth } from "firebase/auth"; //Importar auth
 
-const firebaseConfig = {
+// Inicializar Firebase
+    const firebaseConfig = {
   apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
   authDomain: "tienda-level-up.firebaseapp.com",
   projectId: "tienda-level-up",
@@ -14,6 +16,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig); try { getAnalytics(app) } catch {}
+const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const db = getFirestore(app);
+
+export const auth = getAuth(app); //Se exporta auth 

@@ -21,11 +21,25 @@
     margin: 0;
     padding: 0;
 }
+
+/* === INICIO DE LA CORRECCIÓN PARA EL FOOTER === */
+html, body {
+    height: 100%;
+}
+
 body {
     background: var(--color-bg);
     color: var(--text-main);
     font-family: var(--font-body);
+    display: flex;
+    flex-direction: column;
 }
+
+main {
+    flex-grow: 1; /* Permite que el contenido principal crezca y empuje el footer */
+}
+/* === FIN DE LA CORRECCIÓN === */
+
 a {
     color: var(--color-accent-blue);
     text-decoration: none;
@@ -98,6 +112,7 @@ footer {
     text-align: center;
     padding: 0.5em 1em 1em 1em;
     margin-top: 2em;
+    flex-shrink: 0; /* Evita que el footer se encoja */
 }
 /* ==========================================================================
    3. ESTILOS PARA FORMULARIO DE REGISTRO
