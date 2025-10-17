@@ -17,11 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let categoriaActiva = 'todos'; // Categoría actualmente seleccionada
 
   // Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyBBT7jka7a-7v3vY19BlSajamiedLrBTN0",
-    authDomain: "tiendanombretienda.firebaseapp.com",
-    projectId: "tiendanombretienda",
-  };
+    const firebaseConfig = {
+  apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+  authDomain: "tienda-level-up.firebaseapp.com",
+  projectId: "tienda-level-up"
+};
 
   // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
