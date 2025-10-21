@@ -1,5 +1,5 @@
 import {addUser} from './services/firestoreService.js';
-import {esMayorDeEdad,validarApellidos,validarContrasenas,validarCorreo,validarDireccion,validarNombre,validarRunCompleto,validarSeleccion} from './utils/validacion.js';
+import {esMayorEdad,validarApellidos,validarContrasenas,validarCorreo,validarDireccion,validarNombre,validarRun,validarSeleccion} from './utils/validacion.js';
 
 document.addEventListener("DOMContentLoaded",()=>{
     const form = document.getElementById("formUsuario");
@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     const fecha = fechaInput.value;
 
     //Validar el ingreso correcto de los datos para el registro
-    if(!validarRunCompleto(run)) return mensaje.innerText = "Run incorrecto";
+    if(!validarRun(run)) return mensaje.innerText = "Run incorrecto";
     if(!nombre) return mensaje.innerText = "Nombre en blanco";
     if(!validarCorreo(correo)) return mensaje.innerText = "Correo incorrecto";
-    if(!esMayorDeEdad(fecha)) return mensaje.innerText = "Debe ser mayor de 18 años";
+    if(!esMayorEdad(fecha)) return mensaje.innerText = "Debe ser mayor de 18 años";
 
     try {
       await addUser({ run, nombre, correo, clave, fecha});
