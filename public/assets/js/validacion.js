@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             alert("¡Registro exitoso!");
             formulario.reset(); // Limpiar el formulario
-            comunaSelect.innerHTML = '<option value="">-- Seleccione una comuna --</option>'; // Limpiar comunas
+            comunaSelect.innerText = "";// Limpiar comunas
         }
     });
 });
