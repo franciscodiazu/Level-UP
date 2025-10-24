@@ -806,3 +806,36 @@ footer {
 .top-bar-secondary a:hover {
     color: var(--color-accent-green);
 }
+
+/* ==========================================================================
+   10. ESTILOS PARA NOTIFICACIÓN (TOAST)
+   ========================================================================== */
+.toast-notification {
+    position: fixed; /* Se queda fijo en la pantalla */
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%); /* Centra el mensaje horizontalmente */
+    
+    background-color: var(--color-accent-green); /* Color verde de tu marca */
+    color: var(--color-bg); /* Texto oscuro para contraste */
+    padding: 16px 30px;
+    border-radius: 8px;
+    
+    font-family: var(--font-title); /* Fuente de Título (Orbitron) */
+    font-size: 1.1em;
+    font-weight: bold;
+    
+    z-index: 1000;
+    
+    /* Efectos de aparición y desaparición */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(20px); /* Comienza un poco abajo */
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Sube a su posición final */
+}

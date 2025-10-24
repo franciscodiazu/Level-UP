@@ -275,11 +275,13 @@
     margin-top: 50px;
   }
   /* Título de productos */
-  .productos-grid {
+  .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-  }
+    /* ESTA LÍNEA FUERZA 3 COLUMNAS IGUALES: */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2em;
+    margin-top: 1em;
+}
   /* Card individual de producto */
   .producto-card {
     background: white;
