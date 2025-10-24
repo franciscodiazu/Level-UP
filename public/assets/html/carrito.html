@@ -1,93 +1,188 @@
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito de Compras - Level-Up Gamer</title>
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/carrito.css">
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+ <meta charset="UTF-8">
+
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+ <title>Carrito de Compras - Level-Up Gamer</title>
+
+ <link rel="stylesheet" href="../css/style.css">
+
+ <link rel="stylesheet" href="../css/carrito.css">
+
+ <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+ <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 </head>
+
 <body>
-  <header class="main-header">
-      <a href="../../index.html">
-          <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-      </a>
-      <nav class="main-nav">
-          <a href="../../index.html">Inicio</a>
-          <a href="catalogo.html">Catálogo</a>
-          <a href="blog.html">Blog</a>
-          <a href="nosotros.html">Nosotros</a>
-          <a href="contacto.html">Contacto</a>
-          <a href="login.html">Iniciar Sesión</a>
-          <a href="carrito.html">Carrito</a>
-      </nav>
-  </header>
 
-  <main class="container">
-    <div class="carrito-container">
-      <section class="ofertas-section">
-        <h2 class="page-title">Productos en Oferta</h2>
-        <div id="productosOferta" class="product-grid"></div>
-      </section>
+ <header class="main-header">
 
-      <section class="resumen-carrito">
-        <h2 class="page-title">Resumen de tu Carrito</h2>
-        
-        <div class="tabla-carrito-container">
-          <table class="tabla-carrito">
-            <thead>
-              <tr>
-                <th>Imagen</th>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaCarritoBody">
-              </tbody>
-          </table>
-        </div>
+   <a href="../../index.html">
 
-        <div class="carrito-footer">
-          <div class="total-container">
-            <span class="total-text">Total: $</span>
-            <span id="totalCarrito" class="total-precio">0</span>
-          </div>
-          <div class="botones-carrito">
-            <button id="btnLimpiarCarrito" class="btn btn-secondary">Limpiar Carrito</button>
-            <button id="btnComprarAhora" class="btn btn-primary">Comprar Ahora</button>
-          </div>
-        </div>
-      </section>
+     <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+
+   </a>
+
+   <nav class="main-nav">
+
+     <a href="../../index.html">Inicio</a>
+
+     <a href="catalogo.html">Catálogo</a>
+
+     <a href="blog.html">Blog</a>
+
+     <a href="nosotros.html">Nosotros</a>
+
+     <a href="contacto.html">Contacto</a>
+
+     <a href="login.html">Iniciar Sesión</a>
+
+     <a href="carrito.html">Carrito</a>
+
+   </nav>
+
+ </header>
+
+
+
+ <main class="container">
+
+  <div class="carrito-container">
+
+   <section class="ofertas-section">
+
+    <h2 class="page-title">Productos en Oferta</h2>
+
+    <div id="productosOferta" class="product-grid"></div>
+
+   </section>
+
+
+
+   <section class="resumen-carrito">
+
+    <h2 class="page-title">Resumen de tu Carrito</h2>
+
+    
+
+    <div class="tabla-carrito-container">
+
+     <table class="tabla-carrito">
+
+      <thead>
+
+       <tr>
+
+        <th>Imagen</th>
+
+        <th>Nombre</th>
+
+        <th>Precio</th>
+
+        <th>Cantidad</th>
+
+        <th>Subtotal</th>
+
+        <th>Acciones</th>
+
+       </tr>
+
+      </thead>
+
+      <tbody id="tablaCarritoBody">
+
+       </tbody>
+
+     </table>
+
     </div>
-  </main>
 
-  <footer>
-      <div class="footer-container">
-          <div class="footer-left">
-              <span class="site-name">Level-Up</span>
-              <div class="payment-methods">
-                  <img src="../img/visa.png" alt="Visa">
-                  <img src="../img/mastercard.png" alt="MasterCard">
-                  <img src="../img/amex.png" alt="AMEX">
-              </div>
-          </div>
-          <div class="social-links">
-          </div>
-          <div class="footer-right">
-              <span class="newsletter-text">¿Quieres recibir notificaciones sobre nuestros nuevos productos?.</span>
-              <form class="newsletter-form">
-                  <input type="email" placeholder="Enter Email" required>
-                  <button type="submit">Subscribe</button>
-              </form>
-          </div>
-      </div>
-  </footer>
 
-  <script src="../../js/carrito.js"></script>
+
+    <div class="carrito-footer">
+
+     <div class="total-container">
+
+      <span class="total-text">Total: $</span>
+
+      <span id="totalCarrito" class="total-precio">0</span>
+
+     </div>
+
+     <div class="botones-carrito">
+
+      <button id="btnLimpiarCarrito" class="btn btn-secondary">Limpiar Carrito</button>
+
+      <button id="btnComprarAhora" class="btn btn-primary">Comprar Ahora</button>
+
+     </div>
+
+    </div>
+
+   </section>
+
+  </div>
+
+ </main>
+
+
+
+ <footer>
+
+   <div class="footer-container">
+
+     <div class="footer-left">
+
+       <span class="site-name">Level-Up</span>
+
+       <div class="payment-methods">
+
+         <img src="../img/visa.png" alt="Visa">
+
+         <img src="../img/mastercard.png" alt="MasterCard">
+
+         <img src="../img/amex.png" alt="AMEX">
+
+       </div>
+
+     </div>
+
+     <div class="social-links">
+
+     </div>
+
+     <div class="footer-right">
+
+       <span class="newsletter-text">¿Quieres recibir notificaciones sobre nuestros nuevos productos?.</span>
+
+       <form class="newsletter-form">
+
+         <input type="email" placeholder="Enter Email" required>
+
+         <button type="submit">Subscribe</button>
+
+       </form>
+
+     </div>
+
+   </div>
+
+ </footer>
+
+
+
+ <script src="../js/carrito.js"></script> <!--Cambiar ruta a carrito.js-->
+
 </body>
+
 </html>
+
+
+

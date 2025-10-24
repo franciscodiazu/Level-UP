@@ -1,56 +1,176 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Catálogo - Level-Up Gamer</title>
-    
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-    <header class="main-header">
-        <a href="../../index.html">
-            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-        </a>
-            <nav class="main-nav">
-                <a href="../../index.html">Inicio</a>
-                <a href="catalogo.html">Catálogo</a>
-                <a href="blog.html">Blog</a>
-                <a href="nosotros.html">Nosotros</a>
-                <a href="contacto.html">Contacto</a>
-                <a href="login.html">Iniciar Sesión</a>
-                <a href="carrito.html">Carrito</a>
-            </nav>
-    </header>
 
-    <main class="container">
-        <h1 class="page-title">Catálogo de Productos</h1>
-        <section class="product-grid" id="product-grid">
-            </section>
-    </main>
-    
-    <footer>
-        <div class="footer-container">
-          <div class="footer-left">
-            <span class="site-name">Level-Up</span>
-            <div class="payment-methods">
-              <img src="../img/visa.png" alt="Visa"/>
-              <img src="../img/mastercard.png" alt="MasterCard" />
-              <img src="../img/amex.png" alt="AMEX" />
-            </div>
-          </div>
-          <div class="social-links">
-          </div>
-          <div class="footer-right">
-            <span class="newsletter-text">¿Quieres recibir notificaciones sobre nuestros nuevos productos?.</span>
-            <form class="newsletter-form">
-              <input type="email" placeholder="Enter Email" required />
-              <button type="submit">Subscribe</button>
-            </form>
-          </div>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Catálogo - Level-Up Gamer</title>
+
+  
+
+  <link rel="stylesheet" href="../css/style.css">
+
+  <!-- Falto Agregar Firebase SDK -->
+
+   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+
+   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+</head>
+
+<body>
+
+  <header class="main-header">
+
+   <!--Falto agregar-->
+
+   <!-- Línea Superior -->
+
+   <div class="search-container">
+
+    <input type="text" id="buscador" placeholder="Buscar productos..." class="search-input">
+
+    <button id="btnBuscar" class="btn-buscar">Buscar</button>
+
+   </div>
+
+    <a href="../../index.html">
+
+      <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+
+    </a>
+
+      <nav class="main-nav">
+
+        <!--<a href="../../index.html">Inicio</a>-->
+
+        <!--Falto Cambiar-->
+
+        <a href="/" class="nav-link">Home</a> <!--Cambiar a "/" para React Router-->
+
+        <div class="dropdown">
+
+         <a href="#" class="nav-link">Categorías ⌄</a>
+
+         <div class="dropdown-content" id="dropdownCategorias"></div>
+
         </div>
-      </footer>
+
+
+
+        <a href="blog.html">Blog</a>
+
+        <a href="nosotros.html">Nosotros</a>
+
+        <a href="contacto.html">Contacto</a>
+
+        <a href="login.html">Iniciar Sesión</a>
+
+        <a href="carrito.html">Carrito</a>
+
+      </nav>
+
+      <!--Falto agregar-->
+
+      <div class="nav-right">
+
+       <button class="btn-carrito" onclick="window.location.href='carrito.html'"> <!--Cambiar a "carrito" para React Router-->
+
+        <span class="carrito-icon">🛒</span>
+
+        Total: $<span class="carrito-total">0</span>
+
+       </button>
+
+      </div>
+
+  </header>
+
+  <!--Falto Agregar-->
+
+  <main class="main">
+
+   <!-- CARDS DE CATEGORÍAS -->
+
+   <section class="categorias-section">
+
+    <h2 class="section-title">Categorías</h2>
+
+    <button id="btnVerTodos" class="btn-ver-todos">Todos los productos</button>
+
+    <div id="cardsCategorias" class="categorias-grid"></div>
+
+   </section>
+
+
+
+   <!-- PRODUCTOS -->
+
+   <section class="productos-section">
+
+    <h2 id="tituloProductos" class="section-title">Todos los Productos</h2>
+
+    <div id="productosGrid" class="productos-grid"></div>
+
+   </section>
+
+  </main>
+
+  
+
+  <footer>
+
+    <div class="footer-container">
+
+     <div class="footer-left">
+
+      <span class="site-name">Level-Up</span>
+
+      <div class="payment-methods">
+
+       <img src="../img/visa.png" alt="Visa"/>
+
+       <img src="../img/mastercard.png" alt="MasterCard" />
+
+       <img src="../img/amex.png" alt="AMEX" />
+
+      </div>
+
+     </div>
+
+     <div class="social-links">
+
+     </div>
+
+     <div class="footer-right">
+
+      <span class="newsletter-text">¿Quieres recibir notificaciones sobre nuestros nuevos productos?.</span>
+
+      <form class="newsletter-form">
+
+       <input type="email" placeholder="Enter Email" required />
+
+       <button type="submit">Subscribe</button>
+
+      </form>
+
+     </div>
+
+    </div>
+
+   </footer>
+
+    <!--Falto Agregar-->
+
+   <script src="../js/catalogo.js"></script>
 
 </body>
 
+
+
 </html>
+
