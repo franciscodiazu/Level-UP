@@ -21,21 +21,10 @@
     margin: 0;
     padding: 0;
 }
-
-html, body {
-    height: 100%;
-}
-
 body {
     background: var(--color-bg);
     color: var(--text-main);
     font-family: var(--font-body);
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    flex-grow: 1; 
 }
 a {
     color: var(--color-accent-blue);
@@ -49,134 +38,27 @@ img {
     max-width: 100%;
     height: auto;
 }
-
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 /* ==========================================================================
-   2. HEADER, FOOTER Y COMPONENTES REUTILIZABLES (Refinado - SOLO HEADER)
+   2. HEADER, FOOTER Y COMPONENTES REUTILIZABLES
    ========================================================================== */
 
-/* Asegúrate que .container tenga un ancho máximo y centrado (si no lo tienes ya) */
-.container {
-    width: 90%; /* O un porcentaje adecuado */
-    max-width: 1200px; /* Ancho máximo */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Header & Nav - ESTILO BASE */
+/* Header & Nav (Adaptado a tu HTML) */
 .main-header {
-    background: var(--color-bg); /* Mantiene el fondo negro */
+    background: var(--color-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
     border-bottom: 2px solid var(--color-accent-blue);
-    padding: 0;
-}
-
-/* PRIMER NIVEL: Logo, Búsqueda, Acciones */
-.header-top {
-    /* IMPORTANTE: Añade la clase 'container' a este div en tu HTML */
-    /* <div class="header-top container"> */
-    display: flex;
-    justify-content: space-between; /* Espacia los 3 bloques principales */
-    align-items: center; /* Alinea verticalmente al centro */
-    padding: 1em 0; /* Padding vertical, el horizontal lo da .container */
-}
-
-/* Ajuste para el logo si es necesario */
-.logo-link {
-    display: flex;
-    align-items: center; /* Centra el logo si tiene espacio extra */
-    flex-shrink: 0; /* Evita que el logo se encoja */
 }
 .logo {
     height: 50px;
-    width: auto;
 }
-
-/* BARRA DE BÚSQUEDA (MEJORADA) */
-.search-bar-container {
-    display: flex;
-    align-items: stretch; /* Mantiene la misma altura */
-    flex-grow: 1;
-    max-width: 500px;
-    margin: 0 2em;
-    /* Añadir esto por si acaso */
-    height: 40px; /* Altura fija para el contenedor, ajusta según necesites */
-}
-
-.search-input {
-    padding: 10px 15px;
-    border-radius: 5px 0 0 5px;
-    border: 1px solid var(--color-accent-blue);
-    background-color: #333; /* Fondo gris oscuro */
-    color: var(--text-main); /* Texto blanco */
-    font-size: 1em;
-    /* CORRECCIÓN CLAVE: Asegurar que el input pueda crecer */
-    flex-grow: 1; /* Permite que el input ocupe el espacio disponible */
-    /* Quitar width: 100% si lo tenías, flex-grow es mejor aquí */
-    min-width: 100px; /* Ancho mínimo por si acaso */
-    height: 100%; /* Ocupa la altura del contenedor */
-    box-sizing: border-box; /* Asegura que el padding no desborde */
-}
-
-.search-button {
-    padding: 10px 20px;
-    margin-top: 0;
-    border-radius: 0 5px 5px 0;
-    font-size: 1em;
-    cursor: pointer;
-    background: var(--color-accent-blue);
-    color: var(--text-main);
-    border: 1px solid var(--color-accent-blue);
-    /* CORRECCIÓN CLAVE: Evitar que el botón crezca */
-    flex-shrink: 0; /* Evita que el botón se encoja */
-    height: 100%; /* Ocupa la altura del contenedor */
-    box-sizing: border-box; /* Asegura que el padding no desborde */
-}
-.search-button:hover {
-     background: var(--color-accent-green);
-     color: var(--color-bg);
-}
-
-
-/* ACCIONES DE USUARIO Y CARRITO (MEJORADO) */
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5em; /* Aumenta el espacio entre elementos */
-    font-size: 0.9em;
-    white-space: nowrap; /* Evita saltos de línea */
-    flex-shrink: 0; /* Evita que esta sección se encoja */
-}
-.top-link {
-    color: var(--text-secondary);
-    font-weight: bold;
-    text-decoration: none; /* Quita subrayado */
-}
-.top-link:hover {
-    color: var(--color-accent-green); /* Efecto hover */
-}
-
-.cart-link {
-    /* Mantiene el estilo del botón de carrito verde */
-    background: #39FF14;
-    color: #000;
-    font-weight: bold;
-    padding: 0.6em 1.2em; /* Ligeramente más grande */
-    font-size: 1em;
-    margin-top: 0;
-    border-radius: 5px;
-    text-decoration: none;
-    display: flex; /* Para alinear el ícono si lo usas */
-    align-items: center;
-    gap: 5px; /* Espacio entre ícono y texto */
-    /* Asegúrate que también tenga la clase 'btn' y 'btn-primary' en el HTML si quieres heredar otros estilos base */
-}
-.cart-link:hover {
-    background: #ffffff;
-    color: #000;
-}
-
-
-/* NAVEGACIÓN PRINCIPAL (SEGUNDO NIVEL) */
-/* Estilos base para la navegación (puedes mantener los tuyos si son diferentes) */
 .main-nav {
     display: flex;
     gap: 2em;
@@ -186,61 +68,37 @@ img {
     font-size: 1.1em;
     font-weight: bold;
     color: var(--text-main);
-    text-decoration: none;
 }
-/* Estilos específicos para la barra de navegación de ancho completo */
-.main-nav.full-width-nav {
-    display: flex;
-    justify-content: center;
-    gap: 3em;
+/* Botones (Usando tu estilo .btn-principal para .btn-primary) */
+.btn {
+    display: inline-block;
+    border: none;
     padding: 0.8em 2em;
-    background-color: #111;
-    border-top: 1px solid #2a2a2a; /* Añadido borde superior para separar */
-    border-bottom: 1px solid var(--color-accent-green);
+    border-radius: 10px;
+    font-family: var(--font-title);
+    font-size: 1em;
+    margin-top: 1em;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s, transform 0.2s;
 }
-.main-nav.full-width-nav a {
+.btn-primary {
+    background: var(--color-accent-blue);
     color: var(--text-main);
-    padding: 5px 0; /* Espacio vertical pequeño */
-    border-bottom: 2px solid transparent; /* Espacio para borde inferior en hover */
-    transition: color 0.3s, border-color 0.3s;
 }
-.main-nav.full-width-nav a:hover {
-    color: var(--color-accent-green);
-    border-bottom-color: var(--color-accent-green); /* Línea inferior al pasar el mouse */
+.btn-primary:hover {
+    background: var(--color-accent-green);
+    color: var(--color-bg); /* Cambiado para mejor contraste */
+    transform: scale(1.05);
 }
-
-
-/* --- AJUSTES RESPONSIVOS PARA EL HEADER --- */
-/* Asegúrate que estos estén DENTRO de tu media query existente o crea uno nuevo */
-@media (max-width: 900px) {
-    .header-top {
-        flex-direction: column; /* Apila los elementos */
-        align-items: flex-start; /* Alinea al inicio */
-        padding: 1em; /* Ajusta padding para móvil */
-    }
-    .search-bar-container {
-        width: 100%; /* Ocupa todo el ancho */
-        margin: 1em 0; /* Espacio vertical */
-        max-width: none; /* Sin ancho máximo */
-    }
-    .user-actions {
-        width: 100%; /* Ocupa todo el ancho */
-        justify-content: space-between; /* Espacia los links/botón */
-        margin-top: 0.5em;
-        gap: 1em; /* Reduce espacio en móvil */
-    }
-    .main-nav.full-width-nav {
-        flex-direction: column; /* Apila los enlaces */
-        align-items: flex-start; /* Alinea a la izquierda */
-        padding: 1em;
-        gap: 0.5em; /* Menos espacio entre enlaces */
-    }
-    .cart-link {
-        font-size: 0.9em;
-        padding: 0.5em 0.8em;
-    }
+/* Footer */
+footer {
+    background: #181818;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 0.5em 1em 1em 1em;
+    margin-top: 2em;
 }
-/* ========================================================================== */
 /* ==========================================================================
    3. ESTILOS PARA FORMULARIO DE REGISTRO
    ========================================================================== */
@@ -452,6 +310,7 @@ img {
    ========================================================================== */
 .product-grid {
     display: grid;
+    /* Crea una cuadrícula flexible que se adapta al tamaño */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2em;
     margin-top: 1em;
@@ -460,52 +319,34 @@ img {
     background: #181818;
     border-radius: 16px;
     padding: 1.5em;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px #111;
     text-align: center;
     border: 2px solid var(--color-accent-blue);
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    flex-direction: column; /* Organiza el contenido en columna */
+    justify-content: space-between; /* Empuja el botón hacia abajo */
     transition: transform 0.3s, box-shadow 0.3s;
 }
-
-
 .product-card:hover {
-    transform: translateY(-5px); /* Efecto de elevación al pasar el mouse */
-    box-shadow: 0 0 15px var(--color-accent-green); /* Sombra verde al pasar el mouse */
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-green);
 }
-
 .product-card img {
     width: 100%;
-    height: 200px; /* Altura fija para uniformidad */
-    object-fit: contain; /* Asegura que se vea toda la imagen sin deformar */
+    height: 200px; /* Altura fija para todas las imágenes */
+    object-fit: contain; /* 'contain' asegura que se vea toda la imagen sin recortar */
     margin-bottom: 1em;
-    border-radius: 8px; /* Redondear esquinas de la imagen */
 }
-
 .product-card h3 {
-    font-family: var(--font-title); /* Fuente Orbitron para títulos */
-    min-height: 50px; /* Espacio para títulos largos */
+    font-family: var(--font-title);
+    min-height: 50px; /* Espacio para títulos de 2 líneas */
     margin-bottom: 0.5em;
-    color: var(--text-main); /* Color de texto principal (blanco) */
-    font-size: 1.1em;
-}
-/* Asegúrate que el enlace dentro de la tarjeta no afecte el color del título */
-.product-card a h3 {
-    color: var(--text-main);
-}
-.product-card a:hover h3 {
-    color: var(--color-accent-green); /* Cambia color del título al pasar el mouse sobre el enlace */
 }
 .product-price {
-    color: var(--color-accent-green); /* Precio en verde */
+    color: var(--color-accent-green);
     font-weight: bold;
     font-size: 1.2rem;
     margin-bottom: 1em;
-}
-/* Ajuste para el botón dentro de la tarjeta */
-.product-card .btn {
-    margin-top: auto; /* Asegura que el botón se quede abajo */
 }
 /* ==========================================================================
    6. RESPONSIVE DESIGN (COMBINADO)
@@ -952,7 +793,7 @@ img {
 }
 
 /* ==========================================================================
-   10. ESTILOS PARA NOTIFICACIÓN (TOAST)
+   NUEVOS ESTILOS PARA NOTIFICACIÓN (TOAST)
    ========================================================================== */
 .toast-notification {
     position: fixed; /* Se queda fijo en la pantalla */
@@ -982,259 +823,4 @@ img {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0); /* Sube a su posición final */
-}
-/* ==========================================================================
-   8. ESTILOS PARA PANEL DE ADMINISTRACIÓN
-   ========================================================================== */
-
-/* Layout principal de dos columnas */
-.admin-wrapper {
-    display: flex;
-    min-height: 100vh; /* Ocupa al menos toda la altura de la vista */
-    background-color: #f8f9fa; /* Fondo claro para el contenido principal */
-    color: #212529; /* Texto oscuro para contraste */
-}
-
-/* 1. Barra Lateral (Sidebar) */
-.admin-sidebar {
-    width: 250px;
-    background-color: #ffffff; /* Fondo blanco para la barra lateral */
-    padding: 20px;
-    border-right: 1px solid #dee2e6; /* Borde sutil */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.admin-logo {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.admin-logo img.logo {
-    height: 40px; /* Ajusta el tamaño del logo si es necesario */
-}
-.sidebar-title {
-    color: #495057; /* Texto gris oscuro */
-    margin-top: 5px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.admin-nav {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.nav-item {
-    display: block;
-    padding: 10px 15px;
-    color: #495057; /* Texto de enlace gris */
-    border-radius: 5px;
-    margin-bottom: 5px;
-    transition: background-color 0.3s, color 0.3s;
-    text-decoration: none; /* Quitar subrayado */
-}
-
-.nav-item:hover, .nav-item.active {
-    background-color: #007bff; /* Azul primario para hover/activo */
-    color: #ffffff; /* Texto blanco */
-}
-.nav-item.active {
-    font-weight: bold;
-}
-
-.nav-group {
-    margin-top: 15px;
-}
-
-.group-title {
-    display: block;
-    color: #6c757d; /* Gris más claro para títulos */
-    font-size: 0.8em;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin: 10px 0 5px 15px;
-}
-
-.sub-item {
-    padding-left: 30px; /* Indentación */
-}
-
-.admin-logout {
-    margin-top: 20px;
-    text-align: center;
-}
-/* Reutilizamos .btn-primary pero con color rojo para logout */
-.btn-logout {
-    background-color: #dc3545; /* Rojo */
-    border: none;
-    color: white;
-    padding: 0.5em 1em;
-    margin: 0; /* Quitamos margen superior heredado de .btn */
-}
-.btn-logout:hover {
-    background-color: #c82333; /* Rojo más oscuro */
-    color: white;
-}
-
-
-/* 2. Contenido Principal */
-.admin-main-content {
-    flex-grow: 1;
-    padding: 30px;
-    background-color: #f8f9fa; /* Fondo claro */
-}
-
-.admin-main-content .page-title {
-    text-align: left;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #343a40; /* Texto oscuro principal */
-    font-family: var(--font-title); /* Usar Orbitron si está definido */
-}
-.admin-main-content > p {
-    margin-bottom: 30px;
-    color: #6c757d; /* Texto secundario gris */
-}
-
-/* Estilos de las Tarjetas de Estadísticas */
-.dashboard-stats {
-    margin-bottom: 40px;
-}
-.stat-group-title {
-    font-family: var(--font-title); /* Usar Orbitron */
-    color: #495057; /* Gris oscuro */
-    margin-bottom: 20px;
-    font-size: 1.3em;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Columnas flexibles */
-    gap: 20px;
-}
-
-.stat-card {
-    background-color: #ffffff; /* Fondo blanco */
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra suave */
-    border-left: 5px solid; /* Borde de color */
-}
-
-.stat-card h4 {
-    margin-bottom: 15px;
-    color: #6c757d; /* Título gris */
-    font-size: 1em;
-    font-weight: normal;
-}
-
-.stat-value {
-    font-size: 2em;
-    font-weight: bold;
-    color: #343a40; /* Valor oscuro */
-    margin-bottom: 10px;
-}
-
-.stat-trend {
-    font-size: 0.9em;
-    color: #6c757d;
-}
-.trend-up { color: #28a745; /* Verde para positivo */ }
-.trend-down { color: #dc3545; /* Rojo para negativo */ }
-.stat-alert { color: #ffc107; font-weight: bold; /* Amarillo para alerta */ }
-
-/* Colores Específicos de las Tarjetas (Según la imagen de referencia) */
-.stat-card.blue { border-left-color: #007bff; }
-.stat-card.green { border-left-color: #28a745; }
-.stat-card.yellow { border-left-color: #ffc107; }
-.stat-card.red { border-left-color: #dc3545; }
-
-
-/* Estilos de Tabla de Órdenes */
-.dashboard-latest-orders {
-    margin-top: 40px;
-}
-.responsive-table {
-    overflow-x: auto; /* Permite scroll horizontal en tablas grandes */
-}
-.dashboard-latest-orders table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* Para que el border-radius afecte a la tabla */
-}
-.dashboard-latest-orders th, .dashboard-latest-orders td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6; /* Borde sutil */
-    color: #495057; /* Texto gris */
-}
-.dashboard-latest-orders th {
-    background-color: #e9ecef; /* Fondo gris claro para cabecera */
-    color: #495057;
-    font-weight: bold;
-    font-size: 0.9em;
-    text-transform: uppercase;
-}
-.dashboard-latest-orders tr:last-child td {
-    border-bottom: none;
-}
-.dashboard-latest-orders a {
-    color: #007bff; /* Enlaces azules */
-    text-decoration: none;
-}
-.dashboard-latest-orders a:hover {
-    text-decoration: underline;
-}
-.status-shipped { color: #17a2b8; /* Cyan para Enviado */ }
-.status-processing { color: #ffc107; /* Amarillo para Procesando */ }
-
-/* Margen superior para el botón "Ver Todas las Órdenes" */
-.mt-3 {
-    margin-top: 1.5em !important;
-}
-
-/* Responsive para el Admin Panel */
-@media (max-width: 992px) { /* Ajustar punto de quiebre si es necesario */
-    .admin-sidebar {
-        width: 200px; /* Reducir ancho en pantallas medianas */
-    }
-}
-@media (max-width: 768px) {
-    .admin-wrapper {
-        flex-direction: column; /* Apila sidebar y contenido */
-    }
-    .admin-sidebar {
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid #dee2e6;
-        flex-direction: row; /* Menú horizontal */
-        flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
-        padding-bottom: 10px;
-        justify-content: space-between; /* Espacia logo y nav */
-    }
-    .admin-logo { width: auto; margin-bottom: 0; }
-    .admin-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        margin-top: 0;
-        flex-grow: 0;
-        width: auto; /* No ocupa todo el ancho */
-    }
-    .nav-item { margin-bottom: 0; margin-right: 5px; } /* Ajustes para menú horizontal */
-    .nav-group { margin-top: 0; display: contents; } /* Simplifica grupos */
-    .group-title { display: none; }
-    .admin-logout { width: auto; margin-top: 0; }
-    .admin-main-content {
-        padding: 20px;
-    }
-    .stats-grid {
-        grid-template-columns: 1fr; /* Una columna en móvil */
-    }
 }
