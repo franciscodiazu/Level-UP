@@ -824,3 +824,259 @@ footer {
     visibility: visible;
     transform: translateX(-50%) translateY(0); /* Sube a su posición final */
 }
+
+/* ==========================================================================
+   8. ESTILOS PARA PANEL DE ADMINISTRACIÓN
+   ========================================================================== */
+
+/* Layout principal de dos columnas */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh; /* Ocupa al menos toda la altura de la vista */
+    background-color: #f8f9fa; /* Fondo claro para el contenido principal */
+    color: #212529; /* Texto oscuro para contraste */
+}
+
+/* 1. Barra Lateral (Sidebar) */
+.admin-sidebar {
+    width: 250px;
+    background-color: #ffffff; /* Fondo blanco para la barra lateral */
+    padding: 20px;
+    border-right: 1px solid #dee2e6; /* Borde sutil */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.admin-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.admin-logo img.logo {
+    height: 40px; /* Ajusta el tamaño del logo si es necesario */
+}
+.sidebar-title {
+    color: #495057; /* Texto gris oscuro */
+    margin-top: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.nav-item {
+    display: block;
+    padding: 10px 15px;
+    color: #495057; /* Texto de enlace gris */
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none; /* Quitar subrayado */
+}
+
+.nav-item:hover, .nav-item.active {
+    background-color: #007bff; /* Azul primario para hover/activo */
+    color: #ffffff; /* Texto blanco */
+}
+.nav-item.active {
+    font-weight: bold;
+}
+
+.nav-group {
+    margin-top: 15px;
+}
+
+.group-title {
+    display: block;
+    color: #6c757d; /* Gris más claro para títulos */
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 10px 0 5px 15px;
+}
+
+.sub-item {
+    padding-left: 30px; /* Indentación */
+}
+
+.admin-logout {
+    margin-top: 20px;
+    text-align: center;
+}
+/* Reutilizamos .btn-primary pero con color rojo para logout */
+.btn-logout {
+    background-color: #dc3545; /* Rojo */
+    border: none;
+    color: white;
+    padding: 0.5em 1em;
+    margin: 0; /* Quitamos margen superior heredado de .btn */
+}
+.btn-logout:hover {
+    background-color: #c82333; /* Rojo más oscuro */
+    color: white;
+}
+
+
+/* 2. Contenido Principal */
+.admin-main-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #f8f9fa; /* Fondo claro */
+}
+
+.admin-main-content .page-title {
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #343a40; /* Texto oscuro principal */
+    font-family: var(--font-title); /* Usar Orbitron si está definido */
+}
+.admin-main-content > p {
+    margin-bottom: 30px;
+    color: #6c757d; /* Texto secundario gris */
+}
+
+/* Estilos de las Tarjetas de Estadísticas */
+.dashboard-stats {
+    margin-bottom: 40px;
+}
+.stat-group-title {
+    font-family: var(--font-title); /* Usar Orbitron */
+    color: #495057; /* Gris oscuro */
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Columnas flexibles */
+    gap: 20px;
+}
+
+.stat-card {
+    background-color: #ffffff; /* Fondo blanco */
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    border-left: 5px solid; /* Borde de color */
+}
+
+.stat-card h4 {
+    margin-bottom: 15px;
+    color: #6c757d; /* Título gris */
+    font-size: 1em;
+    font-weight: normal;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: #343a40; /* Valor oscuro */
+    margin-bottom: 10px;
+}
+
+.stat-trend {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+.trend-up { color: #28a745; /* Verde para positivo */ }
+.trend-down { color: #dc3545; /* Rojo para negativo */ }
+.stat-alert { color: #ffc107; font-weight: bold; /* Amarillo para alerta */ }
+
+/* Colores Específicos de las Tarjetas (Según la imagen de referencia) */
+.stat-card.blue { border-left-color: #007bff; }
+.stat-card.green { border-left-color: #28a745; }
+.stat-card.yellow { border-left-color: #ffc107; }
+.stat-card.red { border-left-color: #dc3545; }
+
+
+/* Estilos de Tabla de Órdenes */
+.dashboard-latest-orders {
+    margin-top: 40px;
+}
+.responsive-table {
+    overflow-x: auto; /* Permite scroll horizontal en tablas grandes */
+}
+.dashboard-latest-orders table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Para que el border-radius afecte a la tabla */
+}
+.dashboard-latest-orders th, .dashboard-latest-orders td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6; /* Borde sutil */
+    color: #495057; /* Texto gris */
+}
+.dashboard-latest-orders th {
+    background-color: #e9ecef; /* Fondo gris claro para cabecera */
+    color: #495057;
+    font-weight: bold;
+    font-size: 0.9em;
+    text-transform: uppercase;
+}
+.dashboard-latest-orders tr:last-child td {
+    border-bottom: none;
+}
+.dashboard-latest-orders a {
+    color: #007bff; /* Enlaces azules */
+    text-decoration: none;
+}
+.dashboard-latest-orders a:hover {
+    text-decoration: underline;
+}
+.status-shipped { color: #17a2b8; /* Cyan para Enviado */ }
+.status-processing { color: #ffc107; /* Amarillo para Procesando */ }
+
+/* Margen superior para el botón "Ver Todas las Órdenes" */
+.mt-3 {
+    margin-top: 1.5em !important;
+}
+
+/* Responsive para el Admin Panel */
+@media (max-width: 992px) { /* Ajustar punto de quiebre si es necesario */
+    .admin-sidebar {
+        width: 200px; /* Reducir ancho en pantallas medianas */
+    }
+}
+@media (max-width: 768px) {
+    .admin-wrapper {
+        flex-direction: column; /* Apila sidebar y contenido */
+    }
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+        flex-direction: row; /* Menú horizontal */
+        flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
+        padding-bottom: 10px;
+        justify-content: space-between; /* Espacia logo y nav */
+    }
+    .admin-logo { width: auto; margin-bottom: 0; }
+    .admin-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: 0;
+        flex-grow: 0;
+        width: auto; /* No ocupa todo el ancho */
+    }
+    .nav-item { margin-bottom: 0; margin-right: 5px; } /* Ajustes para menú horizontal */
+    .nav-group { margin-top: 0; display: contents; } /* Simplifica grupos */
+    .group-title { display: none; }
+    .admin-logout { width: auto; margin-top: 0; }
+    .admin-main-content {
+        padding: 20px;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr; /* Una columna en móvil */
+    }
+}
