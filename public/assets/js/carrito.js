@@ -1,254 +1,381 @@
-// Configuración de Firebase (solicitada por el usuario)
+// Configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
-  authDomain: "tienda-level-up.firebaseapp.com",
-  projectId: "tienda-level-up"
+ apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+ authDomain: "tienda-level-up.firebaseapp.com",
+ projectId: "tienda-level-up"
 };
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-// --- LÓGICA DEL CARRITO ---
+// Variables globales
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+let productosOferta = [];
+
+// Inicializar la aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("carrito.js cargado y ejecutándose."); // Verifica carga
+    inicializarCarrito();
+    cargarProductosOferta();
+    configurarEventos();
+});
 
-    // Seleccionar elementos
-    const tablaBody = document.getElementById('tablaCarritoBody');
-    const totalElem = document.getElementById('totalCarrito');
-    const btnLimpiar = document.getElementById('btnLimpiarCarrito');
-    const btnComprar = document.getElementById('btnComprarAhora'); 
+/**
+ * Inicializa la interfaz del carrito
+ */
+function inicializarCarrito() {
+    actualizarCarritoHeader();
+    renderizarCarrito();
+    calcularTotal();
+}
 
-    // Verificación crucial de elementos
-    if (!tablaBody) console.error("Elemento 'tablaCarritoBody' NO encontrado.");
-    if (!totalElem) console.error("Elemento 'totalCarrito' NO encontrado.");
-    if (!btnLimpiar) console.error("Botón 'btnLimpiarCarrito' NO encontrado.");
-    if (!btnComprar) console.error("Botón 'btnComprarAhora' NO encontrado.");
+/**
+ * Carga productos en oferta desde Firestore
+ */
+async function cargarProductosOferta() {
+    try {
+        const snapshot = await db.collection("producto").get();
+        productosOferta = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        // Filtrar productos con oferta (precio anterior)
+        const productosConOferta = productosOferta.filter(producto => producto.precioAnterior);
+        renderizarProductosOferta(productosConOferta);
+    } catch (error) {
+        console.error("Error cargando productos en oferta:", error);
+    }
+}
 
-    // Salir si falta algún elemento esencial
-    if (!tablaBody || !totalElem || !btnLimpiar || !btnComprar) {
-        alert("Error crítico: Faltan elementos HTML esenciales para el carrito. Revisa la consola.");
+/**
+ * Renderiza los productos en oferta
+ */
+function renderizarProductosOferta(productos) {
+    const contenedor = document.getElementById('productosOferta');
+    
+    if (!contenedor) return;
+
+    if (productos.length === 0) {
+        contenedor.innerHTML = '<p>No hay productos en oferta en este momento.</p>';
         return;
     }
 
-    function formatearMoneda(valor) {
-        const numero = Number(valor);
-        if (isNaN(numero)) {
-            console.warn("Intentando formatear valor no numérico:", valor);
-            return "$?"; 
-        }
-        return new Intl.NumberFormat('es-CL', { 
-            style: 'currency', 
-            currency: 'CLP',
-            minimumFractionDigits: 0 
-        }).format(numero);
+    contenedor.innerHTML = productos.map(producto => `
+        <div class="product-card">
+            <img src="${producto.imagen}" 
+                 alt="${producto.nombre}" 
+                 class="producto-imagen"
+                 onerror="this.src='https://via.placeholder.com/400x300/cccccc/969696?text=Imagen+No+Disponible'">
+            <div class="producto-info">
+                <h3 class="product-title">${producto.nombre}</h3>
+                <div class="precios-oferta">
+                    <span class="precio-anterior">$${producto.precioAnterior?.toLocaleString('es-CL')}</span>
+                    <span class="precio-actual">$${producto.precio?.toLocaleString('es-CL')}</span>
+                </div>
+                <p class="stock-disponible">Stock: ${producto.stock || 10}</p>
+                <button class="btn btn-primary btn-agregar-oferta" data-id="${producto.id}">
+                    Añadir
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Agregar eventos a los botones de añadir
+    document.querySelectorAll('.btn-agregar-oferta').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            agregarProductoAlCarrito(productId);
+        });
+    });
+}
+
+/**
+ * Renderiza los productos en el carrito
+ */
+function renderizarCarrito() {
+    const tbody = document.getElementById('tablaCarritoBody');
+    if(!tbody) return;
+    
+    if (carrito.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="carrito-vacio">
+                    <div class="icono">🛒</div>
+                    <h3>Tu carrito está vacío</h3>
+                    <p>Agrega algunos productos para continuar</p>
+                    <a href="catalogo.html" class="btn-ir-catalogo">Ir al Catálogo</a>
+                </td>
+            </tr>
+        `;
+        return;
     }
 
-    function actualizarTotalGeneral() {
-        console.log("Actualizando total general...");
-        try {
-            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            let total = 0;
-            
-            carrito.forEach(producto => {
-                const precio = Number(producto.precio) || 0;
-                const cantidad = Number(producto.cantidad) || 0;
-                if (precio === 0) console.warn(`Producto ${producto.id} tiene precio 0 o inválido.`);
-                if (cantidad === 0) console.warn(`Producto ${producto.id} tiene cantidad 0 o inválida.`);
-                total += precio * cantidad;
-            });
-            
-            totalElem.textContent = total.toLocaleString('es-CL'); 
-            console.log("Total general calculado:", total);
-        } catch (error) {
-            console.error("Error al leer/calcular total desde localStorage:", error);
-        }
-    }
+    tbody.innerHTML = carrito.map((producto, index) => `
+        <tr>
+            <td>
+                <img src="${producto.imagen}" 
+                     alt="${producto.nombre}" 
+                     class="imagen-tabla"
+                     onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Imagen'">
+            </td>
+            <td>${producto.nombre}</td>
+            <td>$${producto.precio?.toLocaleString('es-CL')}</td>
+            <td>
+                <div class="controles-cantidad">
+                    <button class="btn-cantidad" onclick="disminuirCantidad(${index})">-</button>
+                    <span class="cantidad-actual">${producto.cantidad || 1}</span>
+                    <button class="btn-cantidad" onclick="aumentarCantidad(${index})">+</button>
+                </div>
+            </td>
+            <td>$${((producto.precio || 0) * (producto.cantidad || 1)).toLocaleString('es-CL')}</td>
+            <td>
+                <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">
+                    Eliminar
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
 
-    function actualizarFila(inputElement) {
-        console.log("Actualizando fila por cambio de cantidad...");
-        const tr = inputElement.closest('tr');
-        if (!tr) {
-            console.error("No se pudo encontrar la fila (tr) para actualizar.");
+/**
+ * Agrega un producto al carrito
+ */
+function agregarProductoAlCarrito(productId) {
+    const producto = productosOferta.find(p => p.id === productId);
+    
+    if (producto) {
+        if (producto.stock <= 0) {
+            mostrarNotificacion('Producto sin stock disponible', 'error');
             return;
         }
         
-        const id = tr.dataset.id;
-        let nuevaCantidad = parseInt(inputElement.value, 10);
+        const productoExistente = carrito.find(item => item.id === productId);
         
-        if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
-            console.warn(`Cantidad inválida (${inputElement.value}) para producto ${id}. Estableciendo a 1.`);
-            nuevaCantidad = 1;
-            inputElement.value = 1; 
+        if (productoExistente) {
+            productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
+        } else {
+            carrito.push({
+                ...producto,
+                cantidad: 1
+            });
         }
+        
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        
+        actualizarStockFirebase(productId, 1);
+        
+        mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
+    }
+}
 
-        try {
-            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            let precioUnitario = 0;
-            let productoEncontrado = false;
+/**
+ * Actualizar stock en Firebase cuando se agrega al carrito
+ */
+async function actualizarStockFirebase(productId, cantidad) {
+    try {
+        const productoRef = db.collection("producto").doc(productId);
+        const productoDoc = await productoRef.get();
+        
+        if (productoDoc.exists) {
+            const stockActual = productoDoc.data().stock;
+            const nuevoStock = stockActual - cantidad;
             
-            const carritoActualizado = carrito.map(producto => {
-                if (producto.id === id) {
-                    producto.cantidad = nuevaCantidad;
-                    precioUnitario = Number(producto.precio) || 0;
-                    productoEncontrado = true;
-                }
-                return producto;
+            await productoRef.update({
+                stock: nuevoStock
             });
             
-            if (!productoEncontrado) {
-                 console.error(`No se encontró el producto con id ${id} en el carrito de localStorage al actualizar fila.`);
-                 return;
-            }
-
-            localStorage.setItem('carrito', JSON.stringify(carritoActualizado));
-            console.log(`Cantidad actualizada a ${nuevaCantidad} para producto ${id} en localStorage.`);
-
-            const subtotalCell = tr.querySelector('.subtotal-celda');
-            if (subtotalCell) {
-                subtotalCell.textContent = formatearMoneda(precioUnitario * nuevaCantidad);
-            } else {
-                 console.error("No se encontró la celda de subtotal (.subtotal-celda) en la fila.");
-            }
-
-            actualizarTotalGeneral();
-        } catch (error) {
-            console.error("Error al actualizar fila en localStorage:", error);
+            console.log(`Stock actualizado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
         }
+    } catch (error) {
+        console.error("Error actualizando stock en Firebase:", error);
     }
+}
 
-    function eliminarProducto(botonElement) {
-        console.log("Intentando eliminar producto...");
-        const tr = botonElement.closest('tr');
-         if (!tr) {
-             console.error("No se pudo encontrar la fila (tr) para eliminar.");
-             return;
-         }
-        const id = tr.dataset.id;
-        console.log("ID del producto a eliminar:", id);
-
-        try {
-            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            const carritoAntes = carrito.length;
+/**
+ * Restaurar stock cuando se elimina del carrito
+ */
+async function restaurarStockFirebase(productId, cantidad) {
+    try {
+        const productoRef = db.collection("producto").doc(productId);
+        const productoDoc = await productoRef.get();
+        
+        if (productoDoc.exists) {
+            const stockActual = productoDoc.data().stock;
+            const nuevoStock = stockActual + cantidad;
             
-            const carritoActualizado = carrito.filter(producto => producto.id !== id);
-            const carritoDespues = carritoActualizado.length;
-
-            if (carritoAntes === carritoDespues) {
-                console.warn(`El producto con ID ${id} no se encontró en localStorage para eliminar.`);
-            } else {
-                 console.log(`Producto ${id} eliminado de localStorage.`);
-            }
-
-            localStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+            await productoRef.update({
+                stock: nuevoStock
+            });
             
-            cargarProductosDelCarrito(); // Recargar tabla
-        } catch (error) {
-             console.error("Error al eliminar producto de localStorage:", error);
+            console.log(`Stock restaurado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
         }
+    } catch (error) {
+        console.error("Error restaurando stock en Firebase:", error);
     }
+}
 
-    function cargarProductosDelCarrito() {
-        console.log("Cargando productos del carrito desde localStorage...");
-        try {
-            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            console.log("Productos encontrados en localStorage:", carrito);
-            
-            tablaBody.innerHTML = ''; 
 
-            if (carrito.length === 0) {
-                console.log("Carrito vacío.");
-                tablaBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 20px;">
-                            Tu carrito está vacío. <a href="catalogo.html">¡Añade productos!</a>
-                        </td>
-                    </tr>
-                `;
-                btnLimpiar.disabled = true;
-                btnComprar.disabled = true;
-            } else {
-                console.log(`Cargando ${carrito.length} productos en la tabla.`);
-                btnLimpiar.disabled = false;
-                btnComprar.disabled = false;
-                
-                carrito.forEach((producto, index) => {
-                    const precio = Number(producto.precio) || 0;
-                    const cantidad = Number(producto.cantidad) || 0;
-                    const subtotal = precio * cantidad;
-                    
-                    // AJUSTE DE RUTA DE IMAGEN MÁS ROBUSTO:
-                    // Asume que las rutas guardadas son como '../img/producto.jpg' (desde catalogo.html)
-                    // y carrito.html está en la misma carpeta que catalogo.html.
-                    // Si carrito.html estuviera en OTRA carpeta, habría que ajustar diferente.
-                    let imgSrcCorrecta = producto.imgSrc; 
-                    // No se necesita ajuste si carrito.html y catalogo.html están en la misma carpeta 'html'.
-                    // Si estuvieran en carpetas diferentes, aquí ajustaríamos la ruta.
-                    // Ejemplo: si carrito estuviera en raiz y catalogo en html:
-                    // imgSrcCorrecta = producto.imgSrc.replace('../', 'assets/'); 
-                    
-                    console.log(`Producto ${index}: ID=${producto.id}, Nombre=${producto.nombre}, Precio=${precio}, Cant=${cantidad}, Subtotal=${subtotal}, Img=${imgSrcCorrecta}`);
-
-                    const itemHTML = `
-                        <tr data-id="${producto.id}">
-                            <td><img src="${imgSrcCorrecta}" alt="${producto.nombre}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 4px;"></td>
-                            <td>${producto.nombre}</td>
-                            <td>${formatearMoneda(precio)}</td>
-                            <td>
-                                <input type="number" class="cart-item-quantity" value="${cantidad}" min="1" style="width: 60px; padding: 5px; text-align: center;">
-                            </td>
-                            <td class="subtotal-celda">${formatearMoneda(subtotal)}</td>
-                            <td>
-                                <button class="btn-remove" style="background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 0.9em;">Eliminar</button>
-                            </td>
-                        </tr>
-                    `;
-                    tablaBody.insertAdjacentHTML('beforeend', itemHTML);
-                });
-            }
-            
-            actualizarTotalGeneral();
-        } catch (error) {
-            console.error("Error fatal al cargar productos del carrito:", error);
-             tablaBody.innerHTML = `<tr><td colspan="6" style="color: red; text-align: center; padding: 20px;">Error al cargar el carrito. Revisa la consola.</td></tr>`;
-             btnLimpiar.disabled = true;
-             btnComprar.disabled = true;
-        }
-    }
-
-    // --- MANEJO DE EVENTOS ---
-
-    tablaBody.addEventListener('click', function(evento) {
-        if (evento.target.classList.contains('btn-remove')) {
-            eliminarProducto(evento.target);
-        }
-    });
-
-    tablaBody.addEventListener('input', function(evento) {
-        if (evento.target.classList.contains('cart-item-quantity')) {
-            actualizarFila(evento.target);
-        }
-    });
+/**
+ * Aumenta la cantidad de un producto en el carrito
+ */
+function aumentarCantidad(index) {
+    const producto = carrito[index];
     
-    btnLimpiar.addEventListener('click', function() {
-        console.log("Botón 'Limpiar Carrito' clickeado.");
-        if (confirm("¿Estás seguro de que quieres vaciar tu carrito?")) {
-            console.log("Confirmado. Limpiando carrito...");
-            try {
-                localStorage.removeItem('carrito'); 
-                console.log("Carrito eliminado de localStorage.");
-                cargarProductosDelCarrito(); 
-            } catch (error) {
-                 console.error("Error al limpiar el carrito en localStorage:", error);
-            }
-        } else {
-             console.log("Limpieza de carrito cancelada.");
-        }
-    });
+    if (producto.stock <= producto.cantidad) {
+        mostrarNotificacion('No hay suficiente stock disponible', 'error');
+        return;
+    }
     
-    btnComprar.addEventListener('click', function() {
-        console.log("Botón 'Comprar Ahora' clickeado.");
-        alert("Procediendo a la compra... (Lógica de pago no implementada)");
-        // Lógica de pago aquí
-    });
+    carrito[index].cantidad = (carrito[index].cantidad || 1) + 1;
+    guardarCarrito();
+    renderizarCarrito();
+    calcularTotal();
+    
+    actualizarStockFirebase(producto.id, 1);
+}
 
-    // --- EJECUCIÓN INICIAL ---
-    cargarProductosDelCarrito(); 
 
-});
+/**
+ * Disminuye la cantidad de un producto en el carrito
+ */
+function disminuirCantidad(index) {
+    const producto = carrito[index];
+    
+    if (carrito[index].cantidad > 1) {
+        carrito[index].cantidad--;
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        
+        restaurarStockFirebase(producto.id, 1);
+    }
+}
+
+/**
+ * Elimina un producto del carrito
+ */
+function eliminarDelCarrito(index) {
+    const producto = carrito[index];
+    const cantidadEliminada = producto.cantidad || 1;
+    
+    carrito.splice(index, 1);
+    guardarCarrito();
+    renderizarCarrito();
+    calcularTotal();
+    mostrarNotificacion(`"${producto.nombre}" eliminado del carrito`);
+
+    restaurarStockFirebase(producto.id, cantidadEliminada);
+}
+
+/**
+ * Calcula el total del carrito
+ */
+function calcularTotal() {
+    const total = carrito.reduce((sum, producto) => {
+        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
+    }, 0);
+    
+    const totalCarritoElement = document.getElementById('totalCarrito');
+    if (totalCarritoElement) {
+        totalCarritoElement.textContent = total.toLocaleString('es-CL');
+    }
+    actualizarCarritoHeader();
+}
+
+/**
+ * Actualiza el header del carrito
+ */
+function actualizarCarritoHeader() {
+    const total = carrito.reduce((sum, producto) => {
+        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
+    }, 0);
+    
+    const carritoTotalElement = document.querySelector('.carrito-total');
+    if (carritoTotalElement) {
+        carritoTotalElement.textContent = total.toLocaleString('es-CL');
+    }
+}
+
+/**
+ * Guarda el carrito en localStorage
+ */
+function guardarCarrito() {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+/**
+ * Limpia todo el carrito
+ */
+function limpiarCarrito() {
+    if (carrito.length === 0) {
+        alert('El carrito ya está vacío');
+        return;
+    }
+    
+    if (confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
+        carrito = [];
+        guardarCarrito();
+        renderizarCarrito();
+        calcularTotal();
+        mostrarNotificacion('Carrito limpiado correctamente');
+    }
+}
+
+/**
+ * Redirige al checkout
+ */
+function irAlCheckout() {
+    if (carrito.length === 0) {
+        alert('Agrega productos al carrito antes de continuar');
+        return;
+    }
+    
+    window.location.href = 'checkout.html';
+}
+
+/**
+ * Muestra una notificación temporal
+ */
+function mostrarNotificacion(mensaje) {
+    const notificacion = document.createElement('div');
+    notificacion.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        z-index: 10000;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        font-weight: 600;
+    `;
+    notificacion.textContent = mensaje;
+    document.body.appendChild(notificacion);
+    
+    setTimeout(() => {
+        notificacion.remove();
+    }, 3000);
+}
+
+/**
+ * Configura los eventos de la página
+ */
+function configurarEventos() {
+    const btnLimpiar = document.getElementById('btnLimpiarCarrito');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarCarrito);
+    }
+    
+    const btnComprar = document.getElementById('btnComprarAhora');
+    if (btnComprar) {
+        btnComprar.addEventListener('click', irAlCheckout);
+    }
+}
+
+// Hacer funciones disponibles globalmente
+window.aumentarCantidad = aumentarCantidad;
+window.disminuirCantidad = disminuirCantidad;
+window.eliminarDelCarrito = eliminarDelCarrito;
