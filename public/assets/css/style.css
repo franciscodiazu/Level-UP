@@ -833,14 +833,14 @@ footer {
 .admin-wrapper {
     display: flex;
     min-height: 100vh; /* Ocupa al menos toda la altura de la vista */
-    background-color: #f8f9fa; /* Fondo claro para el contenido principal */
-    color: #212529; /* Texto oscuro para contraste */
+    background-color: #000000; /* Fondo claro para el contenido principal */
+    color: #ffffff; /* Texto oscuro para contraste */
 }
 
 /* 1. Barra Lateral (Sidebar) */
 .admin-sidebar {
     width: 250px;
-    background-color: #ffffff; /* Fondo blanco para la barra lateral */
+    background-color: #000000; /* Fondo blanco para la barra lateral */
     padding: 20px;
     border-right: 1px solid #dee2e6; /* Borde sutil */
     display: flex;
@@ -925,7 +925,7 @@ footer {
 .admin-main-content {
     flex-grow: 1;
     padding: 30px;
-    background-color: #f8f9fa; /* Fondo claro */
+    background-color: #000000; /* Fondo claro */
 }
 
 .admin-main-content .page-title {
@@ -958,7 +958,7 @@ footer {
 }
 
 .stat-card {
-    background-color: #ffffff; /* Fondo blanco */
+    background-color: #1a1a1a; /* Fondo blanco */
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra suave */
