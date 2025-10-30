@@ -1080,3 +1080,294 @@ footer {
         grid-template-columns: 1fr; /* Una columna en móvil */
     }
 }
+/* ==========================================================================
+    ESTILOS HEADER UNIFICADO (NUEVO)
+   ========================================================================== */
+
+/* Ajustamos el main-nav para que alinee los enlaces y el botón */
+.main-nav {
+    display: flex;
+    gap: 1.5em; /* Reducimos un poco el gap para que quepa todo */
+    align-items: center; /* ¡Importante para alinear verticalmente! */
+}
+
+/* Estilo para los enlaces de "Iniciar Sesión" / "Crear Cuenta" */
+.main-nav .nav-link-secondary {
+    font-family: var(--font-body); /* Usamos la fuente del body, no la de título */
+    font-size: 0.9em;
+    font-weight: normal;
+    color: var(--text-secondary);
+}
+
+.main-nav .nav-link-secondary:hover {
+    color: var(--color-accent-green);
+}
+
+/* Estilo para el nuevo botón de carrito en el header (Mockup Fig. 1) */
+.btn-cart-header {
+    background-color: #39FF14; /* Verde brillante del mockup */
+    color: var(--color-bg); /* Texto oscuro para contraste */
+    font-family: var(--font-title);
+    font-weight: bold;
+    padding: 0.6em 1.2em;
+    border-radius: 8px;
+    font-size: 0.9em;
+    margin-top: 0; /* Quitamos el margin-top que tiene .btn por defecto */
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.btn-cart-header:hover {
+    background-color: #FFFFFF; /* Blanco al pasar el mouse */
+    color: var(--color-bg);
+    transform: scale(1.05);
+}
+
+/* Ocultamos la barra secundaria que ya no usamos */
+.top-bar-secondary {
+    display: none;
+}
+
+/* ==========================================================================
+   ESTILOS CHECKOUT (CARRITO AVANZADO - FIGURA 6)
+   ========================================================================== */
+
+/* Layout principal: Carrito a la izquierda, Formularios a la derecha */
+.checkout-layout {
+    display: flex;
+    flex-wrap: wrap; /* En pantallas pequeñas, se apilarán */
+    gap: 30px; /* Espacio entre columnas */
+    width: 100%;
+    margin-top: 2em;
+}
+
+.checkout-cart-items {
+    flex: 3; /* Columna del carrito ocupa más espacio */
+    min-width: 320px; /* Ancho mínimo para la tabla */
+}
+
+.checkout-form-section {
+    flex: 2; /* Columna de formularios ocupa menos espacio */
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em; /* Espacio entre secciones del formulario */
+}
+
+/* Estilos para la tabla del carrito (como en Figura 5) */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse; 
+    margin-bottom: 1em;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cart-table th, .cart-table td {
+    border-bottom: 1px solid #333; /* Líneas solo horizontales */
+    padding: 1em 1.2em;
+    text-align: left;
+    vertical-align: middle; 
+}
+
+.cart-table th {
+    background-color: #222; /* Fondo oscuro para encabezados */
+    font-family: var(--font-title);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.imagen-tabla {
+    width: 60px; 
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.controles-cantidad {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+}
+
+.btn-cantidad {
+    background: #333;
+    color: var(--text-main);
+    border: 1px solid #555;
+    padding: 0.2em 0.6em;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1.1em;
+}
+.btn-cantidad:hover {
+    background: var(--color-accent-blue);
+}
+
+.cantidad-actual {
+    min-width: 20px; 
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.btn-eliminar {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.btn-eliminar:hover {
+    background: #e60000;
+}
+
+/* Estado de carrito vacío (tu JS ya lo usa) */
+.carrito-vacio {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+.carrito-vacio .icono {
+    font-size: 3rem;
+    margin-bottom: 0.5em;
+}
+.carrito-vacio h3 {
+    margin-bottom: 0.5em;
+    color: var(--text-main);
+}
+.carrito-vacio p {
+    margin-bottom: 1.5em;
+}
+.btn-ir-catalogo { 
+    display: inline-block;
+    padding: 0.8em 1.5em;
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    border-radius: 8px;
+    font-weight: bold;
+}
+.btn-ir-catalogo:hover {
+    background-color: var(--color-accent-green);
+    color: var(--color-bg);
+}
+
+
+/* Estilos para la sección de formularios (Columna Derecha) */
+.checkout-total-box {
+    /* (Color azul/verde del mockup) */
+    background: linear-gradient(90deg, var(--color-accent-blue), var(--color-accent-green));
+    color: var(--color-bg); /* Texto oscuro para contraste */
+    padding: 1.2em 1.5em;
+    border-radius: 8px;
+    font-family: var(--font-title);
+    font-size: 1.3em;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkout-form {
+    background-color: #1a1a1a;
+    padding: 1.5em;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.checkout-form h2 {
+    font-family: var(--font-title);
+    color: var(--text-main);
+    margin-bottom: 0.3em;
+    font-size: 1.3em;
+}
+.checkout-form p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5em;
+    font-size: 0.9em;
+}
+
+/* Helper para poner inputs en línea (Dpto, Región/Comuna) */
+.form-group-inline {
+    display: flex;
+    gap: 1em;
+    align-items: flex-end; 
+}
+.form-group-inline .form-group {
+    margin-bottom: 1.5em; /* Mantenemos margen inferior */
+    flex: 1; /* Ocupan espacio equitativo */
+}
+
+/* Estilo para Selects (Región/Comuna) */
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-family: var(--font-body); 
+    cursor: pointer;
+}
+.form-group select:focus {
+     outline: none;
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 10px var(--color-accent-green);
+}
+
+/* Estilo para Textarea */
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    resize: vertical; 
+    min-height: 80px; 
+}
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 10px var(--color-accent-green);
+}
+
+/* Botón de Pagar ahora */
+.btn-pagar {
+    width: 100%; 
+    padding: 1em; 
+    font-size: 1.2em;
+    margin-top: 1em;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+}
+.btn-pagar span { 
+    font-weight: bold;
+}
+
+/* Botón secundario (Limpiar Carrito) */
+.btn-secondary {
+    background-color: #555;
+    color: var(--text-secondary);
+}
+.btn-secondary:hover {
+     background-color: #777;
+     color: var(--text-main);
+     transform: scale(1.03);
+}
+
+
+/* --- Responsive para Checkout --- */
+@media (max-width: 900px) {
+    .checkout-layout {
+        flex-direction: column; /* Apila las columnas */
+    }
+}

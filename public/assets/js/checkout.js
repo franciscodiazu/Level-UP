@@ -1,8 +1,14 @@
+/* ==========================================
+ * ARCHIVO: js/checkout.js
+ * (Con la lógica del header integrada)
+ * ==========================================
+*/
+
 // Configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
-  authDomain: "tienda-level-up.firebaseapp.com",
-  projectId: "tienda-level-up"
+    apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+    authDomain: "tienda-level-up.firebaseapp.com",
+    projectId: "tienda-level-up"
 };
 
 // Inicializar Firebase
@@ -44,10 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function cargarRegiones() {
     const selectRegion = document.getElementById('region');
-    
+    if (!selectRegion) return; // Salir si no está el select
+
     // Ordenar regiones alfabéticamente
     const regionesOrdenadas = Object.keys(regionesComunas).sort();
-    
+
     regionesOrdenadas.forEach(region => {
         const option = document.createElement('option');
         option.value = region;
@@ -61,11 +68,13 @@ function cargarRegiones() {
  */
 function cargarComunas(region) {
     const selectComuna = document.getElementById('comuna');
+    if (!selectComuna) return; // Salir si no está el select
+
     const comunas = regionesComunas[region] || [];
-    
+
     // Limpiar select de comunas
     selectComuna.innerHTML = '<option value="">Selecciona una comuna</option>';
-    
+
     // Ordenar comunas alfabéticamente
     comunas.sort().forEach(comuna => {
         const option = document.createElement('option');
@@ -73,7 +82,7 @@ function cargarComunas(region) {
         option.textContent = comuna;
         selectComuna.appendChild(option);
     });
-    
+
     // Habilitar el select de comunas
     selectComuna.disabled = false;
 }
@@ -82,9 +91,8 @@ function cargarComunas(region) {
  * Inicializa la interfaz del checkout
  */
 function inicializarCheckout() {
-    actualizarCarritoHeader();
     renderizarProductosCheckout();
-    actualizarTotales();
+    actualizarTotales(); // Esto actualizará los totales Y el header
 }
 
 /**
@@ -92,7 +100,8 @@ function inicializarCheckout() {
  */
 function renderizarProductosCheckout() {
     const tbody = document.getElementById('tablaCheckoutBody');
-    
+    if (!tbody) return; // Salir si no hay tabla
+
     if (carrito.length === 0) {
         tbody.innerHTML = `
             <tr>
@@ -103,14 +112,17 @@ function renderizarProductosCheckout() {
                 </td>
             </tr>
         `;
+        // Ocultar el botón de pago si no hay items
+        const btnPagar = document.getElementById('btnPagarAhora');
+        if (btnPagar) btnPagar.style.display = 'none';
         return;
     }
 
     tbody.innerHTML = carrito.map(producto => `
         <tr>
             <td>
-                <img src="${producto.imagen}" 
-                     alt="${producto.nombre}" 
+                <img src="${producto.imagen}"
+                     alt="${producto.nombre}"
                      class="imagen-tabla"
                      onerror="this.src='https://via.placeholder.com/100x100/cccccc/969696?text=Imagen'">
             </td>
@@ -123,32 +135,50 @@ function renderizarProductosCheckout() {
 }
 
 /**
- * Actualiza los totales en la interfaz
+ * Actualiza los totales en la interfaz Y en localStorage
  */
 function actualizarTotales() {
     const total = carrito.reduce((sum, producto) => {
         return sum + ((producto.precio || 0) * (producto.cantidad || 1));
     }, 0);
-    
-    document.getElementById('totalPagar').textContent = total.toLocaleString('es-CL');
-    document.getElementById('montoPagar').textContent = total.toLocaleString('es-CL');
+
+    // Actualiza los IDs de la página de checkout
+    const totalPagar = document.getElementById('totalPagar');
+    const montoPagar = document.getElementById('montoPagar');
+
+    if (totalPagar) {
+        totalPagar.textContent = total.toLocaleString('es-CL');
+    }
+    if (montoPagar) {
+        montoPagar.textContent = total.toLocaleString('es-CL');
+    }
+
+    // --- ¡MODIFICACIÓN AÑADIDA! ---
+    // 1. Guarda el total en localStorage
+    localStorage.setItem('cartTotal', total);
+    // 2. Llama a la función que actualiza el header
+    actualizarCarritoHeader();
+    // --- FIN MODIFICACIÓN ---
 }
 
 /**
- * Actualiza el header del carrito
+ * Actualiza el header del carrito (MODIFICADA)
  */
 function actualizarCarritoHeader() {
-    const total = carrito.reduce((sum, producto) => {
-        return sum + ((producto.precio || 0) * (producto.cantidad || 1));
-    }, 0);
-    
-    document.querySelector('.carrito-total').textContent = total.toLocaleString('es-CL');
+    // Llama a la función global que está en global-cart.js
+    // (Asegúrate de haber incluido global-cart.js en checkout.html)
+    if (typeof window.actualizarHeaderCartGlobal === 'function') {
+        window.actualizarHeaderCartGlobal();
+    } else {
+        console.warn("checkout.js: 'actualizarHeaderCartGlobal' no está definida. ¿Falta global-cart.js?");
+    }
 }
 
 /**
  * Procesa el pago y guarda la compra en Firestore
  */
 async function procesarPago() {
+    // ... (Tu función procesarPago() se mantiene exactamente igual) ...
     // Validar que hay productos en el carrito
     if (carrito.length === 0) {
         alert('No hay productos en el carrito');
@@ -160,6 +190,11 @@ async function procesarPago() {
         alert('Por favor completa todos los campos obligatorios');
         return;
     }
+
+    // Mostrar un spinner o deshabilitar el botón para evitar doble clic
+    const btnPagar = document.getElementById('btnPagarAhora');
+    btnPagar.disabled = true;
+    btnPagar.textContent = 'Procesando...';
 
     try {
         // Obtener datos del formulario
@@ -180,18 +215,19 @@ async function procesarPago() {
 
         // Guardar en Firestore
         const docRef = await db.collection('compras').add(compra);
-        
+
         // Simular procesamiento de pago (50% de éxito)
         const pagoExitoso = Math.random() > 0.5;
-        
+
         if (pagoExitoso) {
             // Actualizar estado en Firestore
             await db.collection('compras').doc(docRef.id).update({
                 estado: 'completada'
             });
-            
+
             // Limpiar carrito y redirigir a éxito
-            localStorage.removeItem('carrito');
+            localStorage.setItem('carrito', JSON.stringify([])); // Vaciar carrito
+            localStorage.setItem('cartTotal', 0); // Vaciar total
             localStorage.setItem('ultimaCompra', JSON.stringify({
                 ...compra,
                 id: docRef.id
@@ -202,7 +238,7 @@ async function procesarPago() {
             await db.collection('compras').doc(docRef.id).update({
                 estado: 'error_pago'
             });
-            
+
             // Redirigir a error
             localStorage.setItem('ultimaCompra', JSON.stringify({
                 ...compra,
@@ -214,6 +250,9 @@ async function procesarPago() {
     } catch (error) {
         console.error('Error procesando la compra:', error);
         alert('Error al procesar la compra. Intenta nuevamente.');
+        // Reactivar el botón si falla
+        btnPagar.disabled = false;
+        btnPagar.textContent = 'Pagar ahora';
     }
 }
 
@@ -224,6 +263,7 @@ function validarFormularios() {
     const formCliente = document.getElementById('formCliente');
     const formDireccion = document.getElementById('formDireccion');
     
+    // checkValidity() es una función nativa de formularios HTML5
     return formCliente.checkValidity() && formDireccion.checkValidity();
 }
 
@@ -264,36 +304,42 @@ function generarNumeroOrden() {
  * Configura los eventos del checkout
  */
 function configurarEventosCheckout() {
-    document.getElementById('btnPagarAhora').addEventListener('click', procesarPago);
+    const btnPagar = document.getElementById('btnPagarAhora');
+    if (btnPagar) {
+        btnPagar.addEventListener('click', procesarPago);
+    }
     
-    // Evento para cargar comunas cuando se selecciona una región
-    document.getElementById('region').addEventListener('change', function() {
-        if (this.value) {
-            cargarComunas(this.value);
-        } else {
-            // Si no hay región seleccionada, deshabilitar comuna
-            const selectComuna = document.getElementById('comuna');
-            selectComuna.innerHTML = '<option value="">Primero selecciona una región</option>';
-            selectComuna.disabled = true;
-        }
-    });
+    const selectRegion = document.getElementById('region');
+    if(selectRegion) {
+        // Evento para cargar comunas cuando se selecciona una región
+        selectRegion.addEventListener('change', function() {
+            if (this.value) {
+                cargarComunas(this.value);
+            } else {
+                // Si no hay región seleccionada, deshabilitar comuna
+                const selectComuna = document.getElementById('comuna');
+                selectComuna.innerHTML = '<option value="">Primero selecciona una región</option>';
+                selectComuna.disabled = true;
+            }
+        });
+    }
     
-    // Validación en tiempo real
-    const inputs = document.querySelectorAll('input[required], select[required]');
+    // Validación en tiempo real (opcional pero bueno)
+    const inputs = document.querySelectorAll('#formCliente input[required], #formDireccion input[required], #formDireccion select[required]');
     inputs.forEach(input => {
-        input.addEventListener('blur', function() {
+        input.addEventListener('input', function() { // 'input' es mejor que 'blur'
             validarCampo(this);
         });
     });
 }
 
 /**
- * Valida un campo individual
+ * Valida un campo individual y le da estilo
  */
 function validarCampo(campo) {
-    if (!campo.value.trim()) {
-        campo.style.borderColor = '#dc3545';
+    if (!campo.checkValidity()) { // Usa la validación nativa
+        campo.style.borderColor = '#dc3545'; // Rojo error
     } else {
-        campo.style.borderColor = '#28a745';
+        campo.style.borderColor = '#28a745'; // Verde éxito
     }
 }

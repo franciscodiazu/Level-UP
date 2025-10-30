@@ -1,58 +1,84 @@
-// js/tienda.js
+/* ==========================================
+ * ARCHIVO: js/tienda.js
+ * ==========================================
+ * OBJETIVO: Manejar los botones "Añadir al carrito"
+ * de la página catalogo.html y actualizar el TOTAL.
+*/
+
 document.addEventListener('DOMContentLoaded', function() {
     
-    // 1. Seleccionar todos los botones de "Añadir al carrito"
+    // Selecciona TODOS los botones de añadir al carrito
     const botonesAgregar = document.querySelectorAll('.btn-add-cart');
-    const toast = document.getElementById('toastNotification');
-
-    // 2. Función para mostrar la notificación
-    function showToast() {
-        if (!toast) return; // Si no existe el elemento, no hace nada
-        
-        toast.classList.add('show');
-        
-        // Oculta la notificación después de 2.5 segundos
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2500);
-    }
-
-    // 3. Función principal: Agregar al carrito
-    function agregarAlCarrito(evento) {
-        const boton = evento.target;
-        
-        // Recolectamos los datos del producto desde los atributos 'data-' del botón
-        const producto = {
-            id: boton.dataset.id,
-            nombre: boton.dataset.nombre,
-            precio: parseInt(boton.dataset.precio, 10),
-            imgSrc: boton.dataset.imgSrc,
-            cantidad: 1 
-        };
-
-        // Obtenemos el carrito actual de localStorage (o creamos uno vacío)
-        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-        // Verificamos si el producto ya está en el carrito
-        const productoExistenteIndex = carrito.findIndex(item => item.id === producto.id);
-
-        if (productoExistenteIndex > -1) {
-            // Si ya existe, solo aumentamos la cantidad
-            carrito[productoExistenteIndex].cantidad++;
-        } else {
-            // Si es un producto nuevo, lo agregamos al arreglo
-            carrito.push(producto);
-        }
-
-        // Guardamos el carrito actualizado de vuelta en localStorage
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-
-        // Mostramos la notificación
-        showToast();
-    }
-
-    // 4. Asignamos el evento 'click' a todos los botones
+    
+    // Añade un "escuchador" de clics a cada botón
     botonesAgregar.forEach(boton => {
-        boton.addEventListener('click', agregarAlCarrito);
+        boton.addEventListener('click', function() {
+            // 'this' se refiere al botón que fue clickeado
+            const producto = {
+                id: this.dataset.id,
+                nombre: this.dataset.nombre,
+                // Aseguramos que el precio sea un número
+                precio: parseInt(this.dataset.precio, 10) || 0,
+                // Mapeamos 'data-img-src' a 'imagen' para que coincida con tu carrito.js
+                imagen: this.dataset.imgSrc,
+                cantidad: 1 // Siempre se añade 1
+            };
+
+            // 1. Obtener la lista actual del carrito desde localStorage
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+            // 2. Verificar si el producto ya existe
+            const productoExistente = carrito.find(item => item.id === producto.id);
+
+            if (productoExistente) {
+                // Si ya existe, solo aumenta la cantidad
+                productoExistente.cantidad++;
+            } else {
+                // Si es nuevo, lo añade a la lista
+                carrito.push(producto);
+            }
+
+            // 3. Guardar la LISTA de productos actualizada en localStorage
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+
+            // --- ¡ESTA ES LA PARTE IMPORTANTE! ---
+            // 4. Actualizar el TOTAL en localStorage
+            
+            // Obtener el total actual guardado
+            let totalActual = parseInt(localStorage.getItem('cartTotal'), 10) || 0;
+            
+            // Sumarle el precio del producto nuevo
+            totalActual += producto.precio;
+            
+            // Guardar el nuevo total
+            localStorage.setItem('cartTotal', totalActual);
+
+            // 5. Actualizar el botón del header INMEDIATAMENTE
+            // (Esta función la creamos en global-cart.js)
+            if (typeof window.actualizarHeaderCartGlobal === 'function') {
+                window.actualizarHeaderCartGlobal();
+            } else {
+                console.error("La función global 'actualizarHeaderCartGlobal' no se encuentra. ¿Incluiste global-cart.js?");
+            }
+
+            // 6. Mostrar la notificación (tu HTML ya la tiene)
+            mostrarNotificacionToast(`"${producto.nombre}" agregado al carrito`);
+        });
     });
 });
+
+/**
+ * Muestra la notificación toast (basado en el HTML de tu catalogo.html)
+ */
+function mostrarNotificacionToast(mensaje) {
+    const notificacion = document.getElementById('toastNotification');
+    if (!notificacion) return;
+
+    notificacion.textContent = mensaje;
+    notificacion.classList.add('show'); // Muestra la notificación
+
+    // Oculta la notificación después de 3 segundos
+    setTimeout(() => {
+        notificacion.classList.remove('show');
+    }, 3000);
+}
