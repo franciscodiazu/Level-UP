@@ -1,4 +1,4 @@
-/* CARITO.CSS - Estilos para el sistema de carrito de compras */
+/* CARRITO.CSS - Estilos para el sistema de carrito de compras */
 
 /* Contenedor principal del carrito */
 .carrito-container {
@@ -175,3 +175,5 @@
     font-weight: 600;
     display: inline-block;
   }
+
+  

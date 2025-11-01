@@ -25,6 +25,12 @@ body {
     background: var(--color-bg);
     color: var(--text-main);
     font-family: var(--font-body);
+    /* --- INICIO ARREGLO FOOTER --- */
+    /* (Esto hace que el body ocupe toda la pantalla) */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* --- FIN ARREGLO FOOTER --- */
 }
 a {
     color: var(--color-accent-blue);
@@ -43,6 +49,15 @@ img {
     max-width: 1200px;
     margin: 0 auto;
 }
+
+/* --- INICIO ARREGLO FOOTER --- */
+/* (Esto hace que el main crezca y empuje el footer hacia abajo) */
+main.main {
+    flex-grow: 1;
+    background-color: var(--color-bg); /* Asegura fondo negro en main */
+}
+/* --- FIN ARREGLO FOOTER --- */
+
 /* ==========================================================================
    2. HEADER, FOOTER Y COMPONENTES REUTILIZABLES
    ========================================================================== */
@@ -310,10 +325,10 @@ footer {
    ========================================================================== */
 .product-grid {
     display: grid;
-    /* Crea una cuadrícula flexible que se adapta al tamaño */
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2em;
     margin-top: 1em;
+    align-items: stretch; /* <-- ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ AQUÍ */
 }
 .product-card {
     background: #181818;
@@ -324,7 +339,8 @@ footer {
     border: 2px solid var(--color-accent-blue);
     display: flex;
     flex-direction: column; /* Organiza el contenido en columna */
-    justify-content: space-between; /* Empuja el botón hacia abajo */
+    justify-content: space-between;
+    /* Empuja el botón hacia abajo */
     transition: transform 0.3s, box-shadow 0.3s;
 }
 .product-card:hover {
@@ -334,12 +350,14 @@ footer {
 .product-card img {
     width: 100%;
     height: 200px; /* Altura fija para todas las imágenes */
-    object-fit: contain; /* 'contain' asegura que se vea toda la imagen sin recortar */
+    object-fit: contain;
+    /* 'contain' asegura que se vea toda la imagen sin recortar */
     margin-bottom: 1em;
 }
 .product-card h3 {
     font-family: var(--font-title);
-    min-height: 50px; /* Espacio para títulos de 2 líneas */
+    min-height: 50px;
+    /* Espacio para títulos de 2 líneas */
     margin-bottom: 0.5em;
 }
 .product-price {
@@ -383,7 +401,8 @@ footer {
 .blog-card {
     background: #181818;
     border-radius: 16px;
-    overflow: hidden; /* Esconde lo que se salga de la tarjeta (ej. imagen) */
+    overflow: hidden;
+    /* Esconde lo que se salga de la tarjeta (ej. imagen) */
     border: 2px solid var(--color-accent-blue);
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -440,8 +459,10 @@ footer {
    ESTILO PARA ARTICULO TORNEO
    ========================================================================== */
 .articulo-individual {
-    max-width: 800px; /* Ancho máximo para facilitar la lectura */
-    margin: 2em auto; /* Centra el artículo en la página */
+    max-width: 800px;
+    /* Ancho máximo para facilitar la lectura */
+    margin: 2em auto;
+    /* Centra el artículo en la página */
 }
 
 .articulo-header {
@@ -576,12 +597,14 @@ footer {
 
 /* Estilo para cada post individual */
 .blog-post-horizontal {
-    display: flex; /* La clave para el diseño de dos columnas */
+    display: flex;
+    /* La clave para el diseño de dos columnas */
     background: #181818;
     border-radius: 16px;
     border: 2px solid var(--color-accent-blue);
     margin-bottom: 2.5em; /* Espacio entre cada post */
-    overflow: hidden; /* Asegura que la imagen no se salga de las esquinas redondeadas */
+    overflow: hidden;
+    /* Asegura que la imagen no se salga de las esquinas redondeadas */
     transition: box-shadow 0.3s;
 }
 
@@ -591,8 +614,10 @@ footer {
 
 /* Columna de la imagen */
 .blog-post-imagen {
-    flex: 1; /* Ocupa 1 parte del espacio */
-    min-width: 300px; /* Evita que la imagen se encoja demasiado */
+    flex: 1;
+    /* Ocupa 1 parte del espacio */
+    min-width: 300px;
+    /* Evita que la imagen se encoja demasiado */
 }
 .blog-post-imagen a {
     display: block;
@@ -601,12 +626,14 @@ footer {
 .blog-post-imagen img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Hace que la imagen llene el contenedor sin deformarse */
+    object-fit: cover;
+    /* Hace que la imagen llene el contenedor sin deformarse */
 }
 
 /* Columna del contenido */
 .blog-post-contenido {
-    flex: 1.5; /* Ocupa 1.5 partes del espacio, dándole más prioridad al texto */
+    flex: 1.5;
+    /* Ocupa 1.5 partes del espacio, dándole más prioridad al texto */
     padding: 2em;
     display: flex;
     flex-direction: column; /* Apila el título, texto y botón verticalmente */
@@ -625,7 +652,8 @@ footer {
     flex-grow: 1; /* Empuja el botón hacia abajo */
 }
 .blog-post-contenido .btn {
-    align-self: flex-start; /* Evita que el botón ocupe todo el ancho */
+    align-self: flex-start;
+    /* Evita que el botón ocupe todo el ancho */
     margin-top: 1em;
 }
 
@@ -649,11 +677,14 @@ footer {
     border-radius: 5px;
     color: var(--text-main);
     font-size: 1rem;
-    font-family: var(--font-body); /* Aseguramos que use la misma fuente */
+    font-family: var(--font-body);
+    /* Aseguramos que use la misma fuente */
 
     /* Reglas específicas para el auto-crecimiento */
-    resize: none; /* Deshabilita el redimensionamiento manual del usuario */
-    overflow-y: hidden; /* Oculta el scrollbar vertical */
+    resize: none;
+    /* Deshabilita el redimensionamiento manual del usuario */
+    overflow-y: hidden;
+    /* Oculta el scrollbar vertical */
 
 }
 .footer-container {
@@ -796,33 +827,39 @@ footer {
    NUEVOS ESTILOS PARA NOTIFICACIÓN (TOAST)
    ========================================================================== */
 .toast-notification {
-    position: fixed; /* Se queda fijo en la pantalla */
+    position: fixed;
+    /* Se queda fijo en la pantalla */
     bottom: 30px;
     left: 50%;
-    transform: translateX(-50%); /* Centra el mensaje horizontalmente */
+    transform: translateX(-50%);
+    /* Centra el mensaje horizontalmente */
     
-    background-color: var(--color-accent-green); /* Color verde de tu marca */
-    color: var(--color-bg); /* Texto oscuro para contraste */
+    background-color: var(--color-accent-green);
+    /* Color verde de tu marca */
+    color: var(--color-bg);
+    /* Texto oscuro para contraste */
     padding: 16px 30px;
     border-radius: 8px;
     
-    font-family: var(--font-title); /* Fuente de Título (Orbitron) */
+    font-family: var(--font-title);
+    /* Fuente de Título (Orbitron) */
     font-size: 1.1em;
     font-weight: bold;
     
     z-index: 1000;
-    
     /* Efectos de aparición y desaparición */
     opacity: 0;
     visibility: hidden;
-    transform: translateX(-50%) translateY(20px); /* Comienza un poco abajo */
+    transform: translateX(-50%) translateY(20px);
+    /* Comienza un poco abajo */
     transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 }
 
 .toast-notification.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0); /* Sube a su posición final */
+    transform: translateX(-50%) translateY(0);
+    /* Sube a su posición final */
 }
 
 /* ==========================================================================
@@ -833,16 +870,20 @@ footer {
 .admin-wrapper {
     display: flex;
     min-height: 100vh; /* Ocupa al menos toda la altura de la vista */
-    background-color: #000000; /* Fondo claro para el contenido principal */
-    color: #ffffff; /* Texto oscuro para contraste */
+    background-color: #000000;
+    /* Fondo claro para el contenido principal */
+    color: #ffffff;
+    /* Texto oscuro para contraste */
 }
 
 /* 1. Barra Lateral (Sidebar) */
 .admin-sidebar {
     width: 250px;
-    background-color: #000000; /* Fondo blanco para la barra lateral */
+    background-color: #000000;
+    /* Fondo blanco para la barra lateral */
     padding: 20px;
-    border-right: 1px solid #dee2e6; /* Borde sutil */
+    border-right: 1px solid #dee2e6;
+    /* Borde sutil */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -853,10 +894,12 @@ footer {
     margin-bottom: 30px;
 }
 .admin-logo img.logo {
-    height: 40px; /* Ajusta el tamaño del logo si es necesario */
+    height: 40px;
+    /* Ajusta el tamaño del logo si es necesario */
 }
 .sidebar-title {
-    color: #495057; /* Texto gris oscuro */
+    color: #495057;
+    /* Texto gris oscuro */
     margin-top: 5px;
     font-size: 0.9em;
     font-weight: bold;
@@ -879,8 +922,10 @@ footer {
 }
 
 .nav-item:hover, .nav-item.active {
-    background-color: #007bff; /* Azul primario para hover/activo */
-    color: #ffffff; /* Texto blanco */
+    background-color: #007bff;
+    /* Azul primario para hover/activo */
+    color: #ffffff;
+    /* Texto blanco */
 }
 .nav-item.active {
     font-weight: bold;
@@ -900,7 +945,8 @@ footer {
 }
 
 .sub-item {
-    padding-left: 30px; /* Indentación */
+    padding-left: 30px;
+    /* Indentación */
 }
 
 .admin-logout {
@@ -909,14 +955,17 @@ footer {
 }
 /* Reutilizamos .btn-primary pero con color rojo para logout */
 .btn-logout {
-    background-color: #dc3545; /* Rojo */
+    background-color: #dc3545;
+    /* Rojo */
     border: none;
     color: white;
     padding: 0.5em 1em;
-    margin: 0; /* Quitamos margen superior heredado de .btn */
+    margin: 0;
+    /* Quitamos margen superior heredado de .btn */
 }
 .btn-logout:hover {
-    background-color: #c82333; /* Rojo más oscuro */
+    background-color: #c82333;
+    /* Rojo más oscuro */
     color: white;
 }
 
@@ -925,19 +974,23 @@ footer {
 .admin-main-content {
     flex-grow: 1;
     padding: 30px;
-    background-color: #000000; /* Fondo claro */
+    background-color: #000000;
+    /* Fondo claro */
 }
 
 .admin-main-content .page-title {
     text-align: left;
     margin-top: 0;
     margin-bottom: 10px;
-    color: #343a40; /* Texto oscuro principal */
-    font-family: var(--font-title); /* Usar Orbitron si está definido */
+    color: #343a40;
+    /* Texto oscuro principal */
+    font-family: var(--font-title);
+    /* Usar Orbitron si está definido */
 }
 .admin-main-content > p {
     margin-bottom: 30px;
-    color: #6c757d; /* Texto secundario gris */
+    color: #6c757d;
+    /* Texto secundario gris */
 }
 
 /* Estilos de las Tarjetas de Estadísticas */
@@ -946,7 +999,8 @@ footer {
 }
 .stat-group-title {
     font-family: var(--font-title); /* Usar Orbitron */
-    color: #495057; /* Gris oscuro */
+    color: #495057;
+    /* Gris oscuro */
     margin-bottom: 20px;
     font-size: 1.3em;
 }
@@ -958,16 +1012,20 @@ footer {
 }
 
 .stat-card {
-    background-color: #1a1a1a; /* Fondo blanco */
+    background-color: #1a1a1a;
+    /* Fondo blanco */
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra suave */
-    border-left: 5px solid; /* Borde de color */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    /* Sombra suave */
+    border-left: 5px solid;
+    /* Borde de color */
 }
 
 .stat-card h4 {
     margin-bottom: 15px;
-    color: #6c757d; /* Título gris */
+    color: #6c757d;
+    /* Título gris */
     font-size: 1em;
     font-weight: normal;
 }
@@ -984,14 +1042,18 @@ footer {
     color: #6c757d;
 }
 .trend-up { color: #28a745; /* Verde para positivo */ }
-.trend-down { color: #dc3545; /* Rojo para negativo */ }
-.stat-alert { color: #ffc107; font-weight: bold; /* Amarillo para alerta */ }
+.trend-down { color: #dc3545;
+/* Rojo para negativo */ }
+.stat-alert { color: #ffc107; font-weight: bold;
+/* Amarillo para alerta */ }
 
 /* Colores Específicos de las Tarjetas (Según la imagen de referencia) */
-.stat-card.blue { border-left-color: #007bff; }
+.stat-card.blue { border-left-color: #007bff;
+}
 .stat-card.green { border-left-color: #28a745; }
 .stat-card.yellow { border-left-color: #ffc107; }
-.stat-card.red { border-left-color: #dc3545; }
+.stat-card.red { border-left-color: #dc3545;
+}
 
 
 /* Estilos de Tabla de Órdenes */
@@ -999,7 +1061,8 @@ footer {
     margin-top: 40px;
 }
 .responsive-table {
-    overflow-x: auto; /* Permite scroll horizontal en tablas grandes */
+    overflow-x: auto;
+    /* Permite scroll horizontal en tablas grandes */
 }
 .dashboard-latest-orders table {
     width: 100%;
@@ -1008,16 +1071,19 @@ footer {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* Para que el border-radius afecte a la tabla */
+    overflow: hidden;
+    /* Para que el border-radius afecte a la tabla */
 }
 .dashboard-latest-orders th, .dashboard-latest-orders td {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #dee2e6; /* Borde sutil */
-    color: #495057; /* Texto gris */
+    color: #495057;
+    /* Texto gris */
 }
 .dashboard-latest-orders th {
-    background-color: #e9ecef; /* Fondo gris claro para cabecera */
+    background-color: #e9ecef;
+    /* Fondo gris claro para cabecera */
     color: #495057;
     font-weight: bold;
     font-size: 0.9em;
@@ -1027,14 +1093,16 @@ footer {
     border-bottom: none;
 }
 .dashboard-latest-orders a {
-    color: #007bff; /* Enlaces azules */
+    color: #007bff;
+    /* Enlaces azules */
     text-decoration: none;
 }
 .dashboard-latest-orders a:hover {
     text-decoration: underline;
 }
 .status-shipped { color: #17a2b8; /* Cyan para Enviado */ }
-.status-processing { color: #ffc107; /* Amarillo para Procesando */ }
+.status-processing { color: #ffc107;
+/* Amarillo para Procesando */ }
 
 /* Margen superior para el botón "Ver Todas las Órdenes" */
 .mt-3 {
@@ -1044,24 +1112,29 @@ footer {
 /* Responsive para el Admin Panel */
 @media (max-width: 992px) { /* Ajustar punto de quiebre si es necesario */
     .admin-sidebar {
-        width: 200px; /* Reducir ancho en pantallas medianas */
+        width: 200px;
+        /* Reducir ancho en pantallas medianas */
     }
 }
 @media (max-width: 768px) {
     .admin-wrapper {
-        flex-direction: column; /* Apila sidebar y contenido */
+        flex-direction: column;
+        /* Apila sidebar y contenido */
     }
     .admin-sidebar {
         width: 100%;
         height: auto;
         border-right: none;
         border-bottom: 1px solid #dee2e6;
-        flex-direction: row; /* Menú horizontal */
-        flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
+        flex-direction: row;
+        /* Menú horizontal */
+        flex-wrap: wrap;
+        /* Permite que los elementos pasen a la siguiente línea */
         padding-bottom: 10px;
         justify-content: space-between; /* Espacia logo y nav */
     }
-    .admin-logo { width: auto; margin-bottom: 0; }
+    .admin-logo { width: auto;
+    margin-bottom: 0; }
     .admin-nav {
         flex-direction: row;
         flex-wrap: wrap;
@@ -1069,15 +1142,19 @@ footer {
         flex-grow: 0;
         width: auto; /* No ocupa todo el ancho */
     }
-    .nav-item { margin-bottom: 0; margin-right: 5px; } /* Ajustes para menú horizontal */
-    .nav-group { margin-top: 0; display: contents; } /* Simplifica grupos */
+    .nav-item { margin-bottom: 0;
+    margin-right: 5px; } /* Ajustes para menú horizontal */
+    .nav-group { margin-top: 0; display: contents;
+    } /* Simplifica grupos */
     .group-title { display: none; }
-    .admin-logout { width: auto; margin-top: 0; }
+    .admin-logout { width: auto;
+    margin-top: 0; }
     .admin-main-content {
         padding: 20px;
     }
     .stats-grid {
-        grid-template-columns: 1fr; /* Una columna en móvil */
+        grid-template-columns: 1fr;
+        /* Una columna en móvil */
     }
 }
 /* ==========================================================================
@@ -1088,12 +1165,14 @@ footer {
 .main-nav {
     display: flex;
     gap: 1.5em; /* Reducimos un poco el gap para que quepa todo */
-    align-items: center; /* ¡Importante para alinear verticalmente! */
+    align-items: center;
+    /* ¡Importante para alinear verticalmente! */
 }
 
 /* Estilo para los enlaces de "Iniciar Sesión" / "Crear Cuenta" */
 .main-nav .nav-link-secondary {
-    font-family: var(--font-body); /* Usamos la fuente del body, no la de título */
+    font-family: var(--font-body);
+    /* Usamos la fuente del body, no la de título */
     font-size: 0.9em;
     font-weight: normal;
     color: var(--text-secondary);
@@ -1105,8 +1184,10 @@ footer {
 
 /* Estilo para el nuevo botón de carrito en el header (Mockup Fig. 1) */
 .btn-cart-header {
-    background-color: #39FF14; /* Verde brillante del mockup */
-    color: var(--color-bg); /* Texto oscuro para contraste */
+    background-color: #39FF14;
+    /* Verde brillante del mockup */
+    color: var(--color-bg);
+    /* Texto oscuro para contraste */
     font-family: var(--font-title);
     font-weight: bold;
     padding: 0.6em 1.2em;
@@ -1135,22 +1216,27 @@ footer {
 .checkout-layout {
     display: flex;
     flex-wrap: wrap; /* En pantallas pequeñas, se apilarán */
-    gap: 30px; /* Espacio entre columnas */
+    gap: 30px;
+    /* Espacio entre columnas */
     width: 100%;
     margin-top: 2em;
 }
 
 .checkout-cart-items {
-    flex: 3; /* Columna del carrito ocupa más espacio */
-    min-width: 320px; /* Ancho mínimo para la tabla */
+    flex: 3;
+    /* Columna del carrito ocupa más espacio */
+    min-width: 320px;
+    /* Ancho mínimo para la tabla */
 }
 
 .checkout-form-section {
-    flex: 2; /* Columna de formularios ocupa menos espacio */
+    flex: 2;
+    /* Columna de formularios ocupa menos espacio */
     min-width: 300px;
     display: flex;
     flex-direction: column;
-    gap: 1.5em; /* Espacio entre secciones del formulario */
+    gap: 1.5em;
+    /* Espacio entre secciones del formulario */
 }
 
 /* Estilos para la tabla del carrito (como en Figura 5) */
@@ -1164,10 +1250,11 @@ footer {
 }
 
 .cart-table th, .cart-table td {
-    border-bottom: 1px solid #333; /* Líneas solo horizontales */
+    border-bottom: 1px solid #333;
+    /* Líneas solo horizontales */
     padding: 1em 1.2em;
     text-align: left;
-    vertical-align: middle; 
+    vertical-align: middle;
 }
 
 .cart-table th {
@@ -1294,11 +1381,12 @@ footer {
 .form-group-inline {
     display: flex;
     gap: 1em;
-    align-items: flex-end; 
+    align-items: flex-end;
 }
 .form-group-inline .form-group {
     margin-bottom: 1.5em; /* Mantenemos margen inferior */
-    flex: 1; /* Ocupan espacio equitativo */
+    flex: 1;
+    /* Ocupan espacio equitativo */
 }
 
 /* Estilo para Selects (Región/Comuna) */
@@ -1338,9 +1426,10 @@ footer {
     box-shadow: 0 0 10px var(--color-accent-green);
 }
 
+
 /* Botón de Pagar ahora */
 .btn-pagar {
-    width: 100%; 
+    width: 100%;
     padding: 1em; 
     font-size: 1.2em;
     margin-top: 1em;
@@ -1370,4 +1459,308 @@ footer {
     .checkout-layout {
         flex-direction: column; /* Apila las columnas */
     }
+}
+
+/* ==========================================
+   ESTILOS CARRITO SIMPLE (FIGURA 5)
+   ========================================== */
+
+.cart-layout-simple {
+    display: flex;
+    flex-wrap: wrap; /* Se apilarán en móviles */
+    gap: 30px;
+    margin-top: 2em;
+}
+
+.cart-items-list {
+    flex: 3; /* Más ancho para la lista */
+    min-width: 320px;
+}
+
+.cart-summary-box {
+    flex: 1; /* Más angosto para el resumen */
+    min-width: 280px;
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 1.5em;
+    height: fit-content; /* Para que no se estire */
+    border: 1px solid #222;
+}
+
+.cart-summary-box h2 {
+    font-family: var(--font-title);
+    font-size: 1.3em;
+    margin-bottom: 1.5em;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1em;
+    color: var(--text-secondary);
+    margin-bottom: 1em;
+}
+
+.cart-summary-box hr {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 1.5em 0;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 1.5em;
+}
+
+/* (Opcional: Oculta los estilos de checkout en la página del carrito) */
+/* Esto es por si acaso, para que no interfieran */
+html:has(body main .cart-layout-simple) .checkout-layout {
+    display: none; 
+}
+/* ==========================================
+   11. ARREGLO STICKY FOOTER
+   ========================================== */
+/* Le decimos al body que ocupe, como mínimo,
+  toda la altura de la pantalla (100vh).
+*/
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hacemos que el <main> (tu contenido) crezca
+  para ocupar todo el espacio disponible, empujando
+  el footer hacia abajo.
+*/
+main.main {
+    flex-grow: 1;
+}
+
+/* ==========================================
+   12. ARREGLO FONDO BLANCO Y STICKY FOOTER
+   ========================================== */
+
+/* Define el color de fondo para el cuerpo */
+body {
+    background-color: var(--color-bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Define el color de fondo para el contenido principal */
+main.main {
+    flex-grow: 1;
+    /* Empuja el footer hacia abajo */
+    /* Si quieres que el fondo del main sea negro también: */
+    background-color: var(--color-bg);
+}
+
+/* Asegura que los títulos sean visibles */
+.checkout-titulo {
+    font-family: var(--font-title);
+    color: var(--color-accent-green);
+}
+
+/* ==========================================
+   ESTILOS COMPRA EXITOSA (FIGURA 7)
+   ========================================== */
+
+.compra-exitosa-container {
+    max-width: 800px;
+    margin: 2em auto;
+    padding: 2em;
+    background-color: #1a1a1a;
+    border: 1px solid var(--color-accent-green);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.icono-exito {
+    font-size: 3em;
+    color: var(--color-accent-green);
+    line-height: 1;
+    margin-bottom: 0.2em;
+}
+
+.compra-exitosa-container h2 {
+    font-family: var(--font-title);
+    font-size: 2em;
+    color: var(--color-accent-green);
+    margin-bottom: 0.5em;
+}
+
+.subtitulo-exito {
+    font-size: 1.2em;
+    color: var(--text-secondary);
+    margin-bottom: 2em;
+}
+
+.resumen-compra-box {
+    text-align: left;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.5em 2em;
+}
+
+.resumen-titulo {
+    font-family: var(--font-title);
+    font-size: 1.3em;
+    color: var(--text-main);
+    margin-bottom: 1em;
+    border-bottom: 1px solid var(--color-accent-blue);
+    padding-bottom: 0.5em;
+}
+
+.datos-seccion {
+    margin-bottom: 2em;
+    line-height: 1.6;
+}
+.datos-seccion p {
+    color: var(--text-secondary);
+}
+.datos-seccion .indicaciones {
+    font-size: 0.9em;
+    color: #888;
+}
+
+.tabla-resumen-compra {
+    width: 100%;
+    border-collapse: collapse;
+}
+.tabla-resumen-compra th, .tabla-resumen-compra td {
+    padding: 1em;
+    border-bottom: 1px solid #333;
+    text-align: left;
+    vertical-align: middle;
+}
+.tabla-resumen-compra th {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+.imagen-tabla-resumen {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.total-compra-exitosa {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--color-accent-green);
+    margin-top: 1.5em;
+    padding-top: 1em;
+    border-top: 2px solid var(--color-accent-green);
+}
+
+
+/* ==========================================================================
+   13. ESTILOS PÁGINA CATÁLOGO (ARREGLO FINAL)
+   ========================================================================== */
+
+/* 1. Contenedor de la grilla de categorías */
+.category-grid {
+    display: grid;
+    /* La Figura 4 del PDF muestra 4 columnas. 
+      Vamos a forzar 4 columnas iguales (1fr = 1 fracción).
+      Esto solucionará que "Juegos de mesa" se caiga a otra línea.
+    */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1.5em;
+    margin-top: 1em;
+    /* align-items: stretch; es el valor por defecto de grid, 
+       así que las tarjetas se estirarán solas a la misma altura. */
+}
+
+/* 2. Tarjeta de categoría (Clase real: .categoria-card) */
+.categoria-card {
+    background: #181818; 
+    border-radius: 8px;
+    border: 1px solid #333;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    text-decoration: none;
+    color: var(--text-main);
+    cursor: pointer;
+    
+    /* Esto centra el contenido verticalmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: center;
+}
+
+.categoria-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-green);
+    border-color: var(--color-accent-green);
+}
+
+/* 3. Contenedor del ícono (Clase real: .categoria-img) */
+.categoria-img {
+    width: 100%;
+    height: 100px; 
+    background-color: #333; 
+    border-radius: 4px;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+    color: #555;
+    flex-shrink: 0; 
+}
+    
+/* 4. Contenedor del nombre (Clase real: .categoria-nombre) */
+.categoria-nombre {
+    font-family: var(--font-title);
+    font-size: 1.1em;
+    font-weight: bold;
+    
+    /* Esto permite que el texto crezca y empuje hacia abajo */
+    flex-grow: 1; 
+    
+    /* Esto centra el texto si solo ocupa 1 línea */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Y esto le da espacio para 2 líneas si es necesario */
+    min-height: 50px; 
+    width: 100%;
+}
+       
+/* 5. TÍTULOS DE LA PÁGINA DE CATÁLOGO */
+main.main .checkout-titulo {
+    color: var(--color-accent-green);
+    font-family: var(--font-title);
+    font-size: 1.8em;
+    border-bottom: 2px solid var(--color-accent-blue);
+    padding-bottom: 0.3em;
+    margin: 1.5em 0 1em 0;
+    text-align: left;
+}
+
+/* 6. CENTRADO DEL MAIN EN CATÁLOGO */
+main.main {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 7. RESPONSIVE: Si la pantalla es muy pequeña, pasamos a 2 columnas */
+@media (max-width: 768px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
