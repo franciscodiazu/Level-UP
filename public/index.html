@@ -4,41 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level-Up Gamer - Tu Tienda Gamer en Chile</title>
-    <!-- Vincula tu hoja de estilos CSS -->
+    <!-- Vincula tu hoja de estilos CSS (ruta original) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
-    <!-- Barra de navegación principal -->
-    <header class="main-header">
-    <a href="index.html">
-        <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-    </a>
-    <nav class="main-nav">
-        <a href="index.html">Home</a>
-        <a href="assets/html/catalogo.html">Categorías</a>
-        <a href="#">Ofertas</a> <a href="assets/html/nosotros.html">Nosotros</a>
-        <a href="assets/html/blog.html">Blog</a>
-        <a href="assets/html/contacto.html">Contacto</a>
-
-        <a href="assets/html/login.html" class="nav-link-secondary">Iniciar Sesión</a>
-        <a href="assets/html/registro.html" class="nav-link-secondary">Crear Cuenta</a>
+    <!-- 
+      ==================================================================
+      INICIO: HEADER MODIFICADO PARA EL MOCKUP
+      (Reemplaza tu <header class="main-header"> y <div class="top-bar-secondary">)
+      ==================================================================
+    -->
+    <header class="header-container-mockup">
         
-        <a href="assets/html/carrito.html" class="btn btn-cart-header" id="header-cart-button">
-            🛒Carrito $0
-        </a>
-    </nav>
-</header>
+        <!-- 1. BARRA SUPERIOR (Blanca) con Logo, Búsqueda y Auth -->
+        <div class="top-bar-mockup">
+            
+            <!-- Logo (Movido desde tu 'main-header' original) -->
+            <a href="index.html">
+                <img src="assets/img/logo.png" alt="Logo Level-Up Gamer" class="logo-mockup">
+            </a>
 
-     <!-- Nueva barra secundaria para inicio de sesión y registro -->
-    <div class="top-bar-secondary">
-        <a href="assets/html/login.html">Iniciar Sesión</a>
-        <a href="assets/html/registro.html">Registrarse</a>
-    </div>
+            <!-- Barra de Búsqueda (Nueva, como en el mockup) -->
+            <form class="header-search-form">
+                <input type="text" placeholder="Buscar">
+                <button type="submit">Buscar</button>
+            </form>
 
-    <!-- Contenido principal -->
+            <!-- Botones de Auth (Nuevos, como en el mockup) -->
+            <div class="header-auth-buttons">
+                <a href="assets/html/login.html" class="btn btn-login">Iniciar Sesión</a>
+                <a href="assets/html/registro.html" class="btn btn-register">Crear Cuenta</a>
+            </div>
+        </div>
+        
+        <!-- 2. BARRA DE NAVEGACIÓN (Gris) - Tu <nav class="main-nav"> original, pero modificada -->
+        <!-- Le damos una nueva clase para no chocar con tus estilos viejos -->
+        <nav class="main-nav-mockup">
+            <a href="index.html">Home</a>
+            <a href="assets/html/catalogo.html">Categorías</a>
+            <a href="#">Ofertas</a> 
+            <a href="assets/html/nosotros.html">Nosotros</a>
+            <a href="assets/html/blog.html">Blog</a>
+            <a href="assets/html/contacto.html">Contacto</a>
+            
+            <!-- Tu botón de carrito, pero con el estilo del mockup (verde) -->
+            <a href="assets/html/carrito.html" class="btn-nav-carrito" id="header-cart-button">
+                🛒 Carrito $0
+            </a>
+        </nav>
+    </header>
+    <!--
+      FIN: HEADER MODIFICADO
+      ==================================================================
+    -->
+
+    <!-- Tu <div class="top-bar-secondary"> original se ELIMINA porque ya no se necesita -->
+
+    <!-- Contenido principal (SIN CAMBIOS) -->
     <main>
         <!-- Sección Héroe -->
         <section class="hero">
@@ -66,7 +91,7 @@
         </section>
     </main>
 
-    <!-- Pie de página -->
+    <!-- Pie de página (SIN CAMBIOS) -->
     <footer>
         <div class="footer-container">
             <div class="footer-left">
@@ -106,5 +131,5 @@
         </div>
     </footer>
 </body>
-<script src="assets/js/global-cart.js"></script> </body>
+        <script src="assets/js/global-cart.js"></script> 
 </html>

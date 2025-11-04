@@ -52,9 +52,9 @@ img {
 
 /* --- INICIO ARREGLO FOOTER --- */
 /* (Esto hace que el main crezca y empuje el footer hacia abajo) */
-main.main {
+main { /* <- CORREGIDO: Se aplica a 'main' directamente */
     flex-grow: 1;
-    background-color: var(--color-bg); /* Asegura fondo negro en main */
+    /* background-color: var(--color-bg); Ya está en el body */
 }
 /* --- FIN ARREGLO FOOTER --- */
 
@@ -1158,7 +1158,7 @@ footer {
     }
 }
 /* ==========================================================================
-    ESTILOS HEADER UNIFICADO (NUEVO)
+   ESTILOS HEADER UNIFICADO (NUEVO)
    ========================================================================== */
 
 /* Ajustamos el main-nav para que alinee los enlaces y el botón */
@@ -1671,8 +1671,8 @@ main.main {
 .category-grid {
     display: grid;
     /* La Figura 4 del PDF muestra 4 columnas. 
-      Vamos a forzar 4 columnas iguales (1fr = 1 fracción).
-      Esto solucionará que "Juegos de mesa" se caiga a otra línea.
+       Vamos a forzar 4 columnas iguales (1fr = 1 fracción).
+       Esto solucionará que "Juegos de mesa" se caiga a otra línea.
     */
     grid-template-columns: repeat(4, 1fr); 
     gap: 1.5em;
@@ -1739,7 +1739,7 @@ main.main {
     min-height: 50px; 
     width: 100%;
 }
-       
+        
 /* 5. TÍTULOS DE LA PÁGINA DE CATÁLOGO */
 main.main .checkout-titulo {
     color: var(--color-accent-green);
@@ -1764,3 +1764,251 @@ main.main {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ==========================================================================
+   8. ESTILOS PARA CATEGORÍAS (Mockup Figura 4)
+   ========================================================================== */
+
+/*
+ * Esta es la cuadrícula para los íconos pequeños de categoría (100x100)
+ * Usamos Flexbox para que se ordenen en una fila.
+ */
+.category-selector {
+    display: flex;
+    flex-wrap: wrap; /* Permite que bajen si no caben (móvil) */
+    justify-content: center; /* Centra las tarjetas de categoría */
+    gap: 1.5em; /* Espacio entre las tarjetas */
+    margin-top: 2em; /* Espacio desde la barra de navegación */
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    border-bottom: 1px solid var(--color-accent-blue); /* Línea divisoria del mockup */
+}
+
+.category-selector-card {
+    background-color: #181818; /* Mismo fondo que tus product-card */
+    border: 1px solid #333;
+    border-radius: 8px;
+    width: 140px; /* Ancho para ícono de 100px + padding */
+    padding: 1em;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/*
+ * Efecto hover y estado "activo" para la categoría seleccionada
+ */
+.category-selector-card:hover,
+.category-selector-card.active {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px var(--color-accent-green);
+    color: var(--text-main);
+}
+
+.category-selector-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain; /* 'contain' asegura que se vea todo el producto */
+    border-radius: 5px;
+    margin-bottom: 0.5em;
+    background-color: #000; /* Fondo negro para las imágenes */
+}
+
+.category-selector-card span {
+    font-family: var(--font-title);
+    font-size: 0.9em;
+}
+
+/*
+ * Estilo para el título de la sección (ej. "Categoría 1" o "Juegos de Mesa")
+ * Lo alineamos a la izquierda como en el mockup.
+ */
+.section-title {
+    font-family: var(--font-title);
+    color: var(--text-main); /* El mockup lo muestra blanco, no verde */
+    font-size: 1.8em;
+    margin-bottom: 1em;
+    text-align: left; /* Alineado a la izquierda */
+}
+
+/* ==========================================================================
+   9. ESTILOS PARA FILTROS DE CATÁLOGO
+   ========================================================================== */
+
+/* Contenedor para el botón "Ver Todos" */
+.filter-actions {
+    display: flex;
+    justify-content: center; /* Centra el botón */
+    margin-bottom: 2em; /* Espacio antes del título "Juegos de Mesa" */
+}
+
+/* * Ocultamos productos usando 'display: none'.
+ * Tu clase .product-card ya usa 'display: flex',
+ * así que el JS alternará entre 'none' y 'flex'.
+ */
+
+
+/* ==========================================================================
+   14. ESTILOS DEL HEADER MOCKUP (TEMA OSCURO CORREGIDO)
+   ========================================================================== */
+
+/* Ocultamos tus contenedores de header antiguos */
+.main-header,
+.top-bar-secondary {
+    display: none !important; 
+}
+
+/* Contenedor principal del nuevo header */
+.header-container-mockup {
+    /* Usamos tu color de fondo principal */
+    background-color: var(--color-bg); 
+    border-bottom: 1px solid #333; /* Borde oscuro */
+    color: var(--text-main); /* Texto principal blanco */
+    display: block !important; /* Asegurarnos que se vea */
+}
+
+/* 1. BARRA SUPERIOR (Logo, Búsqueda, Auth) */
+.top-bar-mockup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-mockup {
+    height: 40px; /* Como en el mockup 40x40 */
+    width: auto;
+}
+
+/* Formulario de búsqueda (nuevo) */
+.header-search-form {
+    display: flex;
+    flex-grow: 1; /* Ocupa el espacio del medio */
+    margin: 0 30px; /* Separa del logo y botones */
+    max-width: 500px;
+}
+
+/* Input de búsqueda con tu tema oscuro */
+.header-search-form input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-accent-blue); /* Borde azul */
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 0.9em;
+    background-color: #333; /* Fondo oscuro (como tus forms) */
+    color: var(--text-main); /* Texto blanco */
+}
+.header-search-form input:focus {
+    outline: none;
+    border-color: var(--color-accent-green);
+    box-shadow: 0 0 10px var(--color-accent-green);
+}
+
+/* Botón de búsqueda con tu tema verde */
+.header-search-form button {
+    padding: 8px 12px;
+    border: 1px solid var(--color-accent-green); /* Verde */
+    background-color: var(--color-accent-green); /* Verde */
+    color: var(--color-bg); /* Texto negro */
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: var(--font-body);
+}
+.header-search-form button:hover {
+    background-color: var(--text-main); /* Fondo blanco al pasar el mouse */
+    border-color: var(--text-main);
+}
+
+/* Botones de Auth (nuevos) */
+.header-auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+.header-auth-buttons .btn {
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    margin-top: 0; /* Reseteamos el margen de tu .btn */
+    font-family: var(--font-body); /* Usamos fuente normal, no Orbitron */
+}
+/* Botón "Iniciar Sesión" (Estilo secundario) */
+.header-auth-buttons .btn-login {
+    background-color: transparent;
+    color: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+}
+.header-auth-buttons .btn-login:hover {
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    transform: none; /* Quitamos transform de .btn-primary:hover */
+}
+/* Botón "Crear Cuenta" (Estilo primario) */
+.header-auth-buttons .btn-register {
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    border-color: var(--color-accent-blue);
+}
+.header-auth-buttons .btn-register:hover {
+    background-color: var(--color-accent-green);
+    border-color: var(--color-accent-green);
+    color: var(--color-bg);
+    transform: none; /* Quitamos transform de .btn-primary:hover */
+}
+
+/* 2. BARRA DE NAVEGACIÓN (adaptada a tu tema) */
+.main-nav-mockup {
+    display: flex;
+    justify-content: center; /* Centra los links */
+    gap: 30px;
+    padding: 10px 20px;
+    background-color: #1a1a1a; /* Un gris oscuro, como tus cards */
+    border-top: 1px solid #333;
+    width: 100%;
+}
+
+.main-nav-mockup a {
+    color: var(--text-main); /* Texto blanco */
+    font-size: 1em;
+    font-weight: 500;
+    text-decoration: none;
+    font-family: var(--font-body); /* Usar tu fuente */
+}
+.main-nav-mockup a:hover {
+    color: var(--color-accent-green) !important; /* Verde mockup */
+}
+
+/* Botón de Carrito (nuevo) */
+.main-nav-mockup .btn-nav-carrito {
+    background-color: var(--color-accent-green); /* Verde mockup */
+    color: var(--color-bg) !important; /* Forzar color negro */
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-family: var(--font-body);
+    font-size: 0.9em !important;
+    margin-top: 0; /* Reseteamos el margen de .btn */
+    transition: background-color 0.3s;
+}
+.main-nav-mockup .btn-nav-carrito:hover {
+    background-color: var(--text-main); /* Fondo blanco al pasar */
+    color: var(--color-bg) !important;
+}
+
+/* ==============================================
+   RE-ESTILOS PARA TU CONTENIDO (Hero, etc.)
+==============================================
+   ¡ELIMINADOS!
+   Ya no forzamos el fondo blanco. 
+   Tu .hero, .page-title, .grid-categorias, etc.,
+   usarán los estilos originales de tu tema oscuro.
+*/
+
