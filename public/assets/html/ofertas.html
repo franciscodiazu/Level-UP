@@ -8,20 +8,7 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <header class="main-header">
-        <a href="../../index.html">
-            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-        </a>
-            <nav class="main-nav">
-                <a href="../../index.html">Inicio</a>
-                <a href="catalogo.html">Catálogo</a>
-                <a href="blog.html">Blog</a>
-                <a href="nosotros.html">Nosotros</a>
-                <a href="contacto.html">Contacto</a>
-                <a href="login.html">Iniciar Sesión</a>
-                <a href="carrito.html">Carrito</a>
-            </nav>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="container">
         <h1 class="page-title">Productos en Oferta</h1>
@@ -36,7 +23,7 @@
                     <span class="product-price-old">$29.990</span>
                     <span class="product-price-offer">$24.990 CLP</span>
                 </div>
-                <button class="btn btn-primary">Añadir al carrito</button>
+                <button class="btn btn-primary btn-add-cart" data-id="JM002" data-nombre="Catan" data-precio="24990" data-img-src="../img/catan.jpg">Añadir al carrito</button>
             </article>
 
             <article class="product-card">
@@ -48,7 +35,7 @@
                     <span class="product-price-old">$59.990</span>
                     <span class="product-price-offer">$54.990 CLP</span>
                 </div>
-                <button class="btn btn-primary">Añadir al carrito</button>
+                <button class="btn btn-primary btn-add-cart" data-id="AC001" data-nombre="Controlador Inalámbrico Xbox Series X" data-precio="54990" data-img-src="../img/controlInalambrico.jpg">Añadir al carrito</button>
             </article>
 
             <article class="product-card">
@@ -60,7 +47,7 @@
                     <span class="product-price-old">$89.990</span>
                     <span class="product-price-offer">$79.990 CLP</span>
                 </div>
-                <button class="btn btn-primary">Añadir al carrito</button>
+                <button class="btn btn-primary btn-add-cart" data-id="AC002" data-nombre="Audífonos HyperX Cloud 3" data-precio="79990" data-img-src="../img/hyperx-headset.jpg">Añadir al carrito</button>
             </article>
 
         </section>
@@ -102,5 +89,9 @@
           </div>
         </div>
       </footer>
+      <script src="../js/loadHeader.js"></script>
+      <script src="../js/global-cart.js"></script>
+      <script src="../js/tienda.js"></script>
+      <div id="toastNotification" class="toast-notification"></div>
 </body>
 </html>
