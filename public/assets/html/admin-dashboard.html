@@ -5,117 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Level-Up Gamer</title>
     <link rel="stylesheet" href="../css/style.css">
-    </head>
+</head>
 <body>
-    
-    <div class="admin-wrapper">
+    <header class="main-header">
+        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
+        <nav class="main-nav">
+            <a href="../../index.html">Ver Tienda</a>
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="admin-productos.html">Productos</a>
+            <a href="admin-usuarios.html">Usuarios</a>
+            <a href="admin-pedidos.html">Pedidos</a>
+            <a href="../../index.html">Cerrar Sesión</a> </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Panel de Administración</h1>
+        <p>Bienvenido, Administrador. Desde aquí podrás gestionar el contenido de la tienda.</p>
         
-        <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <a href="../../index.html">
-                    <img src="../img/logo.png" alt="Level-Up Logo" class="logo">
+        <section class="product-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            
+            <article class="product-card" style="border-color: var(--color-accent-blue);">
+                <a href="admin-pedidos.html" style="text-decoration: none;">
+                    <h3>Órdenes</h3>
                 </a>
-                <p class="sidebar-title">Panel de Administración</p>
-            </div>
-            
-            <nav class="admin-nav">
-                <a href="admin-dashboard.html" class="nav-item active">🏠 Dashboard</a>
-                
-                <a href="#" class="nav-item">📋 Órdenes y Boletas</a>
-                
-                <div class="nav-group">
-                    <span class="group-title">Gestión de Tienda</span>
-                    <a href="catalogo.html" class="nav-item sub-item">📦 Productos</a>
-                    <a href="#" class="nav-item sub-item">🏷️ Categorías</a>
-                </div>
-                
-                <div class="nav-group">
-                    <span class="group-title">Administración</span>
-                    <a href="#" class="nav-item sub-item">👥 Usuarios</a>
-                    <a href="#" class="nav-item sub-item">📊 Reportes</a>
-                    <a href="#" class="nav-item sub-item">👤 Mi Perfil</a>
-                </div>
-            </nav>
+                <p><strong>1,234</strong></p>
+                <p>Total de órdenes registradas.</p>
+                <a href="admin-pedidos.html" class="btn btn-primary">Gestionar Pedidos</a>
+            </article>
 
-            <div class="admin-logout">
-                <a href="login.html" class="btn btn-primary btn-logout">Cerrar Sesión</a>
-            </div>
-        </aside>
+            <article class="product-card" style="border-color: var(--color-accent-green);">
+                <a href="admin-productos.html" style="text-decoration: none;">
+                    <h3>Productos</h3>
+                </a>
+                <p><strong>400</strong></p>
+                <p>Productos en el inventario.</p>
+                <a href="admin-productos.html" class="btn btn-primary" style="background: var(--color-accent-green); color: var(--color-bg);">Gestionar Productos</a>
+            </article>
 
-        <main class="admin-main-content">
-            <h1 class="page-title">Panel de Administración</h1>
-            <p>Bienvenido, Administrador/a. Este es el resumen de tus actividades diarias.</p>
+            <article class="product-card" style="border-color: #f0ad4e;"> <a href="admin-usuarios.html" style="text-decoration: none;">
+                    <h3>Usuarios</h3>
+                </a>
+                <p><strong>1,890</strong></p>
+                <p>Total de usuarios registrados.</p>
+                <a href="admin-usuarios.html" class="btn" style="background: #f0ad4e; color: var(--color-bg);">Gestionar Usuarios</a>
+            </article>
 
-            <section class="dashboard-stats">
-                <h3 class="stat-group-title">Estadísticas Clave</h3>
-                
-                <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <h4>Ventas del Mes</h4>
-                        <p class="stat-value">$15.450.000</p>
-                        <p class="stat-trend trend-up">↑ 12% respecto al mes anterior</p>
-                    </div>
-                    
-                    <div class="stat-card green">
-                        <h4>Órdenes Pendientes</h4>
-                        <p class="stat-value">45</p>
-                        <p class="stat-trend trend-down">↓ 3 órdenes menos que ayer</p>
-                    </div>
-                    
-                    <div class="stat-card yellow">
-                        <h4>Nuevos Usuarios</h4>
-                        <p class="stat-value">321</p>
-                        <p class="stat-trend trend-up">↑ 5% respecto a la semana pasada</p>
-                    </div>
+        </section>
 
-                    <div class="stat-card red">
-                        <h4>Productos sin Stock</h4>
-                        <p class="stat-value">8</p>
-                        <p class="stat-trend stat-alert">🚨 ¡Revisar urgente!</p>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="dashboard-latest-orders">
-                <h3 class="stat-group-title">Últimas Órdenes</h3>
-                <div class="responsive-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID Orden</th>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#98765</td>
-                                <td>Juan Pérez</td>
-                                <td>25/10/2025</td>
-                                <td>$120.990</td>
-                                <td><span class="status-shipped">Enviado</span></td>
-                                <td><a href="#">Ver Detalle</a></td>
-                            </tr>
-                            <tr>
-                                <td>#98764</td>
-                                <td>María Soto</td>
-                                <td>25/10/2025</td>
-                                <td>$45.000</td>
-                                <td><span class="status-processing">Procesando</span></td>
-                                <td><a href="#">Procesar</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <a href="#" class="btn btn-primary mt-3" style="margin-top: 1.5em;">Ver Todas las Órdenes</a>
-            </section>
-        </main>
-    </div>
+    </main>
 
-    <script src="../../js/login.js"></script>
-    <script src="../../js/setup-admin.js"></script> 
+    <footer>
+        <div class="footer-container">
+          <div class="footer-left">
+            <span class="site-name">Level-Up (Modo Admin)</span>
+          </div>
+          <div class="footer-right">
+            <p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </footer>
 </body>
 </html>

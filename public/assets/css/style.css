@@ -1849,6 +1849,135 @@ main.main {
  */
 
 
+/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
+.product-price-old {
+    text-decoration: line-through;
+    color: var(--text-secondary); /* Usa el color de texto secundario */
+    font-size: 0.9rem;
+    margin-right: 0.5em;
+}
+
+.product-price-offer {
+    color: var(--color-accent-green); /* Usa el color de acento verde */
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
+    display: inline-block; /* Asegura que el margen inferior funcione */
+}
+
+/* ==========================================================================
+   8. ESTILOS PARA CHECKOUT (FINALIZAR COMPRA)
+   ========================================================================== */
+
+/* Layout principal de 2 columnas */
+.checkout-layout {
+    display: flex;
+    flex-wrap: wrap; /* Permite que se apilen en móviles */
+    gap: 2em;
+}
+
+/* Columna izquierda del formulario */
+.checkout-form-container {
+    flex: 2; /* Ocupa 2/3 del espacio */
+    min-width: 320px;
+}
+
+/* Columna derecha del resumen */
+.checkout-summary {
+    flex: 1; /* Ocupa 1/3 del espacio */
+    min-width: 300px;
+    background-color: #1a1a1a;
+    padding: 1.5em;
+    border-radius: 8px;
+    height: fit-content; /* Se ajusta al contenido */
+    border: 1px solid var(--color-accent-blue);
+}
+
+/* Caja azul del total (Figura 6) */
+.checkout-total-box {
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    padding: 1em;
+    border-radius: 8px;
+    font-family: var(--font-title);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+/* Tabla de resumen de productos */
+.checkout-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2em;
+}
+
+.checkout-summary-table th,
+.checkout-summary-table td {
+    padding: 0.75em 0.5em;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    font-size: 0.9rem;
+}
+
+.checkout-summary-table th {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.checkout-summary-table td {
+    vertical-align: middle;
+}
+
+.checkout-summary-table img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #333; /* Fondo para imágenes placeholder */
+}
+
+/* Ajustes responsivos para el layout de checkout */
+@media (max-width: 768px) {
+    .checkout-layout {
+        flex-direction: column-reverse; /* Pone el formulario debajo del resumen en móviles */
+    }
+}
+
+/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
+.product-price-old {
+    text-decoration: line-through;
+    color: var(--text-secondary); /* Usa el color de texto secundario */
+    font-size: 0.9rem;
+    margin-right: 0.5em;
+}
+
+.product-price-offer {
+    color: var(--color-accent-green); /* Usa el color de acento verde */
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
+    display: inline-block; /* Asegura que el margen inferior funcione */
+}
+
+/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
+.product-price-old {
+    text-decoration: line-through;
+    color: var(--text-secondary); /* Usa el color de texto secundario */
+    font-size: 0.9rem;
+    margin-right: 0.5em;
+}
+
+.product-price-offer {
+    color: var(--color-accent-green); /* Usa el color de acento verde */
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
+    display: inline-block; /* Asegura que el margen inferior funcione */
+}
+
 /* ==========================================================================
    14. ESTILOS DEL HEADER MOCKUP (TEMA OSCURO CORREGIDO)
    ========================================================================== */
@@ -2004,11 +2133,145 @@ main.main {
     color: var(--color-bg) !important;
 }
 
-/* ==============================================
-   RE-ESTILOS PARA TU CONTENIDO (Hero, etc.)
-==============================================
-   ¡ELIMINADOS!
-   Ya no forzamos el fondo blanco. 
-   Tu .hero, .page-title, .grid-categorias, etc.,
-   usarán los estilos originales de tu tema oscuro.
-*/
+/* ==========================================================================
+   8. ESTILOS PARA CHECKOUT (FINALIZAR COMPRA)
+   ========================================================================== */
+
+/* Layout principal de 2 columnas */
+.checkout-layout {
+    display: flex;
+    flex-wrap: wrap; /* Permite que se apilen en móviles */
+    gap: 2em;
+}
+
+/* Columna izquierda del formulario */
+.checkout-form-container {
+    flex: 2; /* Ocupa 2/3 del espacio */
+    min-width: 320px;
+}
+
+/* Columna derecha del resumen */
+.checkout-summary {
+    flex: 1; /* Ocupa 1/3 del espacio */
+    min-width: 300px;
+    background-color: #1a1a1a;
+    padding: 1.5em;
+    border-radius: 8px;
+    height: fit-content; /* Se ajusta al contenido */
+    border: 1px solid var(--color-accent-blue);
+}
+
+/* Caja azul del total (Figura 6) */
+.checkout-total-box {
+    background-color: var(--color-accent-blue);
+    color: var(--text-main);
+    padding: 1em;
+    border-radius: 8px;
+    font-family: var(--font-title);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+/* Tabla de resumen de productos */
+.checkout-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2em;
+}
+
+.checkout-summary-table th,
+.checkout-summary-table td {
+    padding: 0.75em 0.5em;
+    text-align: left;
+    border-bottom: 1px solid #333;
+    font-size: 0.9rem;
+}
+
+.checkout-summary-table th {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.checkout-summary-table td {
+    vertical-align: middle;
+}
+
+.checkout-summary-table img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    background-color: #333; /* Fondo para imágenes placeholder */
+}
+
+/* Ajustes responsivos para el layout de checkout */
+@media (max-width: 768px) {
+    .checkout-layout {
+        flex-direction: column-reverse; /* Pone el formulario debajo del resumen en móviles */
+    }
+}
+/* ==========================================================================
+   9. ESTILOS PARA PÁGINAS DE RESULTADO (PAGO)
+   ========================================================================== */
+
+/* Contenedor principal para las páginas de recibo */
+.checkout-receipt-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Caja de estado (éxito o error) */
+.checkout-status-box {
+    padding: 1.5em;
+    border-radius: 8px;
+    margin-bottom: 2em;
+    text-align: center;
+}
+
+.checkout-status-success {
+    background-color: #1a4a1a; /* Verde oscuro */
+    border: 2px solid var(--color-accent-green);
+    color: var(--text-main);
+}
+
+.checkout-status-error {
+    background-color: #4a1a1a; /* Rojo oscuro */
+    border: 2px solid #ff4d4d;
+    color: var(--text-main);
+}
+
+.checkout-status-box h2 {
+    font-family: var(--font-title);
+    color: var(--color-accent-green); /* Verde para éxito */
+    margin-bottom: 0.5em;
+}
+
+.checkout-status-error h2 {
+    color: #ff4d4d; /* Rojo para error */
+}
+
+/* Para mostrar la info estática del cliente en el recibo */
+.static-info-group {
+    margin-bottom: 1em;
+}
+
+.static-info-group label {
+    display: block;
+    font-weight: bold;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25em;
+    text-transform: uppercase;
+}
+
+.static-info-group p {
+    font-size: 1.05rem;
+    background-color: #2b2b2b;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    margin: 0;
+}
