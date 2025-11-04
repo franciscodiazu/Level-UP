@@ -1873,7 +1873,8 @@ main.main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 10px 0; /* <-- CAMBIA ESTA LÍNEA (antes era 10px 20px) */
+    width: 90%; /* <--- AÑADE ESTA LÍNEA */
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -2011,4 +2012,3 @@ main.main {
    Tu .hero, .page-title, .grid-categorias, etc.,
    usarán los estilos originales de tu tema oscuro.
 */
-
