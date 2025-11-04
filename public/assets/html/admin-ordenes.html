@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Órdenes - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    
+    <div class="admin-wrapper">
+        
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <a href="../../index.html">
+                    <img src="../img/logo.png" alt="Level-Up Logo" class="logo">
+                </a>
+                <p class="sidebar-title">Panel de Administración</p>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-item">🏠 Dashboard</a>
+                <a href="admin-ordenes.html" class="nav-item active">📋 Órdenes y Boletas</a>
+                
+                <div class="nav-group">
+                    <span class="group-title">Gestión de Tienda</span>
+                    <a href="admin-productos.html" class="nav-item sub-item">📦 Productos</a>
+                    <a href="admin-categorias.html" class="nav-item sub-item">🏷️ Categorías</a>
+                </div>
+                
+                <div class="nav-group">
+                    <span class="group-title">Administración</span>
+                    <a href="admin-usuarios.html" class="nav-item sub-item">👥 Usuarios</a>
+                    <a href="admin-reportes.html" class="nav-item sub-item">📊 Reportes</a>
+                    <a href="admin-perfil.html" class="nav-item sub-item">👤 Mi Perfil</a>
+                </div>
+            </nav>
+
+            <div class="admin-logout">
+                <a href="login.html" class="btn btn-primary btn-logout">Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main-content">
+            <h1 class="page-title" style="color: var(--text-main);">Gestión de Órdenes</h1>
+            <p>Aquí puedes ver, buscar y gestionar todas las órdenes de los clientes.</p>
+
+            <section class="dashboard-latest-orders" style="margin-top: 20px;">
+                <h3 class="stat-group-title" style="color: var(--text-main);">Todas las Órdenes</h3>
+                <div class="responsive-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Orden</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-ordenes-admin">
+                            <!-- Las órdenes se cargarán aquí con JavaScript -->
+                            <tr><td colspan="6" style="text-align: center; padding: 20px;">Cargando órdenes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

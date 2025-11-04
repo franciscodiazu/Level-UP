@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    
+    <div class="admin-wrapper">
+        
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <a href="../../index.html">
+                    <img src="../img/logo.png" alt="Level-Up Logo" class="logo">
+                </a>
+                <p class="sidebar-title">Panel de Administración</p>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-item">🏠 Dashboard</a>
+                <a href="admin-ordenes.html" class="nav-item">📋 Órdenes y Boletas</a>
+                
+                <div class="nav-group">
+                    <span class="group-title">Gestión de Tienda</span>
+                    <a href="admin-productos.html" class="nav-item sub-item active">📦 Productos</a>
+                    <a href="admin-categorias.html" class="nav-item sub-item">🏷️ Categorías</a>
+                </div>
+                
+                <div class="nav-group">
+                    <span class="group-title">Administración</span>
+                    <a href="admin-usuarios.html" class="nav-item sub-item">👥 Usuarios</a>
+                    <a href="admin-reportes.html" class="nav-item sub-item">📊 Reportes</a>
+                    <a href="admin-perfil.html" class="nav-item sub-item">👤 Mi Perfil</a>
+                </div>
+            </nav>
+
+            <div class="admin-logout">
+                <a href="login.html" class="btn btn-primary btn-logout">Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main-content">
+            <h1 class="page-title" style="color: var(--text-main);">Gestión de Productos</h1>
+            <p>Añade, edita o elimina productos de la tienda.</p>
+
+            <section style="margin-top: 20px;">
+                <h3 class="stat-group-title" style="color: var(--text-main);">Lista de Productos</h3>
+                <div style="border: 1px dashed #555; padding: 40px; text-align: center; color: var(--text-secondary); border-radius: 8px;">
+                    (Aquí se mostrará una tabla con todos los productos para editar, ver stock y eliminar. También habrá un botón para "Añadir Nuevo Producto" que abrirá un formulario).
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

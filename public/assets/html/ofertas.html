@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofertas - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+        <nav class="main-nav">
+            <a href="../../index.html">Inicio</a>
+            <a href="catalogo.html">Catálogo</a>
+            <a href="ofertas.html">Ofertas</a>
+            <a href="blog.html">Blog</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="carrito.html" class="btn btn-cart-header" id="header-cart-button">
+                🛒 Carrito $0
+            </a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">🔥 Ofertas Imperdibles</h1>
+        
+        <section class="product-grid" id="ofertasGrid">
+            <!-- Los productos en oferta se cargarán aquí dinámicamente -->
+            <p style="text-align: center; grid-column: 1 / -1;">Cargando ofertas...</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <!-- Contenido del footer copiado de otras páginas para consistencia -->
+            <div class="footer-left">
+                <span class="site-name">Level-Up</span>
+                <div class="payment-methods">
+                    <img src="../img/visa.png" alt="Visa"/>
+                    <img src="../img/mastercard.png" alt="MasterCard" />
+                    <img src="../img/amex.png" alt="AMEX" />
+                </div>
+            </div>
+            <!-- ... resto del footer ... -->
+        </div>
+    </footer>
+
+    <!-- Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Scripts de la aplicación (importante que sean de tipo "module") -->
+    <script src="../js/global-cart.js" type="module"></script>
+    <script src="../js/ofertas.js" type="module"></script>
+</body>
+</html>

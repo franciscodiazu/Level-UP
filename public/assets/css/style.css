@@ -357,14 +357,19 @@ footer {
 .product-card h3 {
     font-family: var(--font-title);
     min-height: 50px;
-    /* Espacio para títulos de 2 líneas */
     margin-bottom: 0.5em;
 }
 .product-price {
     color: var(--color-accent-green);
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.3rem; /* Unificado con el de oferta */
     margin-bottom: 1em;
+    
+    /* Esto es clave para alinear los botones en todas las tarjetas */
+    min-height: 44px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 /* ==========================================================================
    6. RESPONSIVE DESIGN (COMBINADO)
@@ -1716,11 +1721,35 @@ main.main {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2.5em;
-    color: #555;
-    flex-shrink: 0; 
 }
-    
+/* --- ESTILOS PARA PRECIOS DE OFERTA --- */
+
+/* Contenedor para el precio de oferta */
+.precio-oferta-container {
+    /* Mantiene el espaciado original de .product-price */
+    margin-bottom: 1em; 
+    /* Damos una altura mínima para alinear botones */
+    min-height: 44px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Precio original tachado */
+.product-price-original {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    text-decoration: line-through; /* ¡Tachado! */
+    line-height: 1;
+}
+
+/* Precio de oferta (verde, grande) */
+.product-price-oferta {
+    color: var(--color-accent-green);
+    font-weight: bold;
+    font-size: 1.3rem; /* Más grande que el precio normal */
+    line-height: 1.2;
+}
 /* 4. Contenedor del nombre (Clase real: .categoria-nombre) */
 .categoria-nombre {
     font-family: var(--font-title);
@@ -1763,4 +1792,133 @@ main.main {
   .category-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* --- ESTILOS PARA PRECIOS DE OFERTA --- */
+
+/* Contenedor para el precio de oferta */
+.precio-oferta-container {
+    /* Mantiene el espaciado original de .product-price */
+    margin-bottom: 1em; 
+    /* Damos una altura mínima para alinear botones */
+    min-height: 44px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Precio original tachado */
+.product-price-original {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    text-decoration: line-through; /* ¡Tachado! */
+    line-height: 1;
+}
+
+/* Precio de oferta (verde, grande) */
+.product-price-oferta {
+    color: var(--color-accent-green);
+    font-weight: bold;
+    font-size: 1.3rem; /* Más grande que el precio normal */
+    line-height: 1.2;
+}
+
+/* Modifica tu .product-price existente para que se alinee */
+.product-price {
+    min-height: 44px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* --- ESTILOS PARA PAGINA DE DETALLE DE PRODUCTO --- */
+.producto-detalle-layout {
+    display: flex;
+    gap: 3em;
+}
+
+.producto-imagen-container {
+    flex: 1;
+    max-width: 500px;
+}
+
+.producto-imagen-container img {
+    width: 100%;
+    border-radius: 8px;
+    background-color: #fff; /* Fondo blanco para imgs con transparencia */
+    object-fit: contain;
+}
+
+.producto-info-container {
+    flex: 1.5;
+}
+
+.producto-detalle-precio {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-accent-green);
+    font-family: var(--font-title);
+    margin-bottom: 0.5em;
+}
+
+/* Ajusta el precio de oferta en la página de detalle */
+.producto-info-container .product-price-original {
+    font-size: 1.5rem; /* Más grande que en la tarjeta */
+}
+.producto-info-container .precio-oferta-container {
+    margin-bottom: 0.5em;
+    min-height: 0; /* Resetea el min-height */
+}
+
+.producto-descripcion {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 2em;
+}
+
+.producto-info-container h3 {
+    font-family: var(--font-title);
+    color: var(--text-main);
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 2px solid var(--color-accent-blue);
+    padding-bottom: 5px;
+}
+
+.producto-especs {
+    list-style: none;
+    padding-left: 0;
+    color: var(--text-secondary);
+}
+
+.producto-especs li {
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+}
+
+.producto-especs li strong {
+    color: var(--text-main);
+}
+
+.producto-acciones {
+    display: flex;
+    gap: 2em;
+    align-items: center;
+    margin-top: 2em;
+    background-color: #1a1a1a;
+    padding: 1.5em;
+    border-radius: 8px;
+}
+/* Responsive para la página de detalle */
+@media (max-width: 768px) {
+    .producto-detalle-layout {
+        flex-direction: column;
+        gap: 2em;
+    }
+    .producto-info-container h1 {
+        font-size: 2rem;
+    }
+    .producto-detalle-precio {
+        font-size: 2rem;
+    }
 }

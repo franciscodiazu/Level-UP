@@ -21,19 +21,19 @@
             <nav class="admin-nav">
                 <a href="admin-dashboard.html" class="nav-item active">🏠 Dashboard</a>
                 
-                <a href="#" class="nav-item">📋 Órdenes y Boletas</a>
+                <a href="admin-ordenes.html" class="nav-item">📋 Órdenes y Boletas</a>
                 
                 <div class="nav-group">
                     <span class="group-title">Gestión de Tienda</span>
-                    <a href="catalogo.html" class="nav-item sub-item">📦 Productos</a>
-                    <a href="#" class="nav-item sub-item">🏷️ Categorías</a>
+                    <a href="admin-productos.html" class="nav-item sub-item">📦 Productos</a>
+                    <a href="admin-categorias.html" class="nav-item sub-item">🏷️ Categorías</a>
                 </div>
                 
                 <div class="nav-group">
                     <span class="group-title">Administración</span>
-                    <a href="#" class="nav-item sub-item">👥 Usuarios</a>
-                    <a href="#" class="nav-item sub-item">📊 Reportes</a>
-                    <a href="#" class="nav-item sub-item">👤 Mi Perfil</a>
+                    <a href="admin-usuarios.html" class="nav-item sub-item">👥 Usuarios</a>
+                    <a href="admin-reportes.html" class="nav-item sub-item">📊 Reportes</a>
+                    <a href="admin-perfil.html" class="nav-item sub-item">👤 Mi Perfil</a>
                 </div>
             </nav>
 
@@ -90,32 +90,22 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>#98765</td>
-                                <td>Juan Pérez</td>
-                                <td>25/10/2025</td>
-                                <td>$120.990</td>
-                                <td><span class="status-shipped">Enviado</span></td>
-                                <td><a href="#">Ver Detalle</a></td>
-                            </tr>
-                            <tr>
-                                <td>#98764</td>
-                                <td>María Soto</td>
-                                <td>25/10/2025</td>
-                                <td>$45.000</td>
-                                <td><span class="status-processing">Procesando</span></td>
-                                <td><a href="#">Procesar</a></td>
-                            </tr>
+                        <tbody id="tabla-ordenes-dashboard">
+                            <!-- Las órdenes se cargarán aquí dinámicamente desde Firebase -->
+                            <tr><td colspan="6" style="text-align: center; padding: 20px;">Cargando...</td></tr>
                         </tbody>
                     </table>
                 </div>
-                <a href="#" class="btn btn-primary mt-3" style="margin-top: 1.5em;">Ver Todas las Órdenes</a>
+                <a href="admin-ordenes.html" class="btn btn-primary mt-3" style="margin-top: 1.5em;">Ver Todas las Órdenes</a>
             </section>
         </main>
     </div>
 
-    <script src="../../js/login.js"></script>
-    <script src="../../js/setup-admin.js"></script> 
+    <!-- Scripts de Firebase (necesarios para la conexión) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Script específico para la lógica de esta página -->
+    <script src="../js/admin-dashboard.js"></script>
 </body>
 </html>
