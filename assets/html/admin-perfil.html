@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    
+    <div class="admin-wrapper">
+        
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <a href="../../index.html">
+                    <img src="../img/logo.png" alt="Level-Up Logo" class="logo">
+                </a>
+                <p class="sidebar-title">Panel de Administración</p>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-item">🏠 Dashboard</a>
+                <a href="admin-ordenes.html" class="nav-item">📋 Órdenes y Boletas</a>
+                
+                <div class="nav-group">
+                    <span class="group-title">Gestión de Tienda</span>
+                    <a href="admin-productos.html" class="nav-item sub-item">📦 Productos</a>
+                    <a href="admin-categorias.html" class="nav-item sub-item">🏷️ Categorías</a>
+                </div>
+                
+                <div class="nav-group">
+                    <span class="group-title">Administración</span>
+                    <a href="admin-usuarios.html" class="nav-item sub-item">👥 Usuarios</a>
+                    <a href="admin-reportes.html" class="nav-item sub-item">📊 Reportes</a>
+                    <a href="admin-perfil.html" class="nav-item sub-item active">👤 Mi Perfil</a>
+                </div>
+            </nav>
+
+            <div class="admin-logout">
+                <a href="login.html" class="btn btn-primary btn-logout">Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main-content">
+            <h1 class="page-title" style="color: var(--text-main);">Mi Perfil de Administrador</h1>
+            <p>Edita tu información personal y cambia tu contraseña.</p>
+
+            <section style="margin-top: 20px;">
+                <h3 class="stat-group-title" style="color: var(--text-main);">Editar Información</h3>
+                <div style="border: 1px dashed #555; padding: 40px; text-align: center; color: var(--text-secondary); border-radius: 8px;">
+                    (Aquí habrá un formulario para que el administrador pueda cambiar su contraseña).
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

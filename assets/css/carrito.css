@@ -1,0 +1,179 @@
+/* CARRITO.CSS - Estilos para el sistema de carrito de compras */
+
+/* Contenedor principal del carrito */
+.carrito-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  
+  /* Sección de ofertas */
+  .ofertas-section {
+    grid-column: 1;
+  }
+  
+  /* Resumen del carrito */
+  .resumen-carrito {
+    grid-column: 2;
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+  }
+  
+  /* Contenedor de tabla del carrito */
+  .tabla-carrito-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border: 1px solid #333;
+    border-radius: 8px;
+  }
+  
+  /* Tabla del carrito */
+  .tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .tabla-carrito th {
+    background: #111;
+    padding: 15px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-main);
+    border-bottom: 2px solid var(--color-accent-blue);
+    font-size: 14px;
+  }
+  
+  .tabla-carrito td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #333;
+    vertical-align: middle;
+  }
+  
+  /* Imagen en tabla */
+  .imagen-tabla {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  /* Controles de cantidad */
+  .controles-cantidad {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .btn-cantidad {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #555;
+    background: #333;
+    color: var(--text-main);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+  
+  .btn-cantidad:hover {
+    background: #444;
+  }
+  
+  .cantidad-actual {
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+  }
+  
+  /* Botón eliminar */
+  .btn-eliminar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  .btn-eliminar:hover {
+    background: #c82333;
+  }
+  
+  /* Footer del carrito */
+  .carrito-footer {
+    border-top: 2px solid #333;
+    padding-top: 20px;
+  }
+  
+  .total-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  
+  .total-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  
+  .total-precio {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-accent-green);
+  }
+  
+  .botones-carrito {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+  }
+  
+  /* Mensaje carrito vacío */
+  .carrito-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+  }
+  
+  .carrito-vacio .icono {
+    font-size: 60px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+  
+  .carrito-vacio h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--text-main);
+  }
+  
+  .carrito-vacio p {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  
+  .btn-ir-catalogo {
+    padding: 12px 24px;
+    background: var(--color-accent-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  

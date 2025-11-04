@@ -1,0 +1,71 @@
+/* ==========================================================================
+   ESTILOS CATÁLOGO (CORRECCIÓN FINAL)
+   ========================================================================== */
+
+/* 1. GRILLA DE CATEGORÍAS */
+/* Usamos el ID para tener máxima prioridad */
+body #cardsCategorias {
+    display: grid;
+    /* 4 columnas como en Figura 4 */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1.5em;
+    margin-top: 1em;
+    /* Estira todas las tarjetas a la misma altura */
+    align-items: stretch; 
+}
+
+/* 2. TARJETA DE CATEGORÍA (Clase de tu JS: .categoria-card) */
+.categoria-card {
+    background: #181818; 
+    border-radius: 8px;
+    border: 1px solid #333;
+    padding: 1.5em;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    cursor: pointer;
+    
+    /* Centra el contenido verticalmente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra el bloque de [ícono + texto] */
+    align-items: center;
+}
+
+.categoria-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-green);
+    border-color: var(--color-accent-green);
+}
+
+/* 3. ÍCONO DE LA TARJETA (Clase de tu JS: .categoria-img) */
+.categoria-img {
+    width: 100%;
+    height: 100px; 
+    background-color: #333; 
+    border-radius: 4px;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+    color: #555;
+    flex-shrink: 0; 
+}
+    
+/* 4. NOMBRE DE LA TARJETA (Clase de tu JS: .categoria-nombre) */
+.categoria-nombre {
+    font-family: var(--font-title);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 100%;
+    padding-top: 0.5em;
+    /* Quitamos flex-grow y min-height para que se centre bien */
+}
+       
+/* 5. RESPONSIVE (para pantallas más pequeñas) */
+@media (max-width: 768px) {
+  body #cardsCategorias {
+    /* Pasa a 2 columnas en pantallas pequeñas */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

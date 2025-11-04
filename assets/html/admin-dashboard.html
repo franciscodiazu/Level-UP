@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
+    </head>
+<body>
+    
+    <div class="admin-wrapper">
+        
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <a href="../../index.html">
+                    <img src="../img/logo.png" alt="Level-Up Logo" class="logo">
+                </a>
+                <p class="sidebar-title">Panel de Administración</p>
+            </div>
+            
+            <nav class="admin-nav">
+                <a href="admin-dashboard.html" class="nav-item active">🏠 Dashboard</a>
+                
+                <a href="admin-ordenes.html" class="nav-item">📋 Órdenes y Boletas</a>
+                
+                <div class="nav-group">
+                    <span class="group-title">Gestión de Tienda</span>
+                    <a href="admin-productos.html" class="nav-item sub-item">📦 Productos</a>
+                    <a href="admin-categorias.html" class="nav-item sub-item">🏷️ Categorías</a>
+                </div>
+                
+                <div class="nav-group">
+                    <span class="group-title">Administración</span>
+                    <a href="admin-usuarios.html" class="nav-item sub-item">👥 Usuarios</a>
+                    <a href="admin-reportes.html" class="nav-item sub-item">📊 Reportes</a>
+                    <a href="admin-perfil.html" class="nav-item sub-item">👤 Mi Perfil</a>
+                </div>
+            </nav>
+
+            <div class="admin-logout">
+                <a href="login.html" class="btn btn-primary btn-logout">Cerrar Sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main-content">
+            <h1 class="page-title">Panel de Administración</h1>
+            <p>Bienvenido, Administrador/a. Este es el resumen de tus actividades diarias.</p>
+
+            <section class="dashboard-stats">
+                <h3 class="stat-group-title">Estadísticas Clave</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <h4>Ventas del Mes</h4>
+                        <p class="stat-value">$15.450.000</p>
+                        <p class="stat-trend trend-up">↑ 12% respecto al mes anterior</p>
+                    </div>
+                    
+                    <div class="stat-card green">
+                        <h4>Órdenes Pendientes</h4>
+                        <p class="stat-value">45</p>
+                        <p class="stat-trend trend-down">↓ 3 órdenes menos que ayer</p>
+                    </div>
+                    
+                    <div class="stat-card yellow">
+                        <h4>Nuevos Usuarios</h4>
+                        <p class="stat-value">321</p>
+                        <p class="stat-trend trend-up">↑ 5% respecto a la semana pasada</p>
+                    </div>
+
+                    <div class="stat-card red">
+                        <h4>Productos sin Stock</h4>
+                        <p class="stat-value">8</p>
+                        <p class="stat-trend stat-alert">🚨 ¡Revisar urgente!</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="dashboard-latest-orders">
+                <h3 class="stat-group-title">Últimas Órdenes</h3>
+                <div class="responsive-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Orden</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-ordenes-dashboard">
+                            <!-- Las órdenes se cargarán aquí dinámicamente desde Firebase -->
+                            <tr><td colspan="6" style="text-align: center; padding: 20px;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="admin-ordenes.html" class="btn btn-primary mt-3" style="margin-top: 1.5em;">Ver Todas las Órdenes</a>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts de Firebase (necesarios para la conexión) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Script específico para la lógica de esta página -->
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>

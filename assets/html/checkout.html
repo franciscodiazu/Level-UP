@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Level-Up Gamer</title>
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="../../index.html">
+            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
+        </a>
+        <nav class="main-nav">
+            <a href="../../index.html">Home</a>
+            <a href="catalogo.html">Categorías</a>
+            <a href="#">Ofertas</a>
+            <a href="nosotros.html">Nosotros</a>
+            <a href="blog.html">Blog</a>
+            <a href="contacto.html">Contacto</a>
+            <a href="login.html" class="nav-link-secondary">Iniciar Sesión</a>
+            <a href="registro.html" class="nav-link-secondary">Crear Cuenta</a>
+            <a href="carrito.html" class="btn btn-cart-header" id="header-cart-button">
+                Carrito $0
+            </a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Finalizar Compra</h1>
+        <p class="form-subtitle" style="text-align: center; margin-bottom: 30px;">
+            Confirma tus productos y completa tu dirección.
+        </p>
+
+        <div class="checkout-layout">
+
+            <section class="checkout-cart-items">
+                <h2>Resumen de tu Orden</h2>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCheckoutBody">
+                        </tbody>
+                </table>
+                
+                <div class="checkout-total-box" style="margin-top: 2em;">
+                    <span>Total a pagar:</span>
+                    <span id="totalPagar">$0</span> </div>
+            </section>
+
+            <aside class="checkout-form-section">
+                <form id="formCliente" class="checkout-form">
+                    <h2>Información del cliente</h2>
+                    <p>Completa la siguiente información</p>
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos</label>
+                        <input type="text" id="apellidos" name="apellidos" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Correo</label>
+                        <input type="email" id="correo" name="correo" required>
+                    </div>
+                </form>
+
+                <form id="formDireccion" class="checkout-form">
+                    <h2>Dirección de entrega</h2>
+                    <p>Ingrese dirección de forma detallada</p>
+                    <div class="form-group">
+                        <label for="calle">Calle</label>
+                        <input type="text" id="calle" name="calle" required>
+                    </div>
+                    <div class="form-group-inline">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="departamento">Departamento (opcional)</label>
+                            <input type="text" id="departamento" name="departamento">
+                        </div>
+                    </div>
+                    <div class="form-group-inline">
+                         <div class="form-group" style="flex: 1;">
+                            <label for="region">Región</label>
+                            <select id="region" name="region" required>
+                                <option value="">-- Seleccione Región --</option>
+                            </select>
+                        </div>
+                         <div class="form-group" style="flex: 1;">
+                            <label for="comuna">Comuna</label>
+                            <select id="comuna" name="comuna" required disabled>
+                                <option value="">-- Seleccione Comuna --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="indicaciones">Indicaciones (opcional)</label>
+                        <textarea id="indicaciones" name="indicaciones" rows="3"></textarea>
+                    </div>
+                </form>
+
+                <button id="btnPagarAhora" class="btn btn-primary btn-pagar">
+                    Pagar ahora <span id="montoPagar">$0</span>
+                </button>
+            </aside>
+        </div> 
+    </main>
+
+    <script src="../js/global-cart.js"></script>
+    <script src="../js/checkout.js"></script>
+    </body>
+</html>
