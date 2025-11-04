@@ -1854,7 +1854,15 @@ main.main {
    ========================================================================== */
 
 /* Ocultamos tus contenedores de header antiguos */
-.main-header,
+.main-header {
+    background: var(--color-bg);
+    display: flex;
+    justify-content: space-between; /* Esta línea es la que mueve el logo a la izquierda */
+    align-items: center;
+    padding: 1em 2em;
+    border-bottom: 2px solid var(--color-accent-blue);
+}
+
 .top-bar-secondary {
     display: none !important; 
 }
