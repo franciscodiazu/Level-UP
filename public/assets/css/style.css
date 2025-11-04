@@ -1849,27 +1849,6 @@ main.main {
  */
 
 
-/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
-.product-price-old {
-    text-decoration: line-through;
-    color: var(--text-secondary); /* Usa el color de texto secundario */
-    font-size: 0.9rem;
-    margin-right: 0.5em;
-}
-
-.product-price-offer {
-    color: var(--color-accent-green); /* Usa el color de acento verde */
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
-    display: inline-block; /* Asegura que el margen inferior funcione */
-}
-
-/* ==========================================================================
-   8. ESTILOS PARA CHECKOUT (FINALIZAR COMPRA)
-   ========================================================================== */
-
-/* Layout principal de 2 columnas */
 .checkout-layout {
     display: flex;
     flex-wrap: wrap; /* Permite que se apilen en móviles */
@@ -1946,23 +1925,10 @@ main.main {
     }
 }
 
-/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
-.product-price-old {
-    text-decoration: line-through;
-    color: var(--text-secondary); /* Usa el color de texto secundario */
-    font-size: 0.9rem;
-    margin-right: 0.5em;
-}
+/* ==========================================================================
+   10. ESTILOS PARA PRECIOS DE OFERTA
+   ========================================================================== */
 
-.product-price-offer {
-    color: var(--color-accent-green); /* Usa el color de acento verde */
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
-    display: inline-block; /* Asegura que el margen inferior funcione */
-}
-
-/* ===== NUEVOS ESTILOS PARA PÁGINA DE OFERTAS ===== */
 .product-price-old {
     text-decoration: line-through;
     color: var(--text-secondary); /* Usa el color de texto secundario */
@@ -2278,6 +2244,25 @@ main.main {
 
 .checkout-status-error h2 {
     color: #ff4d4d; /* Rojo para error */
+}
+
+/* ==========================================================================
+   ESTILOS PARA PRECIOS DE OFERTA
+   ========================================================================== */
+
+.product-price-old {
+    text-decoration: line-through;
+    color: var(--text-secondary); /* Usa el color de texto secundario */
+    font-size: 0.9rem;
+    margin-right: 0.5em;
+}
+
+.product-price-offer {
+    color: var(--color-accent-green); /* Usa el color de acento verde */
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1em; /* Mantiene el espaciado original de .product-price */
+    display: inline-block; /* Asegura que el margen inferior funcione */
 }
 
 /* Para mostrar la info estática del cliente en el recibo */

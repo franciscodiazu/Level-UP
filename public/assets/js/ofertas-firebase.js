@@ -15,8 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Selectores del DOM ---
     const gridContenedor = document.getElementById('ofertas-product-grid');
     
-    // --- Carrito (copiado de tu catalogo.js) ---
+    // --- Estado del Carrito y Array de Productos ---
     let carrito = JSON.parse(localStorage.getItem('carrito')) || []; 
+    let productosEnOferta = []; // Array local para esta página
 
     // --- Funciones de Ayuda (copiadas de tu catalogo.js) ---
 
@@ -24,10 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
      * Formatea un número como moneda chilena (CLP).
      */
     function formatearPrecio(precio) {
+        // Asegurarse de que el precio sea un número antes de formatear
+        const numericPrice = Number(precio) || 0;
         return new Intl.NumberFormat('es-CL', { 
             style: 'currency', 
             currency: 'CLP' 
-        }).format(precio);
+        }).format(numericPrice);
     }
 
     /**
@@ -69,7 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
      * Lógica principal para cargar SOLO productos en oferta
      */
     async function cargarOfertas() {
-        if (!gridContenedor) return; // Salir si no estamos en la página correcta
+        if (!gridContenedor) {
+            console.error("Error: No se encontró el contenedor 'ofertas-product-grid'");
+            return;
+        }
         
         gridContenedor.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Cargando ofertas...</p>';
 
@@ -77,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 1. Definir la consulta a Firebase
             const productosRef = db.collection("producto");
             
-            // 2. ¡LA MAGIA! Buscar productos donde "precioAnterior" sea mayor que 0
+            // 2. Buscar productos donde "precioAnterior" sea mayor que 0
             const q = productosRef.where("precioAnterior", ">", 0);
             
             // 3. Ejecutar la consulta
@@ -88,13 +94,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             
-            // 4. Limpiar el grid y mostrar los productos
+            // 4. Limpiar el grid y preparar para mostrar productos
             gridContenedor.innerHTML = ''; 
+            
             snapshot.forEach(doc => {
                 const producto = { id: doc.id, ...doc.data() };
+                productosEnOferta.push(producto); // Llenamos nuestro array local
                 
-                // 5. ¡Lógica de precios de oferta!
-                // (Necesitarás los estilos de la Parte 3 para que esto se vea bien)
+                // 5. Lógica de precios de oferta (Usa los estilos CSS que ya existen)
                 const precioHTML = `
                     <div>
                         <span class="product-price-old">${formatearPrecio(producto.precioAnterior)}</span>
@@ -121,29 +128,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 gridContenedor.appendChild(article);
             });
             
-            // 7. Añadir eventos a los botones (copiado de tu catalogo.js)
+            // 7. Añadir eventos a los botones
             document.querySelectorAll('.btn-agregar').forEach(btn => { 
               btn.addEventListener('click', function() { 
                 const productId = this.dataset.id; 
-                agregarAlCarrito(productId, snapshot.docs); // Pasamos los docs para encontrar el producto
+                agregarAlCarrito(productId);
               });
             });
 
         } catch (error) {
             console.error("Error al cargar los productos en oferta:", error);
-            gridContenedor.innerHTML = '<p style="text-align: center; color: red; grid-column: 1 / -1;">Error al cargar las ofertas. Intenta más tarde.</p>';
+            gridContenedor.innerHTML = '<p style="text-align: center; color: red; grid-column: 1 / -1;">Error al cargar las ofertas. Revise la consola (F12).</p>';
         }
     }
 
     /**
-     * Añade un producto al carrito (copiado de tu catalogo.js)
+     * Añade un producto al carrito (Usa el array local 'productosEnOferta')
      */
-    function agregarAlCarrito(productId, productosDocs) { 
-        // Encontramos el producto desde los documentos de Firebase
-        const doc = productosDocs.find(d => d.id === productId);
-        if (!doc) return;
-        
-        const producto = { id: doc.id, ...doc.data() };
+    function agregarAlCarrito(productId) { 
+        const producto = productosEnOferta.find(p => p.id === productId); 
+        if (!producto) return; 
         
         const stockActual = producto.stock !== undefined ? producto.stock : 100;
         if (producto && stockActual <= 0) {
@@ -164,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarStockFirebase(productId, 1);
             mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
             
-            // Actualizamos el contador global del header
             if (typeof window.actualizarHeaderCartGlobal === 'function') {
                 window.actualizarHeaderCartGlobal();
             }

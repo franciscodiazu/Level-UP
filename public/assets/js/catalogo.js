@@ -37,6 +37,22 @@ document.addEventListener("DOMContentLoaded", () => {
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
+  // --- PEGA ESTA FUNCIÓN AQUÍ ---
+  /**
+   * Formatea un número como moneda chilena (CLP).
+   * @param {number} precio - El número a formatear.
+   * @returns {string} El precio formateado.
+   */
+  function formatearPrecio(precio) {
+      // Asegurarse de que el precio sea un número antes de formatear
+      const numericPrice = Number(precio) || 0;
+      return new Intl.NumberFormat('es-CL', { 
+          style: 'currency', 
+          currency: 'CLP' 
+      }).format(numericPrice);
+  }
+  // --- FIN DEL CÓDIGO A PEGAR ---
+
   // Inicializar la aplicación
   actualizarCarritoTotal();
   cargarProductos();
@@ -220,26 +236,52 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ----- MODIFICACIÓN 7 -----
-    // Tu HTML original estaba bien, solo cambié la clase del botón
-    // a 'btn btn-primary' para que tome los estilos correctos.
-    productosGrid.innerHTML = productos.map(producto => `
-      <article class="product-card" data-category="${producto.categoria}">
-        <a href="producto-detalle.html?id=${producto.id}" style="text-decoration: none;">
-            <img src="${producto.imagen || 'https://placehold.co/400x200/333/FFF?text=Sin+Imagen'}" 
-                 alt="${producto.nombre}" 
-                 class="producto-imagen"
-                 onerror="this.src='https://placehold.co/400x200/cccccc/969696?text=Error+Cargando'">
-            <h3>${producto.nombre || 'Sin nombre'}</h3>
-        </a>
-        <p class="product-price">$${(producto.precio || 0).toLocaleString('es-CL')}</p>
-        <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
+    // --- INICIO DE LA MODIFICACIÓN (Paso 34) ---
+    productosGrid.innerHTML = ''; // Limpiamos el grid
+    
+    productos.forEach(producto => {
+        // 1. Lógica para el precio (Muestra ofertas)
+        let precioHTML = '';
+        // Revisa si 'precioAnterior' existe Y es mayor que 0
+        if (producto.precioAnterior && producto.precioAnterior > 0) {
+            // Es OFERTA
+            precioHTML = `
+                <div>
+                    <span class="product-price-old">${formatearPrecio(producto.precioAnterior)}</span>
+                    <span class="product-price-offer">${formatearPrecio(producto.precio)} CLP</span>
+                </div>
+            `;
+        } else {
+            // Es PRECIO NORMAL
+            precioHTML = `
+                <p class="product-price">${formatearPrecio(producto.precio)} CLP</p>
+            `;
+        }
+
+        // 2. Creamos el elemento de la tarjeta
+        const article = document.createElement('article');
+        article.className = 'product-card';
+        article.dataset.category = producto.categoria;
+
+        // 3. Rellenamos la tarjeta con el HTML (usando la variable precioHTML)
+        article.innerHTML = `
+            <a href="producto-detalle.html?id=${producto.id}" style="text-decoration: none;">
+                <img src="${producto.imagen || 'https://placehold.co/400x200/333/FFF?text=Sin+Imagen'}" 
+                     alt="${producto.nombre}" 
+                     class="producto-imagen"
+                     onerror="this.src='https://placehold.co/400x200/cccccc/969696?text=Error+Cargando'">
+                <h3>${producto.nombre || 'Sin nombre'}</h3>
+            </a>
+        ${precioHTML}        <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
         <button class="btn btn-primary btn-agregar" data-id="${producto.id}">
           Añadir al carrito
         </button>
-      </article>
-    `).join("");
-    // --------------------------
+        `;
+        
+        // 4. Añadimos la tarjeta al grid
+        productosGrid.appendChild(article);
+    });
+    // --- FIN DE LA MODIFICACIÓN ---
 
     // Agregar eventos a los botones de comprar
     document.querySelectorAll('.btn-agregar').forEach(btn => { 
