@@ -1515,12 +1515,6 @@ footer {
     color: var(--text-main);
     margin-bottom: 1.5em;
 }
-
-/* (Opcional: Oculta los estilos de checkout en la página del carrito) */
-/* Esto es por si acaso, para que no interfieran */
-html:has(body main .cart-layout-simple) .checkout-layout {
-    display: none; 
-}
 /* ==========================================
    11. ARREGLO STICKY FOOTER
    ========================================== */
@@ -2286,4 +2280,33 @@ main.main {
     border-radius: 5px;
     border: 1px solid #444;
     margin: 0;
+}
+
+/* ==========================================================================
+   8. ESTILOS PARA PRODUCTOS EN OFERTA (CARRITO)
+   ========================================================================== */
+
+/* * Por defecto, la clase .product-grid es auto-ajustable.
+ * Esta nueva clase .product-grid-ofertas forzará 3 columnas.
+*/
+.product-grid-ofertas {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* * Hacemos que la grilla sea responsive en pantallas medianas (tablets).
+ * En lugar de 3 columnas, mostramos 2.
+*/
+@media (max-width: 900px) {
+    .product-grid-ofertas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* * En pantallas muy pequeñas (móviles), mostramos solo 1 columna 
+ * para evitar que se vea apretado.
+*/
+@media (max-width: 500px) {
+    .product-grid-ofertas {
+        grid-template-columns: 1fr;
+    }
 }

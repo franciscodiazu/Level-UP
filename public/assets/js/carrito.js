@@ -1,6 +1,7 @@
 /* ==========================================
  * ARCHIVO MODIFICADO: js/carrito.js
  * (Incluye Firebase + localStorage para el total)
+ * + LÓGICA PARA RENDERIZAR OFERTAS
  * ==========================================
 */
 
@@ -16,12 +17,16 @@ const db = firebase.firestore();
 
 // Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-let productosOferta = []; // Asegúrate de que esta variable se llene si la usas en otras partes
+let productosOferta = []; // (AHORA SE LLAMA 'productosCargados')
+// Cambié el nombre para evitar confusión: 
+// esta variable ahora guarda TODOS los productos para la lógica de stock.
+let productosCargados = []; 
 
 // Inicializar la aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     inicializarCarrito();
-    cargarProductosOferta(); // Carga productos para saber el stock
+    // AHORA SE LLAMA 'cargarTodosLosProductos' para más claridad
+    cargarTodosLosProductos(); 
     configurarEventos();
 });
 
@@ -80,25 +85,74 @@ function inicializarCarrito() {
 }
 
 /**
- * Carga productos en oferta desde Firestore
+ * (FUNCIÓN RENOMBRADA) Carga TODOS los productos de Firestore
+ * y luego llama a renderizar las ofertas.
  */
-async function cargarProductosOferta() {
+async function cargarTodosLosProductos() { // Nombre cambiado
     try {
-        const snapshot = await db.collection("producto").get();
-        productosOferta = snapshot.docs.map(doc => ({
+        const snapshot = await db.collection("producto").get(); // Tu colección es 'producto'
+        
+        // Llena la variable global que usa el resto de tu lógica (stock, etc.)
+        productosCargados = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
 
-        // Podrías necesitar renderizar algo aquí si tienes una sección de ofertas
-        // en la página del carrito, pero lo dejo comentado por si acaso.
-        // const productosConOferta = productosOferta.filter(producto => producto.precioAnterior);
-        // renderizarProductosOferta(productosConOferta);
+        // --- INICIO DE MODIFICACIÓN ---
+        // Ahora, filtra esta lista para encontrar las ofertas
+        // Asumo que tu campo se llama 'enOferta' y es 'true'
+        
+const productosConOferta = productosCargados
+    .filter(producto => producto.precioAnterior) // <-- ¡CÁMBIALA POR ESTA LÍNEA!
+    .slice(0, 6);
+
+        // Llama a la nueva función para "pintarlos" en el HTML
+        renderizarProductosOferta(productosConOferta);
+        // --- FIN DE MODIFICACIÓN ---
 
     } catch (error) {
         console.error("Error cargando productos:", error);
     }
 }
+
+// ==========================================================================
+//  NUEVA FUNCIÓN PARA "PINTAR" LOS PRODUCTOS EN OFERTA EN EL HTML
+// ==========================================================================
+function renderizarProductosOferta(productosParaRenderizar) {
+    const ofertasContainer = document.getElementById('productosOferta');
+    if (!ofertasContainer) return; // Salir si el div no existe
+
+    if (productosParaRenderizar.length === 0) {
+        ofertasContainer.innerHTML = "<p>No hay ofertas disponibles en este momento.</p>";
+        return;
+    }
+
+    let ofertasHTML = '';
+    productosParaRenderizar.forEach(producto => {
+        const id = producto.id;
+        
+        // Asumo que tus campos se llaman 'url', 'imagen', 'nombre' y 'precio'
+        const urlPagina = producto.url || '#'; // Link a la pág. del producto
+        const imagenUrl = producto.imagen || 'https://via.placeholder.com/200'; // Imagen
+        const nombre = producto.nombre || 'Producto sin nombre';
+        const precioFormateado = formatearMoneda(producto.precio || 0);
+
+        ofertasHTML += `
+            <article class="product-card">
+                <a href="${urlPagina}" style="text-decoration: none;">
+                    <img src="${imagenUrl}" alt="${nombre}" />
+                    <h3>${nombre}</h3>
+                </a>
+                <p class="product-price">${precioFormateado} CLP</p>
+                
+                <button class="btn btn-primary btn-agregar-oferta" data-id="${id}">Añadir al carrito</button>
+            </article>
+        `;
+    });
+
+    ofertasContainer.innerHTML = ofertasHTML;
+}
+
 
 /**
  * Renderiza los productos en el carrito
@@ -150,14 +204,11 @@ function renderizarCarrito() {
 
 /**
  * Agrega un producto al carrito (Asumiendo que viene de otra página o sección)
- * Necesitarás una función similar en tu script de catálogo.
+ * Esta función es llamada por el event listener de la sección de ofertas.
  */
 function agregarProductoAlCarrito(productId) {
-    // Esta función necesita acceso a la lista completa de productos
-    // O recibir el objeto producto completo como parámetro.
-    // Usaremos productosOferta como ejemplo, pero deberías tener una fuente
-    // de datos más general si agregas desde el catálogo.
-    const producto = productosOferta.find(p => p.id === productId);
+    // USA 'productosCargados' (la lista completa)
+    const producto = productosCargados.find(p => p.id === productId); 
 
     if (producto) {
         const stockActualProducto = producto.stock || 0; // Obtener stock actual del producto fuente
@@ -223,13 +274,20 @@ async function actualizarStockFirebase(productId, cantidadASumar) {
         });
         console.log(`Stock actualizado para ${productId}: ${cantidadASumar > 0 ? '+' : ''}${cantidadASumar}.`);
 
-        // Actualizar el stock en la variable local productosOferta si existe
-        const productoLocal = productosOferta.find(p => p.id === productId);
+        // Actualizar el stock en la variable local 'productosCargados'
+        const productoLocal = productosCargados.find(p => p.id === productId);
         if(productoLocal) {
             productoLocal.stock = (productoLocal.stock || 0) + cantidadASumar;
             if (productoLocal.stock < 0) productoLocal.stock = 0; // Asegurar no negativo localmente
-            // Si tienes productos de oferta renderizados, necesitas actualizarlos aquí
-            // renderizarProductosOferta(productosOferta.filter(p => p.precioAnterior));
+            
+            // --- INICIO MODIFICACIÓN ---
+            // Volver a renderizar las ofertas para que se actualice el stock
+            // (si el producto quitado del carrito era una oferta)
+            const productosConOferta = productosCargados
+                .filter(producto => producto.enOferta === true)
+                .slice(0, 6);
+            renderizarProductosOferta(productosConOferta);
+            // --- FIN MODIFICACIÓN ---
         }
 
     } catch (error) {
@@ -247,10 +305,26 @@ function aumentarCantidad(index) {
     if (!productoCarrito) return;
 
     // Busca el producto en la lista general para verificar stock real
-    const productoGeneral = productosOferta.find(p => p.id === productoCarrito.id);
+    // USA 'productosCargados'
+    const productoGeneral = productosCargados.find(p => p.id === productoCarrito.id);
     const stockDisponible = productoGeneral ? (productoGeneral.stock || 0) : 0; // Stock actual real
 
-    if (productoCarrito.cantidad >= stockDisponible) {
+    // Ajuste: El stock disponible es el stock *actual* de firebase,
+    // NO el stock - lo que ya tengo en el carrito, porque tu lógica de stock
+    // ya resta de firebase al añadir.
+    // Por lo tanto, comparamos la cantidad en el carrito con el stock total del producto.
+    
+    // CORRECCIÓN LÓGICA:
+    // El stock en 'productosCargados' refleja el stock *restante* en la BD.
+    // La cantidad en 'productoCarrito' es lo que el usuario *ya tiene*.
+    // El stock *total* original era (productosCargados.stock + productoCarrito.cantidad)
+    // Pero es más fácil: ¿El stock restante (productosCargados.stock) es > 0?
+    
+    // Tu lógica original:
+    // if (productoCarrito.cantidad >= stockDisponible) {
+    
+    // Nueva lógica (más simple):
+    if (stockDisponible <= 0) {
         mostrarNotificacion(`No hay más stock disponible para "${productoCarrito.nombre}".`, 'error');
         return;
     }
@@ -401,21 +475,24 @@ function mostrarNotificacion(mensaje, tipo = 'success') { // tipo puede ser 'suc
         box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         font-weight: 600;
         opacity: 0;
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        transform: translateX(100%);
     `;
     notificacion.textContent = mensaje;
     document.body.appendChild(notificacion);
 
-    // Pequeña animación de fade-in
+    // Pequeña animación de fade-in y slide-in
     setTimeout(() => {
         notificacion.style.opacity = '1';
+        notificacion.style.transform = 'translateX(0)';
     }, 10);
 
 
     setTimeout(() => {
-         // Animación fade-out
+         // Animación fade-out y slide-out
         notificacion.style.opacity = '0';
-        // Espera a que termine el fade-out para eliminar
+        notificacion.style.transform = 'translateX(100%)';
+        // Espera a que termine la animación para eliminar
         setTimeout(() => {
             if (notificacion.parentNode) {
                  notificacion.remove();
@@ -438,16 +515,25 @@ function configurarEventos() {
         btnComprar.addEventListener('click', irAlCheckout);
     }
 
-     // Eventos para botones de añadir en sección de ofertas (si existe)
+     // --- INICIO MODIFICACIÓN ---
+     // Eventos para botones de añadir en sección de ofertas (¡YA LO TENÍAS!)
+     // Esto funcionará perfectamente con el HTML que genera 'renderizarProductosOferta'
     const contenedorOfertas = document.getElementById('productosOferta');
     if (contenedorOfertas) {
         contenedorOfertas.addEventListener('click', function(event) {
-            if (event.target.classList.contains('btn-agregar-oferta')) {
-                const productId = event.target.getAttribute('data-id');
-                agregarProductoAlCarrito(productId);
+            
+            // Busca el botón aunque el clic sea en un hijo (ej. el texto del botón)
+            const boton = event.target.closest('.btn-agregar-oferta'); 
+            
+            if (boton) { // Si se hizo clic en un botón de agregar
+                const productId = boton.getAttribute('data-id');
+                if (productId) {
+                    agregarProductoAlCarrito(productId);
+                }
             }
         });
     }
+    // --- FIN MODIFICACIÓN ---
 }
 
 // Hacer funciones cruciales disponibles globalmente para los botones inline (onclick)

@@ -176,4 +176,87 @@
     display: inline-block;
   }
 
+  /* ==========================================================================
+     ESTILOS PARA SECCIÓN DE OFERTAS (2 filas x 3 columnas)
+     ========================================================================== */
+  
+  .ofertas-section h2 {
+    font-family: var(--font-title);
+    color: var(--color-accent-green);
+    font-size: 1.8em;
+    border-bottom: 2px solid var(--color-accent-blue);
+    padding-bottom: 0.3em;
+    margin-bottom: 1em;
+    text-align: left;
+  }
+
+  /*
+   * NOTA: Se aplican estilos genéricos a los hijos directos de la cuadrícula
+   * para asegurar que cualquier producto (independientemente de su clase)
+   * se muestre correctamente.
+   */
+  .ofertas-grid > * {
+      background: #181818;
+      border-radius: 16px;
+      padding: 1.5em;
+      box-shadow: 0 4px 8px #111;
+      text-align: center;
+      border: 2px solid var(--color-accent-blue);
+      display: flex !important; /* Forzamos flex para asegurar la estructura */
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .ofertas-grid > *:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 15px var(--color-accent-green);
+  }
+  /* Estilos para los elementos DENTRO de la tarjeta de oferta */
+  .ofertas-grid > * img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      margin-bottom: 1em;
+  }
+  .ofertas-grid > * h3 {
+      font-family: var(--font-title);
+      min-height: 50px;
+      margin-bottom: 0.5em;
+  }
+  /* Usamos un selector de clase genérico para el precio */
+  .ofertas-grid > * [class*="price"],
+  .ofertas-grid > * [class*="precio"] {
+      color: var(--color-accent-green);
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 1em;
+  }
+  /* --- Fin de estilos añadidos --- */
+  
+  .ofertas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2em;
+  }
+  
+  /* Responsive para la grilla de ofertas */
+  @media (max-width: 900px) {
+    .ofertas-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .ofertas-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Aseguramos que el contenedor principal del carrito se adapte en móvil */
+  @media (max-width: 992px) {
+    .carrito-container {
+      grid-template-columns: 1fr;
+    }
+  }
+
   
