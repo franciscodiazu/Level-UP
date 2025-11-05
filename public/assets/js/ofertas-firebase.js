@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // --- Configuración de Firebase (Copiada de tu catalogo.js) ---
+    // --- Configuración de Firebase ---
     const firebaseConfig = {
         apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs", 
         authDomain: "tienda-level-up.firebaseapp.com",
         projectId: "tienda-level-up"
     };
 
-    // Inicializar Firebase
-    if (!firebase.apps.length) { // Evita reinicializar si ya lo hizo otro script
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.firestore();
@@ -19,13 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let carrito = JSON.parse(localStorage.getItem('carrito')) || []; 
     let productosEnOferta = []; // Array local para esta página
 
-    // --- Funciones de Ayuda (copiadas de tu catalogo.js) ---
+    
+    // ==================================================================
+    //  INICIO DE FUNCIONES
+    // ==================================================================
 
     /**
      * Formatea un número como moneda chilena (CLP).
      */
     function formatearPrecio(precio) {
-        // Asegurarse de que el precio sea un número antes de formatear
         const numericPrice = Number(precio) || 0;
         return new Intl.NumberFormat('es-CL', { 
             style: 'currency', 
@@ -50,25 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Actualiza el stock en Firebase (decrementa).
-     */
-    async function actualizarStockFirebase(productId, cantidad) {
-      try {
-          const productoRef = db.collection("producto").doc(productId);
-          const productoDoc = await productoRef.get();
-          
-          if (productoDoc.exists) {
-              const stockActual = productoDoc.data().stock;
-              const nuevoStock = stockActual - cantidad;
-              await productoRef.update({ stock: nuevoStock });
-              console.log(`Stock actualizado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
-          }
-      } catch (error) {
-          console.error("Error actualizando stock en Firebase:", error);
-      }
-    }
-
-    /**
      * Lógica principal para cargar SOLO productos en oferta
      */
     async function cargarOfertas() {
@@ -76,17 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error: No se encontró el contenedor 'ofertas-product-grid'");
             return;
         }
-        
         gridContenedor.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Cargando ofertas...</p>';
 
         try {
-            // 1. Definir la consulta a Firebase
             const productosRef = db.collection("producto");
-            
-            // 2. Buscar productos donde "precioAnterior" sea mayor que 0
             const q = productosRef.where("precioAnterior", ">", 0);
-            
-            // 3. Ejecutar la consulta
             const snapshot = await q.get();
             
             if (snapshot.empty) {
@@ -94,56 +70,70 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             
-            // 4. Limpiar el grid y preparar para mostrar productos
-            gridContenedor.innerHTML = ''; 
-            
+            // Limpia el array local
+            productosEnOferta = []; 
             snapshot.forEach(doc => {
-                const producto = { id: doc.id, ...doc.data() };
-                productosEnOferta.push(producto); // Llenamos nuestro array local
-                
-                // 5. Lógica de precios de oferta (Usa los estilos CSS que ya existen)
-                const precioHTML = `
-                    <div>
-                        <span class="product-price-old">${formatearPrecio(producto.precioAnterior)}</span>
-                        <span class="product-price-offer">${formatearPrecio(producto.precio)} CLP</span>
-                    </div>
-                `;
-
-                // 6. Crear la tarjeta del producto
-                const article = document.createElement('article');
-                article.className = 'product-card';
-                article.innerHTML = `
-                    <a href="producto-detalle.html?id=${producto.id}" style="text-decoration: none;">
-                        <img src="${producto.imagen || 'https://placehold.co/400x200/333/FFF?text=Sin+Imagen'}" 
-                             alt="${producto.nombre}" 
-                             class="producto-imagen"
-                             onerror="this.src='https://placehold.co/400x200/cccccc/969696?text=Error+Cargando'">
-                        <h3>${producto.nombre || 'Sin nombre'}</h3>
-                    </a>
-                    ${precioHTML} <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
-                    <button class="btn btn-primary btn-agregar" data-id="${producto.id}">
-                      Añadir al carrito
-                    </button>
-                `;
-                gridContenedor.appendChild(article);
+                productosEnOferta.push({ id: doc.id, ...doc.data() });
             });
             
-            // 7. Añadir eventos a los botones
-            document.querySelectorAll('.btn-agregar').forEach(btn => { 
-              btn.addEventListener('click', function() { 
-                const productId = this.dataset.id; 
-                agregarAlCarrito(productId);
-              });
-            });
+            // Llama a la función que "dibuja" los productos
+            renderizarGridOfertas(); 
 
         } catch (error) {
             console.error("Error al cargar los productos en oferta:", error);
             gridContenedor.innerHTML = '<p style="text-align: center; color: red; grid-column: 1 / -1;">Error al cargar las ofertas. Revise la consola (F12).</p>';
         }
     }
+    
+    /**
+     * NUEVA FUNCIÓN: Dibuja las tarjetas en el HTML.
+     * Lee los datos del array 'productosEnOferta'.
+     */
+    function renderizarGridOfertas() {
+        if (!gridContenedor) return;
+        
+        // Limpiar el grid
+        gridContenedor.innerHTML = ''; 
+        
+        productosEnOferta.forEach(producto => {
+            const precioHTML = `
+                <div>
+                    <span class="product-price-old">${formatearPrecio(producto.precioAnterior)}</span>
+                    <span class="product-price-offer">${formatearPrecio(producto.precio)} CLP</span>
+                </div>
+            `;
+
+            const article = document.createElement('article');
+            article.className = 'product-card';
+            article.innerHTML = `
+                <a href="producto-detalle.html?id=${producto.id}" style="text-decoration: none;">
+                    <img src="${producto.imagen || 'https://placehold.co/400x200/333/FFF?text=Sin+Imagen'}" 
+                         alt="${producto.nombre}" 
+                         class="producto-imagen"
+                         onerror="this.src='https://placehold.co/400x200/cccccc/969696?text=Error+Cargando'">
+                    <h3>${producto.nombre || 'Sin nombre'}</h3>
+                </a>
+                ${precioHTML} 
+                <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
+                <button class="btn btn-primary btn-agregar" data-id="${producto.id}">
+                  Añadir al carrito
+                </button>
+            `;
+            gridContenedor.appendChild(article);
+        });
+        
+        // Re-asignar eventos a los nuevos botones
+        document.querySelectorAll('.btn-agregar').forEach(btn => { 
+            btn.addEventListener('click', function() { 
+                const productId = this.dataset.id; 
+                agregarAlCarrito(productId);
+            });
+        });
+    }
+
 
     /**
-     * Añade un producto al carrito (Usa el array local 'productosEnOferta')
+     * Añade un producto al carrito
      */
     function agregarAlCarrito(productId) { 
         const producto = productosEnOferta.find(p => p.id === productId); 
@@ -165,12 +155,51 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             localStorage.setItem('carrito', JSON.stringify(carrito)); 
-            actualizarStockFirebase(productId, 1);
+            
+            // --- CORRECCIÓN 1: BUG ARREGLADO ---
+            // Llamamos con -1 para RESTAR stock (antes tenías 1)
+            actualizarStockFirebase(productId, -1); 
+            
             mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
             
             if (typeof window.actualizarHeaderCartGlobal === 'function') {
                 window.actualizarHeaderCartGlobal();
             }
+        }
+    }
+    
+    /**
+     * Actualiza el stock en Firebase Y EN LA PÁGINA ACTUAL.
+     * @param {string} productId - ID del producto
+     * @param {number} cantidadASumar - El número a sumar (ej: -1 para restar)
+     */
+    async function actualizarStockFirebase(productId, cantidadASumar) {
+        try {
+            const productoRef = db.collection("producto").doc(productId);
+            const productoDoc = await productoRef.get();
+            
+            if (productoDoc.exists) {
+                const stockActual = productoDoc.data().stock;
+                const nuevoStock = stockActual + cantidadASumar; // Suma el número (que es -1)
+                
+                // Asegura que el stock no sea negativo
+                const stockFinal = Math.max(0, nuevoStock); 
+                
+                await productoRef.update({ stock: stockFinal });
+                
+                // --- CORRECCIÓN 2: ACTUALIZAR DATOS LOCALES Y REDIBUJAR ---
+                // 1. Actualiza el stock en el array local 'productosEnOferta'
+                const productoLocal = productosEnOferta.find(p => p.id === productId);
+                if (productoLocal) {
+                    productoLocal.stock = stockFinal;
+                }
+                
+                // 2. Vuelve a dibujar el grid con el stock actualizado
+                renderizarGridOfertas();
+                // --- FIN DE LA CORRECCIÓN ---
+            }
+        } catch (error) {
+            console.error("Error actualizando stock en Firebase:", error);
         }
     }
 
