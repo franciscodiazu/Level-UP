@@ -1,7 +1,7 @@
 /* ==========================================
  * ARCHIVO MODIFICADO: js/carrito.js
- * (Incluye Firebase + localStorage para el total)
- * + LÓGICA PARA RENDERIZAR OFERTAS
+ * (Corregido: 1. El filtro de recarga de ofertas)
+ * (Corregido: 2. Se añade el stock a las tarjetas de oferta)
  * ==========================================
 */
 
@@ -17,23 +17,17 @@ const db = firebase.firestore();
 
 // Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-let productosOferta = []; // (AHORA SE LLAMA 'productosCargados')
-// Cambié el nombre para evitar confusión: 
-// esta variable ahora guarda TODOS los productos para la lógica de stock.
 let productosCargados = []; 
 
 // Inicializar la aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     inicializarCarrito();
-    // AHORA SE LLAMA 'cargarTodosLosProductos' para más claridad
     cargarTodosLosProductos(); 
     configurarEventos();
 });
 
 /**
  * Función para formatear un número como moneda chilena (CLP).
- * @param {number} valor - El número a formatear.
- * @returns {string} El valor formateado como moneda.
  */
 function formatearMoneda(valor) {
     const numero = Number(valor);
@@ -46,8 +40,6 @@ function formatearMoneda(valor) {
 
 /**
  * Función para leer un texto de moneda (ej: "$549.990 CLP") y convertirlo a un número.
- * @param {string} texto - El texto con formato de moneda.
- * @returns {number} El valor numérico.
  */
 function parsearMoneda(texto) {
     if (typeof texto !== 'string') return 0;
@@ -57,20 +49,11 @@ function parsearMoneda(texto) {
 
 /**
  * Actualiza el botón del carrito en el header (si existe la función global).
- * Lee el total guardado en localStorage.
  */
 function actualizarHeaderCart() {
-    // Verifica si la función global existe (de global-cart.js)
+    // Llama a la función global (de global-cart.js)
     if (typeof window.actualizarHeaderCartGlobal === 'function') {
-        window.actualizarHeaderCartGlobal(); // Llama a la función global
-    } else {
-        // Fallback: Intenta actualizar el botón directamente si no existe la global
-        // (Esto solo funcionará si estás en una página que tiene el botón)
-        const cartButton = document.getElementById('header-cart-button');
-        if (cartButton) {
-            const totalGuardado = parseInt(localStorage.getItem('cartTotal'), 10) || 0;
-            cartButton.textContent = 'Carrito ' + formatearMoneda(totalGuardado);
-        }
+        window.actualizarHeaderCartGlobal(); 
     }
 }
 
@@ -79,36 +62,33 @@ function actualizarHeaderCart() {
  * Inicializa la interfaz del carrito
  */
 function inicializarCarrito() {
-    // No necesitamos actualizar el header aquí, calcularTotal lo hará
     renderizarCarrito();
-    calcularTotal(); // Esto ahora también guarda en localStorage y actualiza header
+    // Llama a la función global para que calcule el total y actualice
+    // tanto localStorage['cartTotal'] como el header.
+    actualizarHeaderCart();
 }
 
 /**
- * (FUNCIÓN RENOMBRADA) Carga TODOS los productos de Firestore
+ * Carga TODOS los productos de Firestore
  * y luego llama a renderizar las ofertas.
  */
-async function cargarTodosLosProductos() { // Nombre cambiado
+async function cargarTodosLosProductos() {
     try {
         const snapshot = await db.collection("producto").get(); // Tu colección es 'producto'
         
-        // Llena la variable global que usa el resto de tu lógica (stock, etc.)
         productosCargados = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
         }));
 
-        // --- INICIO DE MODIFICACIÓN ---
-        // Ahora, filtra esta lista para encontrar las ofertas
-        // Asumo que tu campo se llama 'enOferta' y es 'true'
-        
-const productosConOferta = productosCargados
-    .filter(producto => producto.precioAnterior) // <-- ¡CÁMBIALA POR ESTA LÍNEA!
-    .slice(0, 6);
+        // Filtra para encontrar las ofertas
+        // (Usa el filtro de 'precioAnterior' que sí te funciona)
+        const productosConOferta = productosCargados
+            .filter(producto => producto.precioAnterior) // <-- TU FILTRO CORRECTO
+            .slice(0, 6); 
 
         // Llama a la nueva función para "pintarlos" en el HTML
         renderizarProductosOferta(productosConOferta);
-        // --- FIN DE MODIFICACIÓN ---
 
     } catch (error) {
         console.error("Error cargando productos:", error);
@@ -116,14 +96,18 @@ const productosConOferta = productosCargados
 }
 
 // ==========================================================================
-//  NUEVA FUNCIÓN PARA "PINTAR" LOS PRODUCTOS EN OFERTA EN EL HTML
+//  FUNCIÓN PARA "PINTAR" LOS PRODUCTOS EN OFERTA EN EL HTML
 // ==========================================================================
 function renderizarProductosOferta(productosParaRenderizar) {
     const ofertasContainer = document.getElementById('productosOferta');
-    if (!ofertasContainer) return; // Salir si el div no existe
+    if (!ofertasContainer) return; 
 
     if (productosParaRenderizar.length === 0) {
-        ofertasContainer.innerHTML = "<p>No hay ofertas disponibles en este momento.</p>";
+        ofertasContainer.innerHTML = `
+            <div style="text-align: center; padding: 20px; border: 1px dashed #555; border-radius: 8px;">
+                No hay ofertas disponibles en este momento.
+            </div>
+        `;
         return;
     }
 
@@ -131,11 +115,14 @@ function renderizarProductosOferta(productosParaRenderizar) {
     productosParaRenderizar.forEach(producto => {
         const id = producto.id;
         
-        // Asumo que tus campos se llaman 'url', 'imagen', 'nombre' y 'precio'
-        const urlPagina = producto.url || '#'; // Link a la pág. del producto
-        const imagenUrl = producto.imagen || 'https://via.placeholder.com/200'; // Imagen
+        const urlPagina = producto.url || '#';
+        const imagenUrl = producto.imagen || 'https://via.placeholder.com/200';
         const nombre = producto.nombre || 'Producto sin nombre';
         const precioFormateado = formatearMoneda(producto.precio || 0);
+        // === INICIO CORRECCIÓN 2: Mostrar Stock ===
+        // Usamos el mismo estilo que tenías en ofertas-firebase.js
+        const stockHtml = `<p class="producto-stock" style="font-size: 0.9em; color: #aaa; margin: 8px 0;">Stock: ${producto.stock || 0}</p>`;
+        // === FIN CORRECCIÓN 2 ===
 
         ofertasHTML += `
             <article class="product-card">
@@ -143,8 +130,9 @@ function renderizarProductosOferta(productosParaRenderizar) {
                     <img src="${imagenUrl}" alt="${nombre}" />
                     <h3>${nombre}</h3>
                 </a>
-                <p class="product-price">${precioFormateado} CLP</p>
-                
+                <div>
+                    <p class="product-price">${precioFormateado} CLP</p>
+                    ${stockHtml} </div>
                 <button class="btn btn-primary btn-agregar-oferta" data-id="${id}">Añadir al carrito</button>
             </article>
         `;
@@ -155,7 +143,7 @@ function renderizarProductosOferta(productosParaRenderizar) {
 
 
 /**
- * Renderiza los productos en el carrito
+ * Renderiza los productos en el carrito (la tabla de la derecha)
  */
 function renderizarCarrito() {
     const tbody = document.getElementById('tablaCarritoBody');
@@ -200,18 +188,19 @@ function renderizarCarrito() {
             </td>
         </tr>
     `).join('');
+    
+    // Actualiza el total de la página del carrito
+    calcularTotalPagina();
 }
 
 /**
- * Agrega un producto al carrito (Asumiendo que viene de otra página o sección)
- * Esta función es llamada por el event listener de la sección de ofertas.
+ * Agrega un producto al carrito (llamada por los botones de oferta)
  */
 function agregarProductoAlCarrito(productId) {
-    // USA 'productosCargados' (la lista completa)
     const producto = productosCargados.find(p => p.id === productId); 
 
     if (producto) {
-        const stockActualProducto = producto.stock || 0; // Obtener stock actual del producto fuente
+        const stockActualProducto = producto.stock || 0; 
 
         if (stockActualProducto <= 0) {
             mostrarNotificacion('Producto sin stock disponible', 'error');
@@ -222,7 +211,6 @@ function agregarProductoAlCarrito(productId) {
         let cantidadAAgregar = 1;
 
         if (productoExistente) {
-             // Verificar si agregar uno más excede el stock
             if (productoExistente.cantidad >= stockActualProducto) {
                 mostrarNotificacion(`No puedes agregar más "${producto.nombre}", stock máximo alcanzado.`, 'error');
                 return;
@@ -235,13 +223,9 @@ function agregarProductoAlCarrito(productId) {
             });
         }
 
-        guardarCarrito();
-        renderizarCarrito();
-        calcularTotal(); // Esto actualiza total, localStorage y header
-
-        // Actualizar stock en Firebase (RESTA stock)
-        actualizarStockFirebase(productId, -cantidadAAgregar); // Pasa negativo para restar
-
+        guardarCarrito(); // Guarda la lista
+        renderizarCarrito(); // Dibuja la tabla de la derecha
+        actualizarStockFirebase(productId, -cantidadAAgregar); // Actualiza DB y redibuja ofertas
         mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
     } else {
         console.error("Producto no encontrado para agregar:", productId);
@@ -264,7 +248,6 @@ async function actualizarStockFirebase(productId, cantidadASumar) {
             const stockActual = productoDoc.data().stock || 0;
             const nuevoStock = stockActual + cantidadASumar;
 
-            // Evitar stock negativo
             if (nuevoStock < 0) {
                  console.warn(`Intento de dejar stock negativo para ${productId}. Se dejará en 0.`);
                  transaction.update(productoRef, { stock: 0 });
@@ -278,16 +261,15 @@ async function actualizarStockFirebase(productId, cantidadASumar) {
         const productoLocal = productosCargados.find(p => p.id === productId);
         if(productoLocal) {
             productoLocal.stock = (productoLocal.stock || 0) + cantidadASumar;
-            if (productoLocal.stock < 0) productoLocal.stock = 0; // Asegurar no negativo localmente
+            if (productoLocal.stock < 0) productoLocal.stock = 0; 
             
-            // --- INICIO MODIFICACIÓN ---
+            // === INICIO CORRECCIÓN 1: Filtro Arreglado ===
             // Volver a renderizar las ofertas para que se actualice el stock
-            // (si el producto quitado del carrito era una oferta)
             const productosConOferta = productosCargados
-                .filter(producto => producto.enOferta === true)
+                .filter(producto => producto.precioAnterior) // <-- FILTRO CORREGIDO
                 .slice(0, 6);
             renderizarProductosOferta(productosConOferta);
-            // --- FIN MODIFICACIÓN ---
+            // === FIN CORRECCIÓN 1 ===
         }
 
     } catch (error) {
@@ -304,26 +286,9 @@ function aumentarCantidad(index) {
     const productoCarrito = carrito[index];
     if (!productoCarrito) return;
 
-    // Busca el producto en la lista general para verificar stock real
-    // USA 'productosCargados'
     const productoGeneral = productosCargados.find(p => p.id === productoCarrito.id);
-    const stockDisponible = productoGeneral ? (productoGeneral.stock || 0) : 0; // Stock actual real
+    const stockDisponible = productoGeneral ? (productoGeneral.stock || 0) : 0;
 
-    // Ajuste: El stock disponible es el stock *actual* de firebase,
-    // NO el stock - lo que ya tengo en el carrito, porque tu lógica de stock
-    // ya resta de firebase al añadir.
-    // Por lo tanto, comparamos la cantidad en el carrito con el stock total del producto.
-    
-    // CORRECCIÓN LÓGICA:
-    // El stock en 'productosCargados' refleja el stock *restante* en la BD.
-    // La cantidad en 'productoCarrito' es lo que el usuario *ya tiene*.
-    // El stock *total* original era (productosCargados.stock + productoCarrito.cantidad)
-    // Pero es más fácil: ¿El stock restante (productosCargados.stock) es > 0?
-    
-    // Tu lógica original:
-    // if (productoCarrito.cantidad >= stockDisponible) {
-    
-    // Nueva lógica (más simple):
     if (stockDisponible <= 0) {
         mostrarNotificacion(`No hay más stock disponible para "${productoCarrito.nombre}".`, 'error');
         return;
@@ -332,9 +297,6 @@ function aumentarCantidad(index) {
     productoCarrito.cantidad = (productoCarrito.cantidad || 1) + 1;
     guardarCarrito();
     renderizarCarrito();
-    calcularTotal(); // Actualiza total, localStorage y header
-
-    // Actualizar stock en Firebase (RESTA stock)
     actualizarStockFirebase(productoCarrito.id, -1);
 }
 
@@ -349,12 +311,8 @@ function disminuirCantidad(index) {
         productoCarrito.cantidad--;
         guardarCarrito();
         renderizarCarrito();
-        calcularTotal(); // Actualiza total, localStorage y header
-
-        // Actualizar stock en Firebase (SUMA stock)
         actualizarStockFirebase(productoCarrito.id, 1);
     } else {
-        // Si la cantidad es 1, disminuir significa eliminar
         eliminarDelCarrito(index);
     }
 }
@@ -363,54 +321,51 @@ function disminuirCantidad(index) {
  * Elimina un producto del carrito
  */
 function eliminarDelCarrito(index) {
-    if (index < 0 || index >= carrito.length) return; // Validación
+    if (index < 0 || index >= carrito.length) return; 
 
     const productoEliminado = carrito[index];
     const cantidadRestaurar = productoEliminado.cantidad || 1;
 
-    // Elimina del array local
     carrito.splice(index, 1);
 
     guardarCarrito();
     renderizarCarrito();
-    calcularTotal(); // Actualiza total, localStorage y header
     mostrarNotificacion(`"${productoEliminado.nombre}" eliminado del carrito`);
-
-    // Actualizar stock en Firebase (SUMA stock)
     actualizarStockFirebase(productoEliminado.id, cantidadRestaurar);
 }
 
 /**
- * Calcula el total del carrito y lo guarda en localStorage
+ * (Lógica de tu sugerencia)
+ * Guarda el carrito (lista) en localStorage y llama a la función global.
  */
-function calcularTotal() {
+function guardarCarrito() {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    
+    // Llama a la función global para que calcule, guarde el total y actualice el header
+    if (typeof window.actualizarHeaderCartGlobal === 'function') {
+        window.actualizarHeaderCartGlobal();
+    }
+    
+    // Actualiza el total en la *página del carrito*
+    calcularTotalPagina(); 
+}
+
+/**
+ * (Lógica de tu sugerencia)
+ * Calcula el total y actualiza SOLO los elementos de la página del carrito.
+ */
+function calcularTotalPagina() {
     const total = carrito.reduce((sum, producto) => {
         return sum + ((producto.precio || 0) * (producto.cantidad || 1));
     }, 0);
 
-    // Actualiza el elemento en la página del carrito (si existe)
     const totalCarritoElement = document.getElementById('totalCarrito');
     if (totalCarritoElement) {
-        totalCarritoElement.textContent = total.toLocaleString('es-CL');
+        // Usamos el formateador de 'global-cart.js' para ser consistentes
+        totalCarritoElement.textContent = formatearMoneda(total);
     }
-
-    // --- ¡MODIFICACIÓN IMPORTANTE! ---
-    // Guarda el total calculado en localStorage para que otras páginas lo lean
-    localStorage.setItem('cartTotal', total);
-
-    // Actualiza el header (usará el valor recién guardado en localStorage)
-    actualizarHeaderCart();
-    // --- FIN MODIFICACIÓN ---
 }
 
-
-/**
- * Guarda el carrito (lista de productos) en localStorage
- */
-function guardarCarrito() {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-    calcularTotal(); // Asegura que el total se recalcule y guarde cada vez que cambia el carrito
-}
 
 /**
  * Limpia todo el carrito
@@ -422,21 +377,18 @@ function limpiarCarrito() {
     }
 
     if (confirm('¿Estás seguro de que quieres limpiar todo el carrito? Esta acción restaurará el stock de los productos.')) {
-        // Antes de vaciar, restaura el stock de todos los productos
         const restaurarPromises = carrito.map(producto => {
             return actualizarStockFirebase(producto.id, producto.cantidad || 1);
         });
 
-        // Espera a que todas las actualizaciones de stock terminen
         Promise.all(restaurarPromises).then(() => {
-            carrito = []; // Vacía el carrito local
-            guardarCarrito(); // Guarda el carrito vacío (y recalcula total a 0)
-            renderizarCarrito(); // Actualiza la vista
+            carrito = []; 
+            guardarCarrito(); 
+            renderizarCarrito(); 
             mostrarNotificacion('Carrito limpiado y stock restaurado');
         }).catch(error => {
             console.error("Error al restaurar stock al limpiar carrito:", error);
             mostrarNotificacion("Error al limpiar el carrito, el stock podría no haberse restaurado.", 'error');
-            // Opcionalmente, podrías decidir no limpiar el carrito si falla la restauración de stock
         });
     }
 }
@@ -449,9 +401,8 @@ function irAlCheckout() {
         mostrarNotificacion('Agrega productos al carrito antes de continuar', 'info');
         return;
     }
-    // Guarda el carrito una última vez por si acaso
     guardarCarrito();
-    window.location.href = 'checkout.html'; // Asegúrate que esta es la página correcta
+    window.location.href = 'checkout.html'; 
 }
 
 /**
@@ -481,7 +432,6 @@ function mostrarNotificacion(mensaje, tipo = 'success') { // tipo puede ser 'suc
     notificacion.textContent = mensaje;
     document.body.appendChild(notificacion);
 
-    // Pequeña animación de fade-in y slide-in
     setTimeout(() => {
         notificacion.style.opacity = '1';
         notificacion.style.transform = 'translateX(0)';
@@ -489,16 +439,14 @@ function mostrarNotificacion(mensaje, tipo = 'success') { // tipo puede ser 'suc
 
 
     setTimeout(() => {
-         // Animación fade-out y slide-out
         notificacion.style.opacity = '0';
         notificacion.style.transform = 'translateX(100%)';
-        // Espera a que termine la animación para eliminar
         setTimeout(() => {
             if (notificacion.parentNode) {
                  notificacion.remove();
             }
         }, 300);
-    }, 3000); // Duración de la notificación
+    }, 3000); 
 }
 
 /**
@@ -515,17 +463,11 @@ function configurarEventos() {
         btnComprar.addEventListener('click', irAlCheckout);
     }
 
-     // --- INICIO MODIFICACIÓN ---
-     // Eventos para botones de añadir en sección de ofertas (¡YA LO TENÍAS!)
-     // Esto funcionará perfectamente con el HTML que genera 'renderizarProductosOferta'
     const contenedorOfertas = document.getElementById('productosOferta');
     if (contenedorOfertas) {
         contenedorOfertas.addEventListener('click', function(event) {
-            
-            // Busca el botón aunque el clic sea en un hijo (ej. el texto del botón)
             const boton = event.target.closest('.btn-agregar-oferta'); 
-            
-            if (boton) { // Si se hizo clic en un botón de agregar
+            if (boton) { 
                 const productId = boton.getAttribute('data-id');
                 if (productId) {
                     agregarProductoAlCarrito(productId);
@@ -533,11 +475,9 @@ function configurarEventos() {
             }
         });
     }
-    // --- FIN MODIFICACIÓN ---
 }
 
 // Hacer funciones cruciales disponibles globalmente para los botones inline (onclick)
-// Es mejor usar addEventListener, pero si ya usas onclick, esto es necesario.
 window.aumentarCantidad = aumentarCantidad;
 window.disminuirCantidad = disminuirCantidad;
 window.eliminarDelCarrito = eliminarDelCarrito;
