@@ -10,25 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-
-    <header class="main-header">
-        <a href="../../index.html">
-            <img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo">
-        </a>
-        <nav class="main-nav">
-            <a href="../../index.html">Home</a>
-            <a href="catalogo.html">Categorías</a>
-            <a href="#">Ofertas</a>
-            <a href="nosotros.html">Nosotros</a>
-            <a href="blog.html">Blog</a>
-            <a href="contacto.html">Contacto</a>
-            <a href="login.html" class="nav-link-secondary">Iniciar Sesión</a>
-            <a href="registro.html" class="nav-link-secondary">Crear Cuenta</a>
-            <a href="carrito.html" class="btn btn-cart-header" id="header-cart-button">
-                Carrito $0
-            </a>
-        </nav>
-    </header>
+    <div id="header-placeholder"></div>
 
     <main class="container">
         <h1 class="page-title">Finalizar Compra</h1>
@@ -117,6 +99,7 @@
         </div> 
     </main>
 
+    <script src="../js/loadHeader.js"></script>
     <script src="../js/global-cart.js"></script>
     <script src="../js/checkout.js"></script>
     </body>
