@@ -2312,85 +2312,207 @@ main.main {
 }
 
 /* ==========================================================================
-   NUEVOS ESTILOS PARA MENÚ DESPLEGABLE (MOCKUP) - SOLUCIÓN FINAL
+   14. ESTILOS DEL HEADER MOCKUP (CORRECCIÓN DROPDOWN Y LAYOUT)
    ========================================================================== */
-.dropdown-mockup {
-    /* Mantenemos relative, display y width */
-    position: relative;
-    display: inline-block;
-    width: max-content; 
-    text-align: left;
-}
 
-/* El enlace principal: Categorías */
-.dropbtn-mockup {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em; 
-}
-
-/* Estilo para la flecha con animación */
-.dropdown-arrow-mockup {
-    transition: transform 0.3s ease;
-    color: var(--color-accent-green); 
-    /* Forzamos una fuente sencilla y sin margen adicional */
-    font-family: 'Arial', sans-serif; 
-    font-size: 0.9em;
-    line-height: 1; 
-}
-
-/* Contenido del menú desplegable (oculto por defecto) */
-.dropdown-content-mockup {
-    display: none; 
-    position: absolute;
-    background-color: #1a1a1a; 
-    min-width: 220px; /* Ancho para que los nombres de las categorías quepan */
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
-    z-index: 1001; 
-    border: 1px solid var(--color-accent-blue);
-    top: 100%; 
-    
-    /* 💥 SOLUCIÓN ROBUSTA DE ALINEACIÓN: Centrado Horizontal bajo el link */
-    left: 50%; /* Se mueve a la mitad del contenedor del link */
-    transform: translateX(-50%); /* Se mueve hacia atrás la mitad de su propio ancho */
-    
-    /* Ajuste visual para que se vea ligeramente desplazado a la izquierda, como en tu referencia. */
-    margin-left: -15px; 
-    
-    /* Animación */
-    opacity: 0; 
-    transform: translateY(-10px) translateX(-50%); /* Ajustamos la animación con el centrado */
-    transition: opacity 0.3s ease, transform 0.3s ease; 
-}
-
-/* Al hacer hover, corregimos la posición de la animación */
-.dropdown-mockup:hover .dropdown-content-mockup {
-    display: block; 
-    opacity: 1; 
-    transform: translateY(0) translateX(-50%); /* Vuelve a posición Y=0, manteniendo el centrado X */
-}
-
-/* Estilo de los enlaces y hover (mantenido) */
-.dropdown-content-mockup a {
-    color: var(--text-secondary); 
-    padding: 12px 16px;
+/* Contenedor Principal */
+.header-container-mockup {
+    background-color: var(--color-bg);
+    border-bottom: 1px solid #333;
+    width: 100%;
     display: block;
-    font-family: var(--font-body);
-    font-weight: normal; 
+}
+
+/* --- FILA SUPERIOR (Top Bar) --- */
+.top-bar-mockup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-mockup {
+    height: 45px;
+    width: auto;
+    display: block;
+}
+
+/* Buscador */
+.header-search-form {
+    display: flex;
+    flex-grow: 1;
+    max-width: 500px;
+    margin: 0 30px;
+}
+
+.header-search-form input {
+    width: 100%;
+    padding: 8px 15px;
+    background-color: #222;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+    outline: none;
+}
+
+.header-search-form button {
+    background-color: var(--color-accent-green);
+    color: var(--color-bg);
+    border: none;
+    padding: 8px 20px;
+    font-weight: bold;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.header-search-form button:hover {
+    background-color: #fff;
+}
+
+/* Botones Login/Registro */
+.header-auth-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.header-auth-buttons .btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s, color 0.3s;
+    font-weight: bold;
+    margin: 0; /* Reset de márgenes globales */
+}
+
+.btn-login {
+    border: 1px solid var(--color-accent-blue);
+    color: #fff;
+    background: transparent;
+}
+
+.btn-register {
+    background-color: var(--color-accent-blue);
+    color: #fff;
+}
+
+/* --- FILA INFERIOR (Navegación) --- */
+.main-nav-mockup {
+    background-color: #111; /* Fondo ligeramente más claro para distinguir */
+    border-top: 1px solid #222;
+    display: flex;
+    justify-content: center; /* Centra los elementos */
+    align-items: center;
+    gap: 25px; /* Espacio entre enlaces */
+    padding: 0 20px;
+    height: 50px; /* Altura fija para estabilidad */
+    position: relative; /* Necesario para z-index */
+}
+
+.main-nav-mockup > a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.main-nav-mockup > a:hover {
+    color: #fff;
+}
+
+/* --- LÓGICA DEL DROPDOWN (CORREGIDO) --- */
+
+/* El contenedor del botón y el menú */
+.dropdown-mockup {
+    position: relative; /* Clave: el menú absoluto se posicionará respecto a esto */
+    display: flex;
+    align-items: center;
+    height: 100%; 
+}
+
+/* El enlace que activa el menú */
+.dropbtn-mockup {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.dropbtn-mockup:hover {
+    color: var(--color-accent-green);
+}
+
+/* La flechita animada */
+.dropdown-arrow-mockup {
+    display: inline-block;
+    font-size: 0.7em;
+    transition: transform 0.3s ease; /* Animación suave */
+}
+
+/* Rotar flecha al pasar el mouse sobre el contenedor padre */
+.dropdown-mockup:hover .dropdown-arrow-mockup {
+    transform: rotate(180deg);
+    color: var(--color-accent-green);
+}
+
+/* El Menú Desplegable (Flotante) */
+.dropdown-content-mockup {
+    display: none; /* Oculto por defecto */
+    position: absolute; /* FLOTA sobre el contenido */
+    top: 100%; /* Justo debajo de la barra */
+    left: 0;
+    background-color: #1a1a1a;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    border: 1px solid var(--color-accent-blue);
+    border-radius: 0 0 8px 8px;
+    z-index: 1000; /* Asegura que esté encima de todo */
+    flex-direction: column;
+}
+
+/* Mostrar menú al hacer hover */
+.dropdown-mockup:hover .dropdown-content-mockup {
+    display: flex;
+}
+
+/* Enlaces dentro del menú desplegable */
+.dropdown-content-mockup a {
+    color: #d3d3d3;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #333;
+    font-size: 0.9rem;
 }
 
 .dropdown-content-mockup a:hover {
-    background-color: #2a2a2a; 
-    color: var(--color-accent-green) !important; 
+    background-color: #333;
+    color: var(--color-accent-green);
 }
 
-/* EFECTO DE HOVER */
-.dropdown-mockup:hover .dropdown-arrow-mockup {
-    transform: rotate(180deg); 
+/* Botón Carrito */
+.btn-nav-carrito {
+    background-color: var(--color-accent-green);
+    color: var(--color-bg) !important; /* Texto negro */
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 10px; /* Separarlo un poco más del grupo */
+    transition: transform 0.2s;
 }
 
-.dropdown-mockup:hover a.dropbtn-mockup {
-    color: var(--color-accent-green) !important;
+.btn-nav-carrito:hover {
+    transform: scale(1.05);
+    background-color: #fff;
 }

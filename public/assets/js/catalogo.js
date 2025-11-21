@@ -1,6 +1,6 @@
 /* ==========================================
  * ARCHIVO: js/catalogo.js
- * (Tu código 100% funcional + lógica de filtrado visual añadida)
+ * (Versión Dinámica: Carga categorías de Firebase en el Header)
  * ==========================================
 */
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,46 +12,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const buscador = document.getElementById("buscador");
   const btnBuscar = document.getElementById("btnBuscar");
   const carritoTotal = document.querySelector('.carrito-total');
-  
-  // ----- MODIFICACIÓN 1 -----
-  // Cambiamos el ID para que coincida con el HTML que hicimos
   const btnVerTodos = document.getElementById("show-all-btn"); 
-  // --------------------------
-
   const btnCarrito = document.querySelector('.btn-carrito');
+  
+  // Elemento del Header Dinámico
+  const headerMenuDinamico = document.getElementById("header-menu-dinamico");
 
   let productosGlobal = []; 
   let carrito = JSON.parse(localStorage.getItem('carrito')) || []; 
   let categoriaActiva = 'todos'; 
 
   // Configuración de Firebase
-    const firebaseConfig = {
-    // Tu API key está visible aquí. Por seguridad, deberías 
-    // moverla a un lugar seguro en un proyecto real.
+  const firebaseConfig = {
     apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs", 
     authDomain: "tienda-level-up.firebaseapp.com",
     projectId: "tienda-level-up"
-};
+  };
 
   // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
+  if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+  }
   const db = firebase.firestore();
 
-  // --- PEGA ESTA FUNCIÓN AQUÍ ---
-  /**
-   * Formatea un número como moneda chilena (CLP).
-   * @param {number} precio - El número a formatear.
-   * @returns {string} El precio formateado.
-   */
+  // Función para formatear precio
   function formatearPrecio(precio) {
-      // Asegurarse de que el precio sea un número antes de formatear
       const numericPrice = Number(precio) || 0;
       return new Intl.NumberFormat('es-CL', { 
           style: 'currency', 
           currency: 'CLP' 
       }).format(numericPrice);
   }
-  // --- FIN DEL CÓDIGO A PEGAR ---
 
   // Inicializar la aplicación
   actualizarCarritoTotal();
@@ -60,9 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Función para cargar productos desde Firestore
   async function cargarProductos() {
     try {
-      if (tituloProductos) {
-          tituloProductos.textContent = "Cargando productos...";
-      }
+      if (tituloProductos) tituloProductos.textContent = "Cargando productos...";
       
       const snapshot = await db.collection("producto").get(); 
       productosGlobal = snapshot.docs.map(doc => ({ 
@@ -75,38 +64,41 @@ document.addEventListener("DOMContentLoaded", () => {
       
     } catch (error) {
       console.error("Error cargando productos:", error);
-      if (tituloProductos) {
-          tituloProductos.textContent = "Error al cargar productos";
-      }
-      if (productosGrid) {
-          productosGrid.innerHTML = "<p class'error'>No se pudieron cargar los productos. Intenta recargar la página.</p>";
-      }
+      if (tituloProductos) tituloProductos.textContent = "Error al cargar productos";
     }
   }
 
-  // Inicializar la interfaz con categorías y productos
+  // Inicializar la interfaz
   function inicializarInterfaz(productos) {
     const categorias = obtenerCategoriasUnicas(productos);
     
-    if (dropdownCategorias) {
-        mostrarDropdownCategorias(categorias);
-    }
+    if (dropdownCategorias) mostrarDropdownCategorias(categorias);
+    if (cardsCategorias) mostrarCardsCategorias(categorias);
     
-    if (cardsCategorias) {
-        mostrarCardsCategorias(categorias);
+    // --- NUEVO: Cargar el menú del header dinámicamente ---
+    if (headerMenuDinamico) {
+        cargarMenuHeaderDinamico(categorias);
     }
-    
-    // ----- MODIFICACIÓN 2 -----
-    // Cambiamos el estado inicial para que muestre "Todos"
-    // Esto soluciona el bug de "Juegos de Mesa" siempre activo
-    mostrarTodosLosProductos();
-    // --------------------------
+    // -----------------------------------------------------
+
+    // Revisar URL para filtrar al cargar
+    const params = new URLSearchParams(window.location.search);
+    const categoriaURL = params.get('categoria');
+
+    if (categoriaURL) {
+        const categoriaLimpia = decodeURIComponent(categoriaURL);
+        // Pequeño delay para asegurar que el DOM esté listo si es necesario
+        setTimeout(() => {
+            filtrarPorCategoria(categoriaLimpia, categoriaLimpia);
+        }, 100);
+    } else {
+        mostrarTodosLosProductos();
+    }
     
     configurarEventos();
     escucharCambiosStock();
   }
 
-  // Obtener categorías únicas
   function obtenerCategoriasUnicas(productos) {
     const categoriasSet = new Set(); 
     productos.forEach(producto => { 
@@ -114,10 +106,58 @@ document.addEventListener("DOMContentLoaded", () => {
         categoriasSet.add(producto.categoria); 
       }
     });
-    return Array.from(categoriasSet);
+    // Retornamos array ordenado alfabéticamente para que se vea ordenado
+    return Array.from(categoriasSet).sort();
   }
 
-  // Mostrar categorías en el dropdown
+  // --- FUNCIÓN NUEVA: Generar Header Dinámico ---
+  function cargarMenuHeaderDinamico(categorias) {
+      let html = '';
+      
+      // 1. Generar enlaces para cada categoría existente en Firebase
+      categorias.forEach(cat => {
+          // Usamos ruta absoluta para que funcione desde cualquier página
+          html += `<a href="/assets/html/catalogo.html?categoria=${encodeURIComponent(cat)}" class="header-cat-link">${cat}</a>`;
+      });
+
+      // 2. Agregar separador y botón "Ver todos los productos"
+      html += `
+        <a href="/assets/html/catalogo.html" class="header-cat-link" style="border-top: 1px solid #333; margin-top: 5px; color: #39FF14;">
+            Ver todos los productos
+        </a>
+      `;
+
+      headerMenuDinamico.innerHTML = html;
+
+      // 3. Asignar eventos a estos nuevos enlaces (para navegación SPA dentro del catálogo)
+      asignarEventosHeader();
+  }
+
+  function asignarEventosHeader() {
+      const linksHeader = document.querySelectorAll('.header-cat-link');
+      linksHeader.forEach(link => {
+          link.addEventListener('click', (e) => {
+              // Solo interceptamos si estamos en catalogo.html
+              if (window.location.pathname.includes('catalogo.html')) {
+                  e.preventDefault();
+                  const url = new URL(link.href);
+                  const categoriaClick = url.searchParams.get('categoria');
+
+                  if (categoriaClick) {
+                      const catDecodificada = decodeURIComponent(categoriaClick);
+                      window.history.pushState({}, '', link.href);
+                      filtrarPorCategoria(catDecodificada, catDecodificada);
+                  } else {
+                      // Es el botón de "Ver todos"
+                      window.history.pushState({}, '', '/assets/html/catalogo.html');
+                      mostrarTodosLosProductos();
+                  }
+              }
+          });
+      });
+  }
+  // -----------------------------------------------------
+
   function mostrarDropdownCategorias(categorias) { 
     dropdownCategorias.innerHTML = categorias.map(categoria => `
       <a href="#" class="dropdown-item" data-categoria="${categoria}">
@@ -134,14 +174,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Mostrar categorías como cards
   function mostrarCardsCategorias(categorias) {
-    // ----- MODIFICACIÓN 3 -----
-    // Cambiamos la clase 'categoria-card' por 'category-selector-card'
-    // para que coincida con el CSS que ya tienes.
-    // También usamos una etiqueta <a> en lugar de <div> para que sea clickeable.
     cardsCategorias.innerHTML = categorias.map(categoria => {
-      // Obtenemos una imagen de un producto de esa categoría para el ícono
       const imgProducto = productosGlobal.find(p => p.categoria === categoria)?.imagen;
       const icono = imgProducto || 'https://placehold.co/100x100/333/FFF?text=Icono';
 
@@ -152,75 +186,56 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       `;
     }).join("");
-    // --------------------------
 
-    // Evento para cards de categorías
     cardsCategorias.addEventListener('click', (e) => { 
-      e.preventDefault(); // Prevenir que el <a> nos mueva
+      e.preventDefault(); 
       const card = e.target.closest('.category-selector-card'); 
       if (card) {
         const categoria = card.dataset.category; 
-        
-        // ----- MODIFICACIÓN 4 -----
-        // Obtenemos el nombre del span para el título
         const nombre = card.querySelector('span').textContent;
         filtrarPorCategoria(categoria, nombre); 
-        // --------------------------
       }
     });
   }
 
-  // (Esta función ya no es necesaria, usamos imágenes reales)
-  // function obtenerIconoCategoria(categoria) { ... }
-
-  // Filtrar productos por categoría
+  // Filtrar productos por categoría (Mejorado para insensibilidad de mayúsculas)
   function filtrarPorCategoria(categoria, nombreCategoria) {
-    // Si el nombre no se pasó, lo buscamos (para el dropdown)
-    if (!nombreCategoria) {
-        nombreCategoria = categoria;
-    }
+    if (!nombreCategoria) nombreCategoria = categoria;
 
-    const productosFiltrados = productosGlobal.filter(p => p.categoria === categoria); 
+    // Filtro robusto: compara en minúsculas y sin espacios extra
+    const productosFiltrados = productosGlobal.filter(p => 
+        p.categoria && p.categoria.toLowerCase().trim() === categoria.toLowerCase().trim()
+    ); 
+
     if (tituloProductos) {
         tituloProductos.textContent = `${nombreCategoria} (${productosFiltrados.length} productos)`; 
     }
     categoriaActiva = categoria; 
     mostrarProductos(productosFiltrados);
     
-    // ----- MODIFICACIÓN 5: LÓGICA DE CLASE 'ACTIVE' -----
-    // Esto añade el borde verde a la categoría seleccionada
+    // Actualizar clase 'active' en las cards
     const selectores = document.querySelectorAll('.category-selector-card');
     selectores.forEach(selector => {
-        if (selector.dataset.category === categoria) {
+        if (selector.dataset.category.toLowerCase().trim() === categoria.toLowerCase().trim()) {
             selector.classList.add('active');
         } else {
             selector.classList.remove('active');
         }
     });
-    // --------------------------------------------------
   }
 
-  // Mostrar todos los productos
   function mostrarTodosLosProductos() {
     if (tituloProductos) {
         tituloProductos.textContent = `Todos los productos (${productosGlobal.length})`; 
     }
     categoriaActiva = 'todos'; 
     mostrarProductos(productosGlobal); 
-    if (buscador) {
-        buscador.value = ''; 
-    }
+    if (buscador) buscador.value = ''; 
 
-    // ----- MODIFICACIÓN 6: LÓGICA DE CLASE 'ACTIVE' -----
-    // Esto quita el borde verde de TODAS las categorías
     const selectores = document.querySelectorAll('.category-selector-card');
-    selectores.forEach(selector => {
-        selector.classList.remove('active');
-    });
-    // --------------------------------------------------
+    selectores.forEach(selector => selector.classList.remove('active'));
   }
 
-  // Renderizar productos en el grid
   function mostrarProductos(productos) {
     if (!productosGrid) return; 
 
@@ -231,20 +246,16 @@ document.addEventListener("DOMContentLoaded", () => {
           <button id="btnVerTodosNoProductos" class="btn btn-primary">Ver todos los productos</button>
         </div>
       `;
-      // Usamos 'btn-primary' para que se vea bien
-      document.getElementById('btnVerTodosNoProductos').addEventListener('click', mostrarTodosLosProductos);
+      const btn = document.getElementById('btnVerTodosNoProductos');
+      if(btn) btn.addEventListener('click', mostrarTodosLosProductos);
       return;
     }
 
-    // --- INICIO DE LA MODIFICACIÓN (Paso 34) ---
-    productosGrid.innerHTML = ''; // Limpiamos el grid
+    productosGrid.innerHTML = ''; 
     
     productos.forEach(producto => {
-        // 1. Lógica para el precio (Muestra ofertas)
         let precioHTML = '';
-        // Revisa si 'precioAnterior' existe Y es mayor que 0
         if (producto.precioAnterior && producto.precioAnterior > 0) {
-            // Es OFERTA
             precioHTML = `
                 <div>
                     <span class="product-price-old">${formatearPrecio(producto.precioAnterior)}</span>
@@ -252,18 +263,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
         } else {
-            // Es PRECIO NORMAL
-            precioHTML = `
-                <p class="product-price">${formatearPrecio(producto.precio)} CLP</p>
-            `;
+            precioHTML = `<p class="product-price">${formatearPrecio(producto.precio)} CLP</p>`;
         }
 
-        // 2. Creamos el elemento de la tarjeta
         const article = document.createElement('article');
         article.className = 'product-card';
         article.dataset.category = producto.categoria;
 
-        // 3. Rellenamos la tarjeta con el HTML (usando la variable precioHTML)
         article.innerHTML = `
             <a href="producto-detalle.html?id=${producto.id}" style="text-decoration: none;">
                 <img src="${producto.imagen || 'https://placehold.co/400x200/333/FFF?text=Sin+Imagen'}" 
@@ -272,18 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
                      onerror="this.src='https://placehold.co/400x200/cccccc/969696?text=Error+Cargando'">
                 <h3>${producto.nombre || 'Sin nombre'}</h3>
             </a>
-        ${precioHTML}        <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
-        <button class="btn btn-primary btn-agregar" data-id="${producto.id}">
-          Añadir al carrito
-        </button>
+            ${precioHTML}
+            <p class="producto-stock" style="font-size: 0.9em; color: #aaa;">Stock: ${producto.stock}</p>
+            <button class="btn btn-primary btn-agregar" data-id="${producto.id}">Añadir al carrito</button>
         `;
-        
-        // 4. Añadimos la tarjeta al grid
         productosGrid.appendChild(article);
     });
-    // --- FIN DE LA MODIFICACIÓN ---
 
-    // Agregar eventos a los botones de comprar
     document.querySelectorAll('.btn-agregar').forEach(btn => { 
       btn.addEventListener('click', function() { 
         const productId = this.dataset.id; 
@@ -292,11 +293,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Agregar producto al carrito
   function agregarAlCarrito(productId) { 
     const producto = productosGlobal.find(p => p.id === productId); 
-    
     const stockActual = producto.stock !== undefined ? producto.stock : 100;
+    
     if (producto && stockActual <= 0) {
         mostrarNotificacion('Producto sin stock disponible', 'error');
         return;
@@ -304,75 +304,44 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (producto) { 
       const productoExistente = carrito.find(item => item.id === productId);
-      
       if (productoExistente) {
         productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
       } else {
-        carrito.push({
-          ...producto,
-          cantidad: 1
-        });
+        carrito.push({ ...producto, cantidad: 1 });
       }
-
       
       localStorage.setItem('carrito', JSON.stringify(carrito)); 
       actualizarCarritoTotal(); 
-      
       actualizarStockFirebase(productId, 1);
       mostrarNotificacion(`"${producto.nombre}" agregado al carrito`);
-      console.log('Producto agregado al carrito:', producto); 
     }
   }
 
-  // Actualizar el total del carrito en el DOM
   function actualizarCarritoTotal() {
     const total = carrito.reduce((sum, producto) => sum + ((producto.precio || 0) * (producto.cantidad || 1)), 0); 
-    
-    if (carritoTotal) {
-        carritoTotal.textContent = total.toLocaleString('es-CL'); 
-    }
+    if (carritoTotal) carritoTotal.textContent = total.toLocaleString('es-CL'); 
     localStorage.setItem('cartTotal', total);
-    if (typeof window.actualizarHeaderCartGlobal === 'function') {
-        window.actualizarHeaderCartGlobal();
-    }
-    // ----- AÑADIDO -----
-    actualizarContadorItemsCarrito(); // Asegurarse de que el (contador) también se actualice
-    // -------------------
+    if (typeof window.actualizarHeaderCartGlobal === 'function') window.actualizarHeaderCartGlobal();
+    actualizarContadorItemsCarrito(); 
   }
 
-  // Mostrar una notificación flotante
-  function mostrarNotificacion(mensaje,  tipo = 'success') { 
+  function mostrarNotificacion(mensaje, tipo = 'success') { 
     const notificacion = document.createElement('div'); 
     const backgroundColor = tipo === 'success' ? '#28a745' : '#dc3545';
     notificacion.style.cssText = `
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      background: ${backgroundColor}; 
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
-      z-index: 10000;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-      font-weight: 600;
-      transition: all 0.3s ease;
+      position: fixed; top: 100px; right: 20px;
+      background: ${backgroundColor}; color: white;
+      padding: 15px 20px; border-radius: 5px; z-index: 10000;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2); font-weight: 600; transition: all 0.3s ease;
     `;
     notificacion.textContent = mensaje; 
     document.body.appendChild(notificacion); 
-    
-    setTimeout(() => { 
-      notificacion.remove(); 
-    }, 3000);
+    setTimeout(() => { notificacion.remove(); }, 3000);
   }
 
-  // Configurar eventos de botones y buscador
   function configurarEventos() {
-    if (btnVerTodos) {
-        btnVerTodos.addEventListener('click', mostrarTodosLosProductos);
-    }
-    if (btnBuscar) {
-        btnBuscar.addEventListener('click', buscarProductos);
-    }
+    if (btnVerTodos) btnVerTodos.addEventListener('click', mostrarTodosLosProductos);
+    if (btnBuscar) btnBuscar.addEventListener('click', buscarProductos);
     if (buscador) {
         buscador.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') buscarProductos();
@@ -385,16 +354,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Buscar productos
   function buscarProductos() {
     if (!buscador) return; 
     const termino = buscador.value.toLowerCase().trim();
     if (!termino) {
-      if (categoriaActiva === 'todos') {
-        mostrarTodosLosProductos();
-      } else {
-        filtrarPorCategoria(categoriaActiva, categoriaActiva); // Pasamos el nombre
-      }
+      if (categoriaActiva === 'todos') mostrarTodosLosProductos();
+      else filtrarPorCategoria(categoriaActiva, categoriaActiva); 
       return;
     }
     
@@ -404,104 +369,63 @@ document.addEventListener("DOMContentLoaded", () => {
       p.descripcion?.toLowerCase().includes(termino)
     );
     
-    if (tituloProductos) {
-        tituloProductos.textContent = `Resultados para "${termino}" (${productosFiltrados.length})`;
-    }
+    if (tituloProductos) tituloProductos.textContent = `Resultados para "${termino}" (${productosFiltrados.length})`;
     mostrarProductos(productosFiltrados);
   }
 
-  // Funciones globales
+  // Funciones globales y auxiliares
   window.mostrarTodosLosProductos = mostrarTodosLosProductos;
   window.getProductosGlobal = () => productosGlobal;
   window.getCarrito = () => carrito;
 
-  // Obtener el número total de items
   function obtenerTotalItemsCarrito() {
     return carrito.reduce((total, producto) => total + (producto.cantidad || 1), 0);
   }
 
-  // Actualizar el contador de items
   function actualizarContadorItemsCarrito() {
     const contadorItems = document.querySelector('.carrito-count');
-    if (contadorItems) {
-      contadorItems.textContent = `(${obtenerTotalItemsCarrito()})`;
-    }
+    if (contadorItems) contadorItems.textContent = `(${obtenerTotalItemsCarrito()})`;
   }
 
-  //INICIALIZACIÓN ADICIONAL
   actualizarContadorItemsCarrito();
 
-  //NUEVAS FUNCIONES GLOBALES
-  window.irAlCarrito = () => {
-    window.location.href = 'carrito.html';
-  };
+  window.irAlCarrito = () => { window.location.href = 'carrito.html'; };
+  window.limpiarCarrito = limpiarCarritoYRestaurarStock;
 
-  window.limpiarCarrito = () => {
-    if (confirm('¿Estás seguro de que quieres limpiar todo el carrito?')) {
-      limpiarCarritoYRestaurarStock();
-    }
-  };
-
-    // Actualizar stock en Firebase
+  // Manejo de stock
   async function actualizarStockFirebase(productId, cantidad) {
       try {
           const productoRef = db.collection("producto").doc(productId);
           const productoDoc = await productoRef.get();
-          
           if (productoDoc.exists) {
               const stockActual = productoDoc.data().stock;
-              const nuevoStock = stockActual - cantidad;
-              
-              await productoRef.update({
-                  stock: nuevoStock
-              });
-              
-              console.log(`Stock actualizado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
+              await productoRef.update({ stock: stockActual - cantidad });
           }
-      } catch (error) {
-          console.error("Error actualizando stock en Firebase:", error);
-      }
+      } catch (error) { console.error("Error actualizando stock:", error); }
   }
 
-  // Restaurar stock
   async function restaurarStockFirebase(productId, cantidad) {
       try {
           const productoRef = db.collection("producto").doc(productId);
           const productoDoc = await productoRef.get();
-          
           if (productoDoc.exists) {
               const stockActual = productoDoc.data().stock;
-              const nuevoStock = stockActual + cantidad;
-              
-              await productoRef.update({
-                  stock: nuevoStock
-              });
-              
-              console.log(`Stock restaurado: ${productoDoc.data().nombre} - Nuevo stock: ${nuevoStock}`);
+              await productoRef.update({ stock: stockActual + cantidad });
           }
-      } catch (error) {
-          console.error("Error restaurando stock en Firebase:", error);
-      }
+      } catch (error) { console.error("Error restaurando stock:", error); }
   }
 
-  // Escuchar cambios en el stock en tiempo real
   function escucharCambiosStock() {
       db.collection("producto").onSnapshot((snapshot) => {
           snapshot.docChanges().forEach((change) => {
               if (change.type === "modified") {
-                  const productoActualizado = {
-                      id: change.doc.id,
-                      ...change.doc.data()
-                  };
-                  
+                  const productoActualizado = { id: change.doc.id, ...change.doc.data() };
                   const index = productosGlobal.findIndex(p => p.id === productoActualizado.id);
                   if (index !== -1) {
                       productosGlobal[index] = productoActualizado;
-                      
                       const productosActuales = categoriaActiva === 'todos' 
                           ? productosGlobal 
                           : productosGlobal.filter(p => p.categoria === categoriaActiva);
-                      
                       if (productosActuales.some(p => p.id === productoActualizado.id)) {
                           mostrarProductos(productosActuales);
                       }
@@ -511,27 +435,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Limpiar carrito y restaurar todo el stock
   async function limpiarCarritoYRestaurarStock() {
       if (carrito.length === 0) return;
-      
       try {
           for (const producto of carrito) {
               await restaurarStockFirebase(producto.id, producto.cantidad || 1);
           }
-          
           carrito = [];
           localStorage.removeItem('carrito');
-         actualizarCarritoTotal();
+          actualizarCarritoTotal();
           actualizarContadorItemsCarrito();
           mostrarNotificacion('Carrito limpiado y stock restaurado');
-      } catch (error) {
-          console.error("Error limpiando carrito:", error);
-      }
+      } catch (error) { console.error("Error limpiando carrito:", error); }
   }
 
-  // Reemplazar la función global existente
-  window.limpiarCarrito = limpiarCarritoYRestaurarStock;
-
-  console.log("Catálogo inicializado correctamente");
+  console.log("Catálogo inicializado y header dinámico activo.");
 });
