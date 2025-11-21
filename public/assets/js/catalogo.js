@@ -1,10 +1,10 @@
 /* ==========================================
  * ARCHIVO: js/catalogo.js
- * (Versión Dinámica: Carga categorías de Firebase en el Header)
+ * (Versión Dinámica Corregida: Espera la carga del Header)
  * ==========================================
 */
 document.addEventListener("DOMContentLoaded", () => {
-  // Elementos del DOM
+  // Elementos del DOM fijos de la página
   const dropdownCategorias = document.getElementById("dropdownCategorias");
   const cardsCategorias = document.getElementById("cardsCategorias");
   const productosGrid = document.getElementById("productosGrid");
@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnVerTodos = document.getElementById("show-all-btn"); 
   const btnCarrito = document.querySelector('.btn-carrito');
   
-  // Elemento del Header Dinámico
-  const headerMenuDinamico = document.getElementById("header-menu-dinamico");
+  // Nota: No seleccionamos "header-menu-dinamico" aquí arriba porque aún no existe.
+  // Lo buscaremos dentro de la función intentarCargarHeader.
 
   let productosGlobal = []; 
   let carrito = JSON.parse(localStorage.getItem('carrito')) || []; 
@@ -72,14 +72,26 @@ document.addEventListener("DOMContentLoaded", () => {
   function inicializarInterfaz(productos) {
     const categorias = obtenerCategoriasUnicas(productos);
     
+    // Lógica normal para la página de catálogo
     if (dropdownCategorias) mostrarDropdownCategorias(categorias);
     if (cardsCategorias) mostrarCardsCategorias(categorias);
     
-    // --- NUEVO: Cargar el menú del header dinámicamente ---
-    if (headerMenuDinamico) {
-        cargarMenuHeaderDinamico(categorias);
-    }
-    // -----------------------------------------------------
+    // --- MODIFICACIÓN: Esperar a que el header cargue para llenar el menú ---
+    const intentarCargarHeader = () => {
+        // Buscamos el elemento AQUÍ, porque al inicio del script probablemente no existía
+        const headerMenu = document.getElementById("header-menu-dinamico");
+        
+        if (headerMenu) {
+            // Si el header ya existe, cargamos el menú pasando el elemento encontrado
+            cargarMenuHeaderDinamico(categorias, headerMenu);
+        } else {
+            // Si no existe (loadHeader.js sigue cargando), reintentamos en 100ms
+            setTimeout(intentarCargarHeader, 100);
+        }
+    };
+    // Iniciamos el intento
+    intentarCargarHeader();
+    // -----------------------------------------------------------------------
 
     // Revisar URL para filtrar al cargar
     const params = new URLSearchParams(window.location.search);
@@ -106,12 +118,13 @@ document.addEventListener("DOMContentLoaded", () => {
         categoriasSet.add(producto.categoria); 
       }
     });
-    // Retornamos array ordenado alfabéticamente para que se vea ordenado
+    // Retornamos array ordenado alfabéticamente
     return Array.from(categoriasSet).sort();
   }
 
-  // --- FUNCIÓN NUEVA: Generar Header Dinámico ---
-  function cargarMenuHeaderDinamico(categorias) {
+  // --- FUNCIÓN: Generar Header Dinámico ---
+  // Ahora recibe el elemento del DOM como argumento
+  function cargarMenuHeaderDinamico(categorias, menuContainer) {
       let html = '';
       
       // 1. Generar enlaces para cada categoría existente en Firebase
@@ -127,9 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
         </a>
       `;
 
-      headerMenuDinamico.innerHTML = html;
+      menuContainer.innerHTML = html;
 
-      // 3. Asignar eventos a estos nuevos enlaces (para navegación SPA dentro del catálogo)
+      // 3. Asignar eventos a estos nuevos enlaces
       asignarEventosHeader();
   }
 
