@@ -5,25 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - Admin</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- ESTILOS MODO OSCURO --- */
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Roboto', sans-serif; margin: 20px; }
+        
+        .container { 
+            max-width: 1200px; margin: 0 auto; padding: 20px; 
+            background: #1e1e1e; border-radius: 12px; border: 1px solid #333;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        
+        /* Header y Acciones */
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .header-title h1 { color: #39FF14; margin: 0; font-size: 1.8em; }
+        .btn-back { text-decoration: none; color: #ccc; font-weight: bold; font-size: 1.2em; transition: 0.3s; }
+        .btn-back:hover { color: #39FF14; transform: translateX(-5px); }
+
+        /* Barra de Búsqueda y Filtros */
+        .controls-bar { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; align-items: center; }
+        .search-box { position: relative; flex-grow: 1; max-width: 400px; }
+        .search-box input {
+            width: 100%; padding: 10px 15px 10px 40px;
+            background-color: #2c2c2c; border: 1px solid #444; color: white;
+            border-radius: 25px; outline: none; font-size: 0.95em;
+        }
+        .search-box input:focus { border-color: #39FF14; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+        
+        .btn-create { 
+            background-color: #39FF14; color: black; border: none; 
+            padding: 10px 25px; border-radius: 25px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-create:hover { background-color: #32cb12; transform: scale(1.05); box-shadow: 0 0 10px rgba(57, 255, 20, 0.4); }
+
+        /* Tabla Estilo Dashboard */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #1e1e1e; color: #888; padding: 15px; text-align: left; font-weight: 600; font-size: 0.85em; text-transform: uppercase; border-bottom: 2px solid #333; }
+        td { padding: 15px; border-bottom: 1px solid #2a2a2a; vertical-align: middle; color: #ddd; }
+        tr:hover { background-color: #252525; }
+
+        /* Elementos de Tabla (Avatar, Badges) */
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #333; border: 2px solid #333; }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: bold; color: white; font-size: 0.95em; }
+        .user-email { font-size: 0.85em; color: #aaa; }
+
+        .role-badge { padding: 4px 12px; border-radius: 15px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; display: inline-block; }
+        .role-admin { background-color: rgba(57, 255, 20, 0.1); color: #39FF14; border: 1px solid rgba(57, 255, 20, 0.3); }
+        .role-cliente { background-color: rgba(62, 166, 255, 0.1); color: #3ea6ff; border: 1px solid rgba(62, 166, 255, 0.3); }
+
+        .status-container { display: flex; align-items: center; font-size: 0.9em; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .status-active { background-color: #28a745; box-shadow: 0 0 5px #28a745; }
+        .status-inactive { background-color: #dc3545; box-shadow: 0 0 5px #dc3545; }
+
+        /* Acciones */
+        .actions { display: flex; gap: 10px; }
+        .btn-icon { background: #2c2c2c; border: 1px solid #444; cursor: pointer; font-size: 0.9em; transition: 0.2s; padding: 8px; border-radius: 5px; color: #ccc; }
+        .btn-edit:hover { color: #ffc107; border-color: #ffc107; background: rgba(255, 193, 7, 0.1); }
+        .btn-delete:hover { color: #ff4444; border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+
+        /* Paginación */
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; color: #888; font-size: 0.9em; }
+        .page-btn { background: #2c2c2c; border: 1px solid #444; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-btn:hover:not(:disabled) { background: #39FF14; color: black; border-color: #39FF14; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #1e1e1e; padding: 30px; border-radius: 15px; width: 450px; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ccc; font-size: 0.9em; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; background: #121212; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-size: 1em; }
+        .form-group input:focus, .form-group select:focus { border-color: #39FF14; outline: none; }
+        .form-actions { text-align: right; margin-top: 25px; }
+        .btn-cancel { background: transparent; color: #aaa; border: 1px solid #444; padding: 10px 20px; border-radius: 8px; margin-right: 10px; cursor: pointer; transition: 0.2s; }
+        .btn-cancel:hover { border-color: #ccc; color: white; }
+        .btn-save { background: #39FF14; color: black; border: none; padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-save:hover { background: #32cb12; transform: scale(1.05); }
+    </style>
 </head>
 <body>
-    <header class="main-header">
-        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
-        <nav class="main-nav">
-            <a href="../../index.html">Ver Tienda</a>
-            <a href="admin-dashboard.html">Dashboard</a>
-            <a href="admin-productos.html">Productos</a>
-            <a href="admin-usuarios.html">Usuarios</a>
-            <a href="admin-pedidos.html">Pedidos</a>
-            <a href="../../index.html">Cerrar Sesión</a>
-        </nav>
-    </header>
+
     <main class="container">
-        <h1 class="page-title">Gestión de Usuarios</h1>
-        <p>Aquí se mostrará la lista de usuarios registrados (MOSTRAR USUARIO)[cite: 330].</p>
-        </main>
-    <footer>
-        <div class="container"><p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p></div>
-    </footer>
+        <div class="header-actions">
+            <div class="header-title">
+                <a href="admin-dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+                <h1>Lista de Usuarios</h1>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por nombre o email..." onkeyup="filtrarUsuarios()">
+            </div>
+            <button class="btn-create" onclick="abrirModalUsuario()">
+                <i class="fas fa-plus"></i> Nuevo Usuario
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="35%">Usuario</th>
+                    <th width="15%">Rol</th>
+                    <th width="15%">Estado</th>
+                    <th width="20%">Fecha Registro</th>
+                    <th width="15%">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="usuarios-tbody">
+                <tr><td colspan="5" style="text-align:center; padding: 30px; color: #888;">Cargando usuarios...</td></tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <span id="pagination-info">Mostrando 0 de 0 entradas</span>
+            <div>
+                <button class="page-btn" id="btn-prev" onclick="cambiarPagina(-1)">Anterior</button>
+                <button class="page-btn" id="btn-next" onclick="cambiarPagina(1)">Siguiente</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalUsuario" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="margin-top:0; color:white; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">Nuevo Usuario</h2>
+            <form id="usuarioForm" onsubmit="guardarUsuario(event)">
+                <input type="hidden" id="userId">
+                
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="userNombre" required placeholder="Ej: Juan Pérez">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="userEmail" required placeholder="ejemplo@correo.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="userRol">
+                        <option value="cliente">Cliente</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="userEstado">
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>URL Avatar (Opcional)</label>
+                    <input type="url" id="userAvatar" placeholder="https://...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModalUsuario()">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/admin-logic.js"></script>
+
 </body>
 </html>

@@ -5,25 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Pedidos - Admin</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* MODO OSCURO */
+        body { background-color: #121212; color: #e0e0e0; font-family: sans-serif; margin: 20px; }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #1e1e1e; /* Fondo de contenedor */
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+            border: 1px solid #333;
+        }
+        
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .header-actions h1 { color: #39FF14; margin: 0; }
+        .btn-back { text-decoration: none; color: #ccc; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-back:hover { color: #39FF14; }
+        
+        /* Tabla Oscura */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #000; color: #39FF14; padding: 15px; text-align: left; border-bottom: 2px solid #39FF14; }
+        td { padding: 15px; border-bottom: 1px solid #333; color: #ccc; }
+        tr:hover { background-color: #2a2a2a; } /* Efecto hover */
+        
+        /* Badges */
+        .badge { padding: 5px 12px; border-radius: 15px; font-size: 0.85em; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+        .bg-success { background-color: #00c853; } 
+        .bg-warning { background-color: #ffab00; color: #000; } 
+        .bg-danger { background-color: #d50000; } 
+    </style>
 </head>
 <body>
-    <header class="main-header">
-        <a href="../../index.html"><img src="../img/logo.png" alt="Logo Level-Up Gamer" class="logo"></a>
-        <nav class="main-nav">
-            <a href="../../index.html">Ver Tienda</a>
-            <a href="admin-dashboard.html">Dashboard</a>
-            <a href="admin-productos.html">Productos</a>
-            <a href="admin-usuarios.html">Usuarios</a>
-            <a href="admin-pedidos.html">Pedidos</a>
-            <a href="../../index.html">Cerrar Sesión</a>
-        </nav>
-    </header>
+
     <main class="container">
-        <h1 class="page-title">Gestión de Pedidos</h1>
-        <p>Aquí se mostrará la lista de órdenes y boletas (MOSTRAR BOLETA)[cite: 317].</p>
-        </main>
-    <footer>
-        <div class="container"><p>&copy; 2025 Level-Up Gamer. Todos los derechos reservados.</p></div>
-    </footer>
+        <div class="header-actions">
+            <a href="admin-dashboard.html" class="btn-back">⬅ Volver al Dashboard</a>
+            <h1>Gestión de Pedidos</h1>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Orden</th>
+                    <th>Cliente / Usuario</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="pedidos-tbody">
+                <tr><td colspan="5" style="text-align:center; color: #888;">Cargando pedidos...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/admin-logic.js"></script>
+
 </body>
 </html>
