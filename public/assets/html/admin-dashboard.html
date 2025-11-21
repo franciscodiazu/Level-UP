@@ -7,7 +7,201 @@
     
     <link rel="stylesheet" href="../css/style.css">
 
-    
+    <style>
+        /* Reseteo para el layout del admin */
+        body {
+            background-color: #f0f2f5; /* Color de fondo del contenido principal */
+            color: #333;
+            font-family: var(--font-body, 'Roboto', sans-serif);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Layout Principal (Sidebar + Contenido) --- */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- 1. Barra Lateral (Sidebar) --- */
+        .admin-sidebar {
+            width: 250px;
+            background-color: #1a1a1a; /* Fondo oscuro para la sidebar */
+            color: var(--text-main, #FFFFFF);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5em;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .admin-sidebar .company-name {
+            font-family: var(--font-title, 'Orbitron');
+            font-size: 1.5em;
+            text-align: center;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #444;
+            margin-bottom: 1em;
+            color: var(--color-accent-green, #39FF14);
+        }
+        .admin-sidebar nav {
+            flex-grow: 1; /* Empuja los botones de abajo hacia el fondo */
+        }
+        .admin-sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .admin-sidebar nav li {
+            margin-bottom: 0.5em;
+        }
+        .admin-sidebar nav a {
+            display: block;
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            color: var(--text-secondary, #D3D3D3);
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .admin-sidebar nav a:hover {
+            background-color: var(--color-accent-blue, #1E90FF);
+            color: var(--text-main, #FFFFFF);
+        }
+        .admin-sidebar nav a.active {
+            background-color: var(--color-accent-blue, #1E90FF);
+            color: var(--text-main, #FFFFFF);
+        }
+
+        /* Botones inferiores de la Sidebar */
+        .sidebar-footer {
+            padding-top: 1em;
+            border-top: 1px solid #444;
+        }
+        .sidebar-footer .btn {
+            width: 100%;
+            margin-top: 0.5em;
+            text-align: center;
+            padding: 0.8em;
+            font-size: 0.9em;
+        }
+        .btn-tienda {
+            background-color: #555;
+            color: white;
+        }
+        .btn-tienda:hover {
+            background-color: #777;
+        }
+        .btn-logout {
+            background-color: #d9534f;
+            color: white;
+        }
+        .btn-logout:hover {
+            background-color: #c9302c;
+        }
+
+        /* --- 2. Contenido Principal --- */
+        .admin-main-content {
+            flex-grow: 1;
+            padding: 2em;
+            overflow-y: auto;
+        }
+        .admin-main-content h1 {
+            font-family: var(--font-title, 'Orbitron');
+            color: #111;
+            margin-top: 0;
+        }
+        .admin-main-content .subtitle {
+            color: #555;
+            margin-bottom: 2em;
+        }
+
+        /* --- 3. Tarjetas de Resumen (Stats) --- */
+        .admin-stat-cards {
+            display: flex;
+            gap: 1.5em;
+            margin-bottom: 2em;
+        }
+        .stat-card {
+            flex: 1;
+            padding: 1.5em;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        /* Colores como en la Figura 9 */
+        .stat-card.blue { background-color: #007bff; }
+        .stat-card.green { background-color: #28a745; }
+        .stat-card.yellow { background-color: #ffc107; color: #333; }
+        
+        .stat-card h3 {
+            font-family: var(--font-title, 'Orbitron');
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 0.25em;
+        }
+        .stat-card .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 0.25em;
+        }
+        .stat-card .stat-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* --- 4. Grid de Módulos (Figura 9) --- */
+        .admin-module-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+            gap: 1.5em;
+        }
+        .module-card {
+            background-color: #ffffff;
+            padding: 1.5em;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .module-card .icon { /* Placeholder para el ícono */
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            color: var(--color-accent-blue, #1E90FF);
+        }
+        .module-card h4 {
+            font-family: var(--font-title, 'Orbitron');
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 0.5em;
+        }
+        .module-card p {
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        /* Responsive para tablets y móviles */
+        @media (max-width: 1200px) {
+            .admin-module-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+            }
+        }
+        @media (max-width: 768px) {
+            .admin-layout {
+                flex-direction: column;
+            }
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+            }
+            .admin-stat-cards {
+                flex-direction: column;
+            }
+            .admin-module-grid {
+                grid-template-columns: 1fr; /* 1 columna */
+            }
+        }
+
+    </style>
 </head>
 <body>
 
@@ -104,9 +298,4 @@
     </div>
 
 </body>
-    <!-- Scripts -->
-    <script src="../js/saludo.js"></script>
-    <script src="../js/logout.js"></script>
-    <script src="../js/dashboard.js"></script>
-    <script src="../js/crud-functions.js"></script>
 </html>
