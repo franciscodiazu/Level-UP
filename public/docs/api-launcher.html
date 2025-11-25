@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lanzador API Docs</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 50px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+        .btn { 
+            background: #17a2b8; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .btn:hover { background: #138496; }
+        .loading { display: none; color: #6c757d; }
+        .instructions { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 5px; 
+            margin: 20px 0; 
+            text-align: left; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentación API</h1>
+        <p>Este lanzador abrirá Swagger Editor con la documentación de tu API Firebase.</p>
+        
+        <div class="instructions">
+            <h3>Instrucciones:</h3>
+            <ol>
+                <li>Haz clic en "Abrir Swagger Editor"</li>
+                <li>Se abrirá <strong>https://editor.swagger.io/</strong></li>
+                <li><strong>PASO IMPORTANTE:</strong> Pega el contenido YAML manualmente</li>
+                <li>¡Listo! Tendrás tu documentación interactiva</li>
+            </ol>
+        </div>
+        
+        <button id="launchBtn" class="btn" onclick="launchSwaggerEditor()">
+            <i>📋</i>
+            Abrir Swagger Editor
+        </button>
+
+        <button id="copyBtn" class="btn" onclick="copyYAMLContent()" style="background: #28a745; margin-left: 10px;">
+            <i>📄</i>
+            Copiar YAML
+        </button>
+        
+        <div id="loading" class="loading">
+            <p>Abriendo Swagger Editor...</p>
+        </div>
+
+        <div id="status" style="margin-top: 20px; font-weight: bold;"></div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+            <h4>¿Problemas?</h4>
+            <p>Si el método automático no funciona:</p>
+            <ol style="text-align: left;">
+                <li>Haz clic en "Copiar YAML"</li>
+                <li>Ve manualmente a <a href="https://editor.swagger.io/" target="_blank">https://editor.swagger.io/</a></li>
+                <li>Borra todo el contenido existente</li>
+                <li>Pega el YAML copiado (Ctrl+V)</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Contenido YAML simplificado y compatible
+        const openapiContent = `openapi: 3.0.0
+info:
+  title: API Level UP - Gestión de Compras y Productos
+  description: >
+    Documentación basada en los datos reales de Firebase.
+    Incluye ejemplos extraídos directamente de la base de datos de producción.
+  version: 1.0.2
+  contact:
+    name: Soporte Level UP
+    email: admin@level-up.cl
+
+servers:
+  - url: https://firestore.googleapis.com/v1/projects/tienda-level-up/databases/(default)/documents
+    description: Firebase Firestore Endpoint
+
+tags:
+  - name: Compras
+    description: Gestión de órdenes de compra (Colección 'compras')
+  - name: Productos
+    description: Catálogo de productos (Colección 'producto')
+  - name: Usuarios
+    description: Gestión de usuarios (Colección 'usuario')
+
+paths:
+  /compras:
+    get:
+      tags:
+        - Compras
+      summary: Listar historial de compras
+      description: Retorna la lista de órdenes registradas.
+      operationId: getCompras
+      responses:
+        '200':
+          description: Historial recuperado exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compra'
+              example:
+                - id: "OJmQU29n6zeJTdcjH9rv"
+                  numeroOrden: "ORDEN1763468602697986"
+                  fecha: "18 de noviembre de 2025, 9:23:22 a.m. UTC-3"
+                  estado: "pendiente"
+                  total: 25990
+                  cliente:
+                    nombre: "asdasdsdads"
+                    apellidos: "dasadssadasd"
+                    correo: "fra.d@duoc.cl"
+                  direccion:
+                    calle: "jadsjadsjdsa"
+                    comuna: "La Florida"
+                    departamento: "679"
+                    region: "Metropolitana"
+                    indicaciones: "dsadsdas"
+                  productos:
+                    - id: "EX7TPJ2SnIXVOVOOmSBd"
+                      nombre: "Poleron Geek Gamer"
+                      precio: 25990
+                      cantidad: 1
+                      categoria: "Ropa"
+                      imagen: "https://tienda-level-up.web.app/assets/img/PoleronGeekGamer.jpg"
+                - id: "1ke8OCKi8O8ftT6NOOj9Y"
+                  numeroOrden: "ORDEN1763471130829860"
+                  fecha: "18 de noviembre de 2025, 10:05:30 a.m. UTC-3"
+                  estado: "pendiente"
+                  total: 25990
+                  cliente:
+                    nombre: "asdasdsdas"
+                    apellidos: "adsadsads"
+                    correo: "adssdaads@duoc.cl"
+                  direccion:
+                    calle: "asdasddsaasd"
+                    comuna: "La Florida"
+                    departamento: "679"
+                    region: "Metropolitana"
+                  productos:
+                    - id: "EX7TPJ2SnIXVOVOOmSBd"
+                      nombre: "Poleron Geek Gamer"
+                      cantidad: 1
+                      precio: 25990
+
+  /productos:
+    get:
+      tags:
+        - Productos
+      summary: Obtener catálogo de productos
+      description: Lista los productos disponibles con su stock y precios reales.
+      responses:
+        '200':
+          description: Catálogo recuperado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+              example:
+                - id: "EX7TPJ2SnIXVOVOOmSBd"
+                  nombre: "Poleron Geek Gamer"
+                  precio: 25990
+                  precioAnterior: 45990
+                  stock: 21
+                  categoria: "Ropa"
+                  imagen: "https://tienda-level-up.web.app/assets/img/PoleronGeekGamer.jpg"
+                - id: "tec_xbox_ctrl"
+                  nombre: "Controlador Inalámbrico Xbox Series X"
+                  precio: 59990
+                  precioAnterior: 70000
+                  stock: 99
+                  categoria: "Tecnología"
+                  imagen: "https://tienda-level-up.web.app/assets/img/controlInalambrico.jpg"
+                - id: "per_hyperx_cloud3"
+                  nombre: "Audífonos HyperX Cloud 3"
+                  precio: 89990
+                  stock: 100
+                  categoria: "Periféricos"
+                  imagen: "https://tienda-level-up.web.app/assets/img/hyperx-headset.jpg"
+
+  /usuarios/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener perfil de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "Tzep8VZGlmuhPqWwa6Jj"
+      responses:
+        '200':
+          description: Datos del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+              example:
+                id: "Tzep8VZGlmuhPqWwa6Jj"
+                nombre: "francisco"
+                apellidos: "diaz"
+                run: "256557495"
+                correo: "fra.d@duoc.cl"
+                telefono: "921907483"
+                rol: "cliente"
+                direccion: "independiente 123"
+                comuna: "Independencia"
+                region: "Metropolitana de Santiago"
+                fechaNacimiento: "2006-06-14"
+                createdAt: "28 de octubre de 2025, 9:38:49 a.m. UTC-3"
+
+components:
+  schemas:
+    Compra:
+      type: object
+      properties:
+        id:
+          type: string
+        numeroOrden:
+          type: string
+          description: ID generado para el seguimiento (ej. ORDEN...)
+        fecha:
+          type: string
+        estado:
+          type: string
+          enum: [pendiente, completado, cancelado]
+        total:
+          type: number
+        cliente:
+          type: object
+          properties:
+            nombre:
+              type: string
+            apellidos:
+              type: string
+            correo:
+              type: string
+        direccion:
+          type: object
+          properties:
+            calle:
+              type: string
+            comuna:
+              type: string
+            region:
+              type: string
+            departamento:
+              type: string
+        productos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductoCompra'
+
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        precio:
+          type: number
+        precioAnterior:
+          type: number
+          description: Precio antes de oferta (opcional)
+        stock:
+          type: integer
+        categoria:
+          type: string
+        imagen:
+          type: string
+
+    ProductoCompra:
+      type: object
+      description: Estructura del producto dentro del array de compras
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cantidad:
+          type: integer
+        precio:
+          type: number
+        categoria:
+          type: string
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        run:
+          type: string
+        correo:
+          type: string
+        telefono:
+          type: string
+        rol:
+          type: string
+          enum: [cliente, admin]
+        direccion:
+          type: string
+        comuna:
+          type: string
+        region:
+          type: string
+        fechaNacimiento:
+          type: string`;
+
+        function launchSwaggerEditor() {
+            const btn = document.getElementById('launchBtn');
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('status');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            status.innerHTML = 'Abriendo Swagger Editor...';
+            
+            try {
+                // Método simple: abrir Swagger Editor y preparar para pegar manualmente
+                const swaggerUrl = `https://editor.swagger.io/`;
+                window.open(swaggerUrl, '_blank');
+                
+                status.innerHTML = 'Swagger Editor abierto. <strong>Pega el contenido YAML manualmente.</strong>';
+                
+                // Mostrar instrucciones adicionales
+                setTimeout(() => {
+                    status.innerHTML += '<br><br> <strong>Instrucción:</strong> Ve a la pestaña recién abierta, borra el contenido existente y pega el YAML.';
+                }, 1000);
+                
+            } catch (error) {
+                status.innerHTML = 'Error: ' + error.message;
+            } finally {
+                loading.style.display = 'none';
+                setTimeout(() => {
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        function copyYAMLContent() {
+            const status = document.getElementById('status');
+            
+            try {
+                // Crear un elemento temporal para copiar
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = openapiContent;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                tempTextArea.setSelectionRange(0, 99999); // Para móviles
+                
+                // Ejecutar comando de copia
+                const successful = document.execCommand('copy');
+                document.body.removeChild(tempTextArea);
+                
+                if (successful) {
+                    status.innerHTML = '<strong>YAML copiado al portapapeles!</strong><br>Ahora ve a <a href="https://editor.swagger.io/" target="_blank">Swagger Editor</a> y pega el contenido.';
+                    status.style.color = 'green';
+                } else {
+                    status.innerHTML = 'No se pudo copiar. Intenta manualmente.';
+                    status.style.color = 'red';
+                }
+                
+            } catch (error) {
+                status.innerHTML = 'Error al copiar: ' + error.message;
+                status.style.color = 'red';
+                
+                // Fallback: mostrar el contenido para copiar manualmente
+                setTimeout(() => {
+                    alert('Como falló la copia automática, aquí está el contenido para copiar manualmente:\n\n' + openapiContent.substring(0, 1000) + '...');
+                }, 500);
+            }
+        }
+
+        // Versión alternativa que intenta codificar de forma más segura
+        function encodeToBase64(str) {
+            try {
+                // Primero convertir a bytes UTF-8
+                const bytes = new TextEncoder().encode(str);
+                const binary = String.fromCharCode(...bytes);
+                return btoa(binary);
+            } catch (e) {
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>

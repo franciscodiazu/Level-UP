@@ -1,0 +1,255 @@
+openapi: 3.0.0
+info:
+  title: API Level UP - Gestión de Compras y Productos
+  description: >
+    Documentación basada en los datos reales de Firebase.
+    Incluye ejemplos extraídos directamente de la base de datos de producción.
+  version: 1.0.2
+  contact:
+    name: Soporte Level UP
+    email: admin@level-up.cl
+
+servers:
+  - url: https://firestore.googleapis.com/v1/projects/tienda-level-up/databases/(default)/documents
+    description: Firebase Firestore Endpoint
+
+tags:
+  - name: Compras
+    description: Gestión de órdenes de compra (Colección 'compras')
+  - name: Productos
+    description: Catálogo de productos (Colección 'producto')
+  - name: Usuarios
+    description: Gestión de usuarios (Colección 'usuario')
+
+paths:
+  /compras:
+    get:
+      tags:
+        - Compras
+      summary: Listar historial de compras
+      description: Retorna la lista de órdenes registradas.
+      operationId: getCompras
+      responses:
+        '200':
+          description: Historial recuperado exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Compra'
+              example:
+                - id: "OJmQU29n6zeJTdcjH9rv"
+                  numeroOrden: "ORDEN1763468602697986"
+                  fecha: "18 de noviembre de 2025, 9:23:22 a.m. UTC-3"
+                  estado: "pendiente"
+                  total: 25990
+                  cliente:
+                    nombre: "asdasdsdads"
+                    apellidos: "dasadssadasd"
+                    correo: "fra.d@duoc.cl"
+                  direccion:
+                    calle: "jadsjadsjdsa"
+                    comuna: "La Florida"
+                    departamento: "679"
+                    region: "Metropolitana"
+                    indicaciones: "dsadsdas"
+                  productos:
+                    - id: "EX7TPJ2SnIXVOVOOmSBd"
+                      nombre: "Poleron Geek Gamer"
+                      precio: 25990
+                      cantidad: 1
+                      categoria: "Ropa"
+                      imagen: "https://tienda-level-up.web.app/assets/img/PoleronGeekGamer.jpg"
+                - id: "1ke8OCKi8O8ftT6NOOj9Y"
+                  numeroOrden: "ORDEN1763471130829860"
+                  fecha: "18 de noviembre de 2025, 10:05:30 a.m. UTC-3"
+                  estado: "pendiente"
+                  total: 25990
+                  cliente:
+                    nombre: "asdasdsdas"
+                    apellidos: "adsadsads"
+                    correo: "adssdaads@duoc.cl"
+                  direccion:
+                    calle: "asdasddsaasd"
+                    comuna: "La Florida"
+                    departamento: "679"
+                    region: "Metropolitana"
+                  productos:
+                    - id: "EX7TPJ2SnIXVOVOOmSBd"
+                      nombre: "Poleron Geek Gamer"
+                      cantidad: 1
+                      precio: 25990
+
+  /productos:
+    get:
+      tags:
+        - Productos
+      summary: Obtener catálogo de productos
+      description: Lista los productos disponibles con su stock y precios reales.
+      responses:
+        '200':
+          description: Catálogo recuperado
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'
+              example:
+                - id: "EX7TPJ2SnIXVOVOOmSBd"
+                  nombre: "Poleron Geek Gamer"
+                  precio: 25990
+                  precioAnterior: 45990
+                  stock: 21
+                  categoria: "Ropa"
+                  imagen: "https://tienda-level-up.web.app/assets/img/PoleronGeekGamer.jpg"
+                - id: "tec_xbox_ctrl"
+                  nombre: "Controlador Inalámbrico Xbox Series X"
+                  precio: 59990
+                  precioAnterior: 70000
+                  stock: 99
+                  categoria: "Tecnología"
+                  imagen: "https://tienda-level-up.web.app/assets/img/controlInalambrico.jpg"
+                - id: "per_hyperx_cloud3"
+                  nombre: "Audífonos HyperX Cloud 3"
+                  precio: 89990
+                  stock: 100
+                  categoria: "Periféricos"
+                  imagen: "https://tienda-level-up.web.app/assets/img/hyperx-headset.jpg"
+
+  /usuarios/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener perfil de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "Tzep8VZGlmuhPqWwa6Jj"
+      responses:
+        '200':
+          description: Datos del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+              example:
+                id: "Tzep8VZGlmuhPqWwa6Jj"
+                nombre: "francisco"
+                apellidos: "diaz"
+                run: "256557495"
+                correo: "fra.d@duoc.cl"
+                telefono: "921907483"
+                rol: "cliente"
+                direccion: "independiente 123"
+                comuna: "Independencia"
+                region: "Metropolitana de Santiago"
+                fechaNacimiento: "2006-06-14"
+                createdAt: "28 de octubre de 2025, 9:38:49 a.m. UTC-3"
+
+components:
+  schemas:
+    Compra:
+      type: object
+      properties:
+        id:
+          type: string
+        numeroOrden:
+          type: string
+          description: ID generado para el seguimiento (ej. ORDEN...)
+        fecha:
+          type: string
+        estado:
+          type: string
+          enum: [pendiente, completado, cancelado]
+        total:
+          type: number
+        cliente:
+          type: object
+          properties:
+            nombre:
+              type: string
+            apellidos:
+              type: string
+            correo:
+              type: string
+        direccion:
+          type: object
+          properties:
+            calle:
+              type: string
+            comuna:
+              type: string
+            region:
+              type: string
+            departamento:
+              type: string
+        productos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductoCompra'
+
+    Producto:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        precio:
+          type: number
+        precioAnterior:
+          type: number
+          description: Precio antes de oferta (opcional)
+        stock:
+          type: integer
+        categoria:
+          type: string
+        imagen:
+          type: string
+
+    ProductoCompra:
+      type: object
+      description: Estructura del producto dentro del array de compras
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        cantidad:
+          type: integer
+        precio:
+          type: number
+        categoria:
+          type: string
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        apellidos:
+          type: string
+        run:
+          type: string
+        correo:
+          type: string
+        telefono:
+          type: string
+        rol:
+          type: string
+          enum: [cliente, admin]
+        direccion:
+          type: string
+        comuna:
+          type: string
+        region:
+          type: string
+        fechaNacimiento:
+          type: string
