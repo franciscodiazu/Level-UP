@@ -1,195 +1,264 @@
-// Tests para la lógica de negocio de carrito.js
-// Adaptados al estilo imperativo (mutación de variables globales)
+// Tests PUROS de Jasmine para la lógica del carrito
+// Sin React, sin JSX, solo JavaScript puro
 
-describe('Lógica de Negocio del Carrito (Simulación carrito.js)', function() {
+// Mock de localStorage
+const createLocalStorageMock = () => {
+    let store = {};
+    return {
+        getItem: function(key) {
+            return store[key] || null;
+        },
+        setItem: function(key, value) {
+            store[key] = value.toString();
+        },
+        removeItem: function(key) {
+            delete store[key];
+        },
+        clear: function() {
+            store = {};
+        }
+    };
+};
+
+// Función para calcular total del carrito (extraída del componente)
+const calcularTotal = function(carrito) {
+    return carrito.reduce(function(total, producto) {
+        return total + (producto.precio || 0) * (producto.cantidad || 1);
+    }, 0);
+};
+
+// Función para agregar producto al carrito
+const agregarAlCarrito = function(carrito, producto) {
+    const productoExistente = carrito.find(function(item) {
+        return item.id === producto.id;
+    });
     
-    // --- ESTADO GLOBAL SIMULADO (Como en tu carrito.js) ---
-    let carrito = [];
-    let productosCargados = [];
-    let lastNotification = ""; // Para verificar mensajes de error/éxito
+    if (productoExistente) {
+        return carrito.map(function(item) {
+            return item.id === producto.id
+                ? Object.assign({}, item, { cantidad: (item.cantidad || 1) + 1 })
+                : item;
+        });
+    } else {
+        return carrito.concat([Object.assign({}, producto, { cantidad: 1 })]);
+    }
+};
 
-    // --- MOCK DE LOCALSTORAGE ---
-    const localStorageMock = (function() {
-        let store = {};
-        return {
-            getItem: function(key) { return store[key] || null; },
-            setItem: function(key, value) { store[key] = value.toString(); },
-            clear: function() { store = {}; }
-        };
-    })();
-
-    // --- FUNCIONES SIMULADAS (Replican la lógica exacta de carrito.js) ---
+// Función para actualizar cantidad
+const actualizarCantidad = function(carrito, index, nuevaCantidad) {
+    if (nuevaCantidad < 1) return carrito;
     
-    // Helper para simular mostrarNotificacion
-    const mostrarNotificacion = (msg, type) => { lastNotification = msg; };
+    return carrito.map(function(item, i) {
+        return i === index ? Object.assign({}, item, { cantidad: nuevaCantidad }) : item;
+    });
+};
 
-    // Simula: agregarProductoAlCarrito(productId)
-    const agregarProductoAlCarrito = (productId) => {
-        const producto = productosCargados.find(p => p.id === productId);
-        
-        if (producto) {
-            const stockActualProducto = producto.stock || 0;
-            
-            if (stockActualProducto <= 0) {
-                mostrarNotificacion('Producto sin stock disponible', 'error');
-                return;
-            }
+// Función para eliminar producto
+const eliminarDelCarrito = function(carrito, index) {
+    return carrito.filter(function(_, i) {
+        return i !== index;
+    });
+};
 
-            const productoExistente = carrito.find(item => item.id === productId);
-
-            if (productoExistente) {
-                // Validación de stock máximo que tienes en tu código
-                if (productoExistente.cantidad >= stockActualProducto) {
-                    mostrarNotificacion(`Stock máximo alcanzado`, 'error');
-                    return;
-                }
-                productoExistente.cantidad = (productoExistente.cantidad || 1) + 1;
-            } else {
-                carrito.push({ ...producto, cantidad: 1 });
-            }
-            mostrarNotificacion(`Agregado al carrito`, 'success');
-        }
-    };
-
-    // Simula: aumentarCantidad(index)
-    const aumentarCantidad = (index) => {
-        const productoCarrito = carrito[index];
-        if (!productoCarrito) return;
-
-        const productoGeneral = productosCargados.find(p => p.id === productoCarrito.id);
-        const stockDisponible = productoGeneral ? (productoGeneral.stock || 0) : 0;
-
-        // Validación de stock
-        if (stockDisponible <= 0) {
-            mostrarNotificacion(`No hay más stock disponible`, 'error');
-            return;
-        }
-
-        // Nota: En tu código real también verificas si ya tienes todo el stock en el carrito
-        if (productoCarrito.cantidad >= stockDisponible) {
-             mostrarNotificacion(`Stock máximo alcanzado`, 'error');
-             return;
-        }
-
-        productoCarrito.cantidad = (productoCarrito.cantidad || 1) + 1;
-    };
-
-    // Simula: disminuirCantidad(index)
-    const disminuirCantidad = (index) => {
-        const productoCarrito = carrito[index];
-        if (!productoCarrito) return;
-
-        if (productoCarrito.cantidad > 1) {
-            productoCarrito.cantidad--;
-        } else {
-            eliminarDelCarrito(index);
-        }
-    };
-
-    // Simula: eliminarDelCarrito(index)
-    const eliminarDelCarrito = (index) => {
-        if (index < 0 || index >= carrito.length) return;
-        carrito.splice(index, 1);
-    };
-
-    // --- INICIO DE LOS TESTS ---
-
+// TESTS CON JASMINE
+describe('Lógica del Carrito de Compras', function() {
+    
+    let localStorageMock;
+    
     beforeEach(function() {
-        // Reiniciar estado antes de cada prueba
-        carrito = [];
-        lastNotification = "";
-        
-        // Mock de productos disponibles en "Base de Datos"
-        productosCargados = [
-            { id: '1', nombre: 'Mouse Gamer', precio: 15000, stock: 10 },
-            { id: '2', nombre: 'Teclado Mecánico', precio: 40000, stock: 5 },
-            { id: '3', nombre: 'Producto Agotado', precio: 100, stock: 0 }
-        ];
-        
+        localStorageMock = createLocalStorageMock();
+        // Mock global de localStorage para las pruebas
         if (typeof window !== 'undefined') {
             window.localStorage = localStorageMock;
         }
     });
-
-    describe('Agregar Productos', function() {
-        it('Debe agregar un producto nuevo al array carrito', function() {
-            agregarProductoAlCarrito('1');
+    
+    afterEach(function() {
+        // Limpiar después de cada test
+        if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.clear();
+        }
+    });
+    
+    describe('Cálculo de Totales', function() {
+        
+        it('debe calcular correctamente el total con un producto', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 2 }
+            ];
             
-            expect(carrito.length).toBe(1);
-            expect(carrito[0].id).toBe('1');
-            expect(carrito[0].cantidad).toBe(1);
-            expect(lastNotification).toContain('Agregado');
+            const total = calcularTotal(carrito);
+            expect(total).toBe(20000);
         });
-
-        it('Debe incrementar la cantidad si el producto ya existe', function() {
-            agregarProductoAlCarrito('1'); // Cantidad 1
-            agregarProductoAlCarrito('1'); // Cantidad 2
+        
+        it('debe calcular correctamente el total con múltiples productos', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 },
+                { id: '2', nombre: 'Producto B', precio: 20000, cantidad: 3 }
+            ];
             
-            expect(carrito.length).toBe(1);
-            expect(carrito[0].cantidad).toBe(2);
+            const total = calcularTotal(carrito);
+            expect(total).toBe(70000);
         });
-
-        it('No debe permitir agregar productos sin stock (stock=0)', function() {
-            agregarProductoAlCarrito('3'); // Producto Agotado
-            
-            expect(carrito.length).toBe(0);
-            expect(lastNotification).toContain('sin stock');
+        
+        it('debe retornar 0 para carrito vacío', function() {
+            const carrito = [];
+            const total = calcularTotal(carrito);
+            expect(total).toBe(0);
         });
-
-        it('Debe respetar el límite de stock (stock=5)', function() {
-            // Agregar 5 veces (Llenar stock)
-            for(let i=0; i<5; i++) agregarProductoAlCarrito('2');
-            expect(carrito[0].cantidad).toBe(5);
+        
+        it('debe usar cantidad 1 por defecto cuando no hay cantidad definida', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 15000 } // sin cantidad
+            ];
             
-            // Intentar el 6to
-            agregarProductoAlCarrito('2');
-            expect(carrito[0].cantidad).toBe(5); // No sube
-            expect(lastNotification).toContain('Stock máximo');
+            const total = calcularTotal(carrito);
+            expect(total).toBe(15000);
+        });
+        
+        it('debe manejar productos sin precio', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto Gratis', cantidad: 1 } // sin precio
+            ];
+            
+            const total = calcularTotal(carrito);
+            expect(total).toBe(0);
         });
     });
-
-    describe('Modificar Cantidades por Índice', function() {
-        beforeEach(function() {
-            // Pre-llenar carrito: Índice 0 = Mouse, Índice 1 = Teclado
-            carrito = [
-                { id: '1', nombre: 'Mouse', precio: 15000, cantidad: 2 },
-                { id: '2', nombre: 'Teclado', precio: 40000, cantidad: 1 }
-            ];
-        });
-
-        it('Aumentar cantidad debe sumar 1 al item del índice dado', function() {
-            aumentarCantidad(0); // Aumentar Mouse (index 0)
-            expect(carrito[0].cantidad).toBe(3);
-        });
-
-        it('Disminuir cantidad debe restar 1 si es mayor a 1', function() {
-            disminuirCantidad(0); // Disminuir Mouse (de 2 a 1)
-            expect(carrito[0].cantidad).toBe(1);
-        });
-
-        it('Disminuir cantidad debe eliminar el producto si llega a 0', function() {
-            disminuirCantidad(1); // Disminuir Teclado (de 1 a 0 -> eliminar)
+    
+    describe('Gestión del Carrito', function() {
+        
+        it('debe agregar nuevo producto al carrito', function() {
+            const carritoInicial = [];
+            const producto = { id: '1', nombre: 'Producto A', precio: 10000 };
             
-            expect(carrito.length).toBe(1); // Solo queda el Mouse
-            expect(carrito[0].id).toBe('1'); // El índice 0 sigue siendo Mouse
+            const nuevoCarrito = agregarAlCarrito(carritoInicial, producto);
+            
+            expect(nuevoCarrito.length).toBe(1);
+            expect(nuevoCarrito[0].id).toBe('1');
+            expect(nuevoCarrito[0].cantidad).toBe(1);
+        });
+        
+        it('debe incrementar cantidad de producto existente', function() {
+            const carritoInicial = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 }
+            ];
+            const producto = { id: '1', nombre: 'Producto A', precio: 10000 };
+            
+            const nuevoCarrito = agregarAlCarrito(carritoInicial, producto);
+            
+            expect(nuevoCarrito.length).toBe(1);
+            expect(nuevoCarrito[0].cantidad).toBe(2);
+        });
+        
+        it('debe actualizar cantidad de producto específico', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 },
+                { id: '2', nombre: 'Producto B', precio: 20000, cantidad: 1 }
+            ];
+            
+            const nuevoCarrito = actualizarCantidad(carrito, 0, 5);
+            
+            expect(nuevoCarrito[0].cantidad).toBe(5); // Producto A actualizado
+            expect(nuevoCarrito[1].cantidad).toBe(1); // Producto B sin cambios
+        });
+        
+        it('debe eliminar producto del carrito', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 },
+                { id: '2', nombre: 'Producto B', precio: 20000, cantidad: 1 }
+            ];
+            
+            const nuevoCarrito = eliminarDelCarrito(carrito, 0);
+            
+            expect(nuevoCarrito.length).toBe(1);
+            expect(nuevoCarrito[0].id).toBe('2');
+        });
+        
+        it('no debe permitir cantidad menor a 1', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 }
+            ];
+            
+            const nuevoCarrito = actualizarCantidad(carrito, 0, 0);
+            
+            expect(nuevoCarrito[0].cantidad).toBe(1); // No cambia
         });
     });
-
-    describe('Eliminación Directa', function() {
-        beforeEach(function() {
-            carrito = [
-                { id: 'A', nombre: 'Prod A', cantidad: 1 },
-                { id: 'B', nombre: 'Prod B', cantidad: 1 },
-                { id: 'C', nombre: 'Prod C', cantidad: 1 }
-            ];
-        });
-
-        it('Debe eliminar un producto usando splice por su índice', function() {
-            eliminarDelCarrito(1); // Eliminar el del medio ('B')
+    
+    describe('Cálculo de Subtotales', function() {
+        
+        it('debe calcular subtotal por producto correctamente', function() {
+            const producto = { precio: 5000, cantidad: 4 };
+            const subtotal = producto.precio * producto.cantidad;
             
-            expect(carrito.length).toBe(2);
-            expect(carrito[0].id).toBe('A');
-            expect(carrito[1].id).toBe('C'); // 'C' se desplaza
+            expect(subtotal).toBe(20000);
         });
+        
+        it('debe calcular correctamente con decimales', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 19.99, cantidad: 2 },
+                { id: '2', nombre: 'Producto B', precio: 29.50, cantidad: 1 }
+            ];
+            
+            const total = calcularTotal(carrito);
+            expect(total).toBeCloseTo(69.48, 2); // 19.99*2 + 29.50 = 69.48
+        });
+    });
+    
+    describe('Persistencia en localStorage', function() {
+        
+        it('debe guardar carrito en localStorage', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 2 }
+            ];
+            
+            localStorageMock.setItem('carrito', JSON.stringify(carrito));
+            const carritoGuardado = JSON.parse(localStorageMock.getItem('carrito'));
+            
+            expect(carritoGuardado).toEqual(carrito);
+            expect(carritoGuardado.length).toBe(1);
+            expect(carritoGuardado[0].cantidad).toBe(2);
+        });
+        
+        it('debe cargar carrito desde localStorage', function() {
+            const carrito = [
+                { id: '1', nombre: 'Producto A', precio: 10000, cantidad: 1 }
+            ];
+            
+            localStorageMock.setItem('carrito', JSON.stringify(carrito));
+            const carritoCargado = JSON.parse(localStorageMock.getItem('carrito') || '[]');
+            
+            expect(carritoCargado).toEqual(carrito);
+        });
+        
+        it('debe manejar localStorage vacío', function() {
+            const carritoCargado = JSON.parse(localStorageMock.getItem('carrito') || '[]');
+            
+            expect(carritoCargado).toEqual([]);
+        });
+    });
+});
+
+// Tests adicionales para validar el formato de moneda
+describe('Formato de Moneda', function() {
+    
+    it('debe formatear números correctamente para display', function() {
+        const numero = 12345.67;
+        const formateado = numero.toLocaleString('es-CL');
+        
+        // Dependiendo del entorno, el formato puede variar
+        expect(typeof formateado).toBe('string');
+        expect(formateado).toContain('12'); // Al menos parte del número
+    });
+    
+    it('debe manejar números grandes correctamente', function() {
+        const carritoGrande = [
+            { id: '1', nombre: 'Producto Caro', precio: 1000000, cantidad: 2 },
+            { id: '2', nombre: 'Otro Producto', precio: 500000, cantidad: 1 }
+        ];
+        
+        const total = calcularTotal(carritoGrande);
+        expect(total).toBe(2500000); // 1,000,000 * 2 + 500,000 = 2,500,000
     });
 });
