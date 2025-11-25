@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario de Productos - Level Up Admin</title>
-    
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Gestión de Categorías - Level Up Admin</title>
+    <link rel="stylesheet" href="../css/style.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <style>
-        /* Modo Oscuro */
         body { background-color: #121212; color: #e0e0e0; font-family: 'Roboto', sans-serif; margin: 0; }
         .admin-layout { display: flex; min-height: 100vh; }
-        
-        /* Sidebar */
         .admin-sidebar { width: 250px; background-color: #000000; color: white; padding: 1.5em; display: flex; flex-direction: column; border-right: 1px solid #333; }
         .admin-sidebar h2 { text-align: center; color: #39FF14; margin-bottom: 30px; letter-spacing: 2px; }
         .admin-sidebar nav a { color: #aaa; text-decoration: none; display: flex; align-items: center; gap: 10px; padding: 12px; margin-bottom: 8px; border-radius: 8px; transition: 0.3s; font-size: 0.95em; }
         .admin-sidebar nav a:hover, .admin-sidebar nav a.active { background-color: rgba(57, 255, 20, 0.15); color: #39FF14; font-weight: bold; }
-        
-        /* Contenido */
         .admin-main-content { flex-grow: 1; padding: 2em; overflow-y: auto; }
         .table-dark { --bs-table-bg: #1e1e1e; --bs-table-hover-bg: #252525; }
         .bg-secondary { background-color: #1e1e1e !important; }
         .modal-content { background-color: #1e1e1e; color: white; border: 1px solid #333; }
         .btn-close-white { filter: invert(1); }
-        .img-prod { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid #444; }
     </style>
 </head>
 <body class="bg-dark text-light">
@@ -37,9 +29,9 @@
             <nav>
                 <a href="admin-dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
                 <a href="admin-pedidos.html"><i class="fas fa-box-open"></i> Órdenes</a>
-                <a href="admin-productos.html" class="active"><i class="fas fa-gamepad"></i> Productos</a>
+                <a href="admin-productos.html"><i class="fas fa-gamepad"></i> Productos</a>
                 <a href="admin-usuarios.html"><i class="fas fa-users"></i> Usuarios</a>
-                <a href="admin-categorias.html"><i class="fas fa-layer-group"></i> Categorías</a> 
+                <a href="admin-categorias.html" class="active"><i class="fas fa-layer-group"></i> Categorías</a> 
                 <a href="admin-reportes.html"><i class="fas fa-chart-line"></i> Reportes</a>
                 <a href="admin-perfil.html"><i class="fas fa-user-circle"></i> Mi Perfil</a> 
             </nav>
@@ -47,30 +39,30 @@
 
         <main class="admin-main-content">
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-white">Inventario de Productos</h2>
-                    <button class="btn btn-lg" style="background-color: #39FF14; color: black; font-weight: bold;" onclick="window.abrirModalCrear()">
-                        <i class="fas fa-plus-circle"></i> Nuevo Producto
-                    </button>
-                </div>
+                <h2 class="text-white mb-4">Administración de Categorías</h2>
                 <hr style="border-color: #333;">
 
+                <div class="mb-4">
+                    <button class="btn btn-lg" style="background-color: #39FF14; color: black; font-weight: bold;" onclick="window.abrirModalCategoria()">
+                        <i class="fas fa-plus-circle"></i> Agregar Categoría
+                    </button>
+                </div>
+
                 <div class="table-responsive bg-dark rounded shadow" style="border: 1px solid #333;">
-                    <table class="table table-dark table-hover align-middle mb-0">
+                    <table class="table table-dark table-hover align-middle mb-0" id="tablaCategorias">
                         <thead>
                             <tr>
-                                <th scope="col">Img</th>
+                                <th scope="col" style="color: #39FF14;">ID</th>
                                 <th scope="col">Nombre</th>
-                                <th scope="col">Precio</th>
-                                <th scope="col">Stock</th>
-                                <th scope="col">Categoría</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col" class="text-center">Productos</th>
                                 <th scope="col" class="text-end">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="productos-tbody">
+                        <tbody id="lista-categorias">
                             <tr>
-                                <td colspan="6" class="text-center text-muted p-5">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando inventario...
+                                <td colspan="5" class="text-center text-muted p-5">
+                                    <i class="fas fa-spinner fa-spin"></i> Cargando datos...
                                 </td>
                             </tr>
                         </tbody>
@@ -80,65 +72,38 @@
         </main>
     </div>
 
-    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header border-secondary">
-            <h5 class="modal-title text-white" id="modalTitle">Producto</h5>
+            <h5 class="modal-title text-white" id="modalLabelCategoria">Formulario de Categoría</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="productoForm" onsubmit="window.guardarProducto(event)">
-              <input type="hidden" id="prodId">
-              
-              <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary" id="prodNombre" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Categoría</label>
-                    <input type="text" class="form-control bg-dark text-white border-secondary" id="prodCategoria" list="listaCategoriasSugeridas" required>
-                    <datalist id="listaCategoriasSugeridas">
-                        <option value="Tecnología">
-                        <option value="Juegos de mesa">
-                        <option value="Periféricos">
-                        <option value="Ropa">
-                    </datalist>
-                  </div>
-              </div>
-
-              <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Precio</label>
-                    <input type="number" class="form-control bg-dark text-white border-secondary" id="prodPrecio" required>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label class="form-label">Stock</label>
-                    <input type="number" class="form-control bg-dark text-white border-secondary" id="prodStock" required>
-                  </div>
-              </div>
-
+            <form id="formCategoria" onsubmit="window.guardarCategoria(event)"> 
+              <input type="hidden" id="categoriaId">
               <div class="mb-3">
-                <label class="form-label">URL de Imagen</label>
-                <input type="url" class="form-control bg-dark text-white border-secondary" id="prodImagen" placeholder="https://...">
+                <label for="nombreCategoria" class="form-label">Nombre</label>
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="nombreCategoria" required>
               </div>
-
+              <div class="mb-3">
+                <label for="descripcionCategoria" class="form-label">Descripción</label>
+                <textarea class="form-control bg-dark text-white border-secondary" id="descripcionCategoria" rows="3"></textarea>
+              </div>
             </form>
           </div>
           <div class="modal-footer border-secondary">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" form="productoForm" class="btn btn-primary" style="background-color: #39FF14; color: black; border: none;" id="btnGuardarProd">Guardar</button>
+            <button type="submit" form="formCategoria" class="btn btn-primary" style="background-color: #39FF14; color: black; border: none;" id="guardarCategoriaBtn">Guardar</button>
           </div>
         </div>
       </div>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    
     <script src="../js/admin-logic.js"></script>
 </body>
 </html>

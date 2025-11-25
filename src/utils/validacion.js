@@ -15,7 +15,7 @@ export function validarRun(run) {
   }
   
   // Limpiar el RUN de puntos y guion
-  let runLimpio = run.replace(/[\.-]/g, '');
+  let runLimpio = run.replace(/[.-]/g, '');
   
   // Separar cuerpo y dígito verificador
   let cuerpo = runLimpio.slice(0, -1);

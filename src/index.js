@@ -1,11 +1,11 @@
 import {addUser} from './services/firestoreService.js';
-import {esMayorEdad,validarApellidos,validarContrasenas,validarCorreo,validarDireccion,validarNombre,validarRun,validarSeleccion} from './utils/validacion.js';
+import {esMayorEdad,validarCorreo,validarRun} from './utils/validacion.js';
 
 document.addEventListener("DOMContentLoaded",()=>{
     const form = document.getElementById("formUsuario");
   const runInput = document.getElementById("run");
   const nombreInput = document.getElementById("nombre");
-  const apellidoInput= document.getElementById("apellido");
+  
   const correoInput = document.getElementById("correo"); 
   const claveInput = document.getElementById("clave"); 
   const fechaInput = document.getElementById("fecha"); 
