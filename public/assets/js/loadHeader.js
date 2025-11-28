@@ -18,6 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(html => {
                 headerPlaceholder.innerHTML = html;
+
+                // 1. Integración del Saludo de Perfil (NUEVO)
+                // Usamos la misma lógica 'isRoot' para encontrar el archivo JS
+                const scriptPath = isRoot ? 'assets/js/saludo-perfil.js' : '../js/saludo-perfil.js';
+                
+                const scriptSaludo = document.createElement('script');
+                scriptSaludo.src = scriptPath;
+                document.body.appendChild(scriptSaludo);
+
+                // 2. Actualizar Carrito (Tu lógica original)
                 // Una vez que el header está en el DOM, llamamos a la función para actualizar el carrito
                 if (typeof window.actualizarHeaderCartGlobal === 'function') {
                     window.actualizarHeaderCartGlobal();
