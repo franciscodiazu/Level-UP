@@ -7,8 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return console.error("No se encontró el formulario #loginForm");
     }
 
-    // --- Tu Lógica de Firebase Integrada ---
-
     // 1. Inicializar Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
@@ -64,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 await auth.signInWithEmailAndPassword(correo, clave);
                 
-                // Guardar datos del admin en localStorage para el saludo
+                // Guardar datos del admin en localStorage
                 const usuario = { nombre: "Administrador", correo, rol: "admin" };
                 localStorage.setItem("usuario", JSON.stringify(usuario));
 
@@ -73,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     icon: 'success',
                     title: '¡Bienvenido Administrador!',
                     text: 'Serás redirigido al panel.',
-                    timer: 2000, // 2 segundos
+                    timer: 2000, 
                     showConfirmButton: false,
                     timerProgressBar: true
                 }).then(() => {
@@ -83,8 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Error login admin:", error);
-                // Cerrar modal de carga y mostrar error específico
-                Swal.close(); // Cierra el modal de carga antes de mostrar el error
+                Swal.close(); 
                 mostrarError("Credenciales incorrectas para administrador.");
             }
             return; // Detiene la ejecución si es admin
@@ -92,25 +89,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 4. Lógica para el Cliente (usando Firestore)
         try {
-            // Busca al usuario por correo Y clave (¡Inseguro! Ver nota en registro)
+            // Busca al usuario por correo Y clave
             const query = await db.collection("usuario")
                 .where("correo", "==", correo)
-                .where("clave", "==", clave) // <-- NO SEGURO
-                .limit(1) // Optimización: solo necesitamos 1 resultado
+                .where("clave", "==", clave)
+                .limit(1) 
                 .get();
 
             if (!query.empty) {
-                const userData = query.docs[0].data();
-                const nombre = userData.nombre || "Cliente"; // Usa el nombre si existe
+                const doc = query.docs[0];
+                const userData = doc.data();
 
-                // Guardar datos del cliente en localStorage para el saludo
-                const usuario = { nombre, correo, rol: "cliente" };
+                // --- CONSTRUCCIÓN DEL USUARIO CORREGIDA ---
+                const usuario = {
+                    ...userData, // Copia todo lo que venga de Firebase
+                    rol: "cliente",
+                    nombre: userData.nombre || "Cliente",
+                    correo: userData.correo || correo,
+                    
+                    // Aseguramos apellidos (plural o singular)
+                    apellidos: userData.apellidos || userData.apellido || "",
+
+                    // --- CORRECCIÓN CRÍTICA DE DIRECCIÓN ---
+                    // Si en tu BD se llama 'direccion', lo guardamos como 'calle' 
+                    // para que el checkout.js lo encuentre.
+                    calle: userData.direccion || userData.calle || "", 
+
+                    // Resto de campos de dirección
+                    numero: userData.numero || "",
+                    region: userData.region || "",
+                    comuna: userData.comuna || "",
+                    departamento: userData.departamento || "",
+                    indicaciones: userData.indicaciones || ""
+                };
+
+                // Guardar datos del cliente en localStorage
                 localStorage.setItem("usuario", JSON.stringify(usuario));
 
                 // Cerrar modal de carga y mostrar éxito
                 Swal.fire({
                     icon: 'success',
-                    title: `¡Bienvenido ${nombre}!`,
+                    title: `¡Bienvenido ${usuario.nombre}!`,
                     text: 'Serás redirigido a tu perfil.',
                     timer: 2000,
                     showConfirmButton: false,
@@ -121,13 +140,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
             } else {
-                // Si la consulta no devolvió resultados
-                Swal.close(); // Cierra el modal de carga
+                Swal.close(); 
                 mostrarError("Correo o contraseña incorrectos.");
             }
         } catch (error) {
             console.error("Error login cliente:", error);
-            Swal.close(); // Cierra el modal de carga
+            Swal.close(); 
             mostrarError("Ocurrió un error al verificar el usuario. Intenta de nuevo.");
         }
     });

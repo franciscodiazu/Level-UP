@@ -71,21 +71,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!query.empty) {
                 const userData = query.docs[0].data();
-                const nombre = userData.nombre || correo;
+                
+                // Mapeo EXACTO y MANUAL (Corregido a 'apellidos' PLURAL)
+                const usuario = {
+                    nombre: userData.nombre || "Cliente",
+                    correo: userData.correo || correo,
+                    rol: "cliente",
+                    
+                    // --- CORRECCIÓN AQUÍ: 'apellidos' en plural ---
+                    apellidos: userData.apellidos || "", 
+                    
+                    // Datos de dirección
+                    calle: userData.calle || "",
+                    numero: userData.numero || "",
+                    region: userData.region || "",
+                    comuna: userData.comuna || ""
+                };
 
-                // Guardar datos del cliente en localStorage para el saludo
-                const usuario = { nombre, correo, rol: "cliente" };
+                // Guardar en localStorage
                 localStorage.setItem("usuario", JSON.stringify(usuario));
 
-                alert("Bienvenido cliente, redirigiendo...");
-
-                // Redirigir a la página del cliente
-                window.location.href = `perfil-cliente.html`;
+                // Alerta de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: `¡Bienvenido ${usuario.nombre}!`,
+                    text: 'Redirigiendo a tu perfil...',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = `perfil-cliente.html`;
+                });
 
             } else {
-                alert("Correo o clave incorrectos");
+                Swal.close(); 
+                mostrarError("Correo o contraseña incorrectos.");
             }
         } catch (error) {
+            // Mantenemos el catch para capturar errores de red o base de datos
             console.error("Error login cliente:", error);
             alert("Error al verificar usuario");
         }
