@@ -397,10 +397,37 @@ function limpiarCarrito() {
  * Redirige al checkout
  */
 function irAlCheckout() {
+    // 1. Validar que el carrito no esté vacío
     if (carrito.length === 0) {
         mostrarNotificacion('Agrega productos al carrito antes de continuar', 'info');
         return;
     }
+
+    // 2. VALIDACIÓN DE SESIÓN (NUEVO)
+    const usuarioLogueado = localStorage.getItem('usuario');
+
+    if (!usuarioLogueado) {
+        // Si no hay usuario, mostramos alerta y redirigimos al login
+        Swal.fire({
+            icon: 'warning',
+            title: 'Inicia Sesión',
+            text: 'Debes tener una cuenta para poder comprar.',
+            showCancelButton: true,
+            confirmButtonText: 'Ir a Iniciar Sesión',
+            cancelButtonText: 'Seguir mirando',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Guardamos el carrito antes de irnos por si acaso
+                guardarCarrito();
+                window.location.href = 'login.html';
+            }
+        });
+        return; // Detenemos la función aquí
+    }
+
+    // 3. Si todo está bien, guardamos y vamos al checkout
     guardarCarrito();
     window.location.href = 'checkout.html'; 
 }
