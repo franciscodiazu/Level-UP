@@ -91,6 +91,29 @@
 
          /* Estilo botón logout */
          .btn-logout-link { /* ... (mismos estilos que antes) ... */ }
+         
+         /* --- INICIO DE ESTILOS AÑADIDOS PARA LA TABLA DE PEDIDOS --- */
+         .orders-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+         .orders-table th { background-color: #000; color: var(--color-accent-green); padding: 15px; text-align: left; border-bottom: 2px solid var(--color-accent-green); }
+         .orders-table td { padding: 15px; border-bottom: 1px solid #333; color: var(--text-main); }
+         .orders-table tr:hover { background-color: #2a2a2a; } 
+ 
+         /* Badges (Adaptado de admin-pedidos.html) */
+         .badge { padding: 5px 12px; border-radius: 15px; font-size: 0.85em; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 0.5px; }
+         .bg-success { background-color: #00c853; } /* Entregado/Enviado */
+         .bg-warning { background-color: #ffab00; color: #000; } /* En Proceso */
+         .bg-danger { background-color: #d50000; } /* Cancelado */
+         .bg-info { background-color: #007bff; } /* Nuevo/Pendiente */
+ 
+         .btn-detalle {
+             background-color: var(--color-accent-blue); color: var(--text-main);
+             border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;
+             transition: background-color 0.3s;
+         }
+         .btn-detalle:hover {
+             background-color: var(--color-accent-green); color: var(--color-bg);
+         }
+         /* --- FIN DE ESTILOS AÑADIDOS --- */
 
          /* Responsive */
          @media (max-width: 900px) { /* Ajusta breakpoint si es necesario */
@@ -154,5 +177,121 @@
     </footer>
 
     <script src="../js/saludo-perfil.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileContentArea = document.getElementById('profileContentArea');
+            const navButtons = document.querySelectorAll('.sidebar-nav button.nav-button');
+
+            // Contenido HTML para el historial de compras (tabla adaptada de admin-pedidos.html)
+            const historialComprasContent = `
+                <h1 class="page-title">Historial de Compras</h1>
+                <p>Aquí puedes revisar el estado y detalles de tus pedidos anteriores.</p>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-tbody">
+                        <tr>
+                            <td>#LU-2025001</td>
+                            <td>$45.990</td>
+                            <td><span class="badge bg-success">Entregado</span></td>
+                            <td>2025-11-28</td>
+                            <td><button class="btn-detalle">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>#LU-2025002</td>
+                            <td>$12.500</td>
+                            <td><span class="badge bg-warning">En Proceso</span></td>
+                            <td>2025-12-01</td>
+                            <td><button class="btn-detalle">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>#LU-2025003</td>
+                            <td>$89.990</td>
+                            <td><span class="badge bg-danger">Cancelado</span></td>
+                            <td>2025-12-03</td>
+                            <td><button class="btn-detalle">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align:center; color: var(--text-secondary);">
+                                Los datos son de ejemplo. Se requiere lógica de base de datos para cargar el historial real.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            // Contenido inicial por defecto
+            const inicioPerfilContent = `
+                <h1>Bienvenido a tu Perfil</h1>
+                <p>Selecciona una opción del menú lateral para gestionar tu cuenta.</p>
+                <p>Aquí podríamos mostrar un resumen de la actividad reciente, como el último pedido o puntos de fidelidad.</p>
+            `;
+
+            // Contenido placeholder para otras secciones
+            const otherContent = (page) => `<h1>Página de ${page.replace('-', ' ')}</h1><p>Contenido en desarrollo.</p>`;
+            
+            // Función para cambiar el contenido
+            const loadPageContent = (page) => {
+                let content = '';
+                // Limpia el estado de carga
+                profileContentArea.classList.remove('loading');
+                profileContentArea.innerHTML = ''; // Limpia el contenido antes de cargar
+
+                switch (page) {
+                    case 'inicio-perfil':
+                        content = inicioPerfilContent;
+                        break;
+                    case 'historial-compras':
+                        // Simula un proceso de carga (opcional)
+                        profileContentArea.classList.add('loading');
+                        // En un entorno real, aquí se llamaría al fetch de datos
+                        setTimeout(() => {
+                            profileContentArea.classList.remove('loading');
+                            profileContentArea.innerHTML = historialComprasContent;
+                            // Asignar el evento al botón de detalle (simulado)
+                            document.querySelectorAll('.btn-detalle').forEach(button => {
+                                button.addEventListener('click', () => {
+                                    alert('Funcionalidad de "Ver Detalle" pendiente de implementación.');
+                                });
+                            });
+                        }, 500);
+                        return; // Retorna para manejar la simulación de carga
+                    case 'soporte-cliente':
+                    case 'editar-perfil':
+                        content = otherContent(page);
+                        break;
+                    default:
+                        content = inicioPerfilContent;
+                }
+                profileContentArea.innerHTML = content;
+            };
+
+            // Manejador de eventos para los botones de navegación
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Actualiza el estado activo
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Carga el contenido
+                    const page = this.getAttribute('data-page');
+                    loadPageContent(page);
+                });
+            });
+
+            // Carga inicial al iniciar la página
+            const initialPageButton = document.querySelector('.sidebar-nav button.nav-button.active');
+            if (initialPageButton) {
+                loadPageContent(initialPageButton.getAttribute('data-page'));
+            }
+        });
+    </script>
 </body>
 </html>
