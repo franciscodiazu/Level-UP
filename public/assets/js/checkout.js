@@ -1,8 +1,11 @@
 /* ==========================================
  * ARCHIVO: js/checkout.js
- * (Versión Final: Con Autocompletado y Bloqueo)
+ * (Versión Profesional: Usando Import)
  * ==========================================
 */
+
+// 1. IMPORTAMOS LAS REGIONES (No las copiamos)
+import { regionesYComunas } from './regiones.js';
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -20,26 +23,6 @@ const db = firebase.firestore();
 // Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// Datos de regiones y comunas
-const regionesComunas = {
-    "Arica y Parinacota": ["Arica", "Camarones", "Putre", "General Lagos"],
-    "Tarapacá": ["Iquique", "Alto Hospicio", "Pozo Almonte", "Camiña", "Colchane", "Huara", "Pica"],
-    "Antofagasta": ["Antofagasta", "Mejillones", "Sierra Gorda", "Taltal", "Calama", "Ollagüe", "San Pedro de Atacama", "Tocopilla", "María Elena"],
-    "Atacama": ["Copiapó", "Caldera", "Tierra Amarilla", "Chañaral", "Diego de Almagro", "Vallenar", "Alto del Carmen", "Freirina", "Huasco"],
-    "Coquimbo": ["La Serena", "Coquimbo", "Andacollo", "La Higuera", "Paiguano", "Vicuña", "Illapel", "Canela", "Los Vilos", "Salamanca", "Ovalle", "Combarbalá", "Monte Patria", "Punitaqui", "Río Hurtado"],
-    "Valparaíso": ["Valparaíso", "Casablanca", "Concón", "Juan Fernández", "Puchuncaví", "Quintero", "Viña del Mar", "Isla de Pascua", "Los Andes", "Calle Larga", "Rinconada", "San Esteban", "La Ligua", "Cabildo", "Papudo", "Petorca", "Zapallar", "Quillota", "Calera", "Hijuelas", "La Cruz", "Nogales", "San Antonio", "Algarrobo", "Cartagena", "El Quisco", "El Tabo", "Santo Domingo", "San Felipe", "Catemu", "Llaillay", "Panquehue", "Putaendo", "Santa María", "Quilpué", "Limache", "Olmué", "Villa Alemana"],
-    "Metropolitana": ["Santiago", "Cerrillos", "Cerro Navia", "Conchalí", "El Bosque", "Estación Central", "Huechuraba", "Independencia", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "Ñuñoa", "Pedro Aguirre Cerda", "Peñalolén", "Providencia", "Pudahuel", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Joaquín", "San Miguel", "San Ramón", "Vitacura", "Puente Alto", "Pirque", "San José de Maipo", "Colina", "Lampa", "Tiltil", "San Bernardo", "Buin", "Calera de Tango", "Paine", "Melipilla", "Alhué", "Curacaví", "María Pinto", "San Pedro", "Talagante", "El Monte", "Isla de Maipo", "Padre Hurtado", "Peñaflor"],
-    "O'Higgins": ["Rancagua", "Codegua", "Coinco", "Coltauco", "Doñihue", "Graneros", "Las Cabras", "Machalí", "Malloa", "Mostazal", "Olivar", "Peumo", "Pichidegua", "Quinta de Tilcoco", "Rengo", "Requínoa", "San Vicente", "Pichilemu", "La Estrella", "Litueche", "Marchihue", "Navidad", "San Fernando", "Chépica", "Chimbarongo", "Lolol", "Nancagua", "Palmilla", "Peralillo", "Placilla", "Pumanque", "Santa Cruz"],
-    "Maule": ["Talca", "Constitución", "Curepto", "Empedrado", "Maule", "Pelarco", "Pencahue", "Río Claro", "San Clemente", "San Rafael", "Cauquenes", "Chanco", "Pelluhue", "Curicó", "Hualañé", "Licantén", "Molina", "Rauco", "Romeral", "Sagrada Familia", "Teno", "Vichuquén", "Linares", "Colbún", "Longaví", "Parral", "Retiro", "San Javier", "Villa Alegre", "Yerbas Buenas"],
-    "Ñuble": ["Chillán", "Bulnes", "Chillán Viejo", "El Carmen", "Pemuco", "Pinto", "Quillón", "San Ignacio", "Yungay", "Quirihue", "Cobquecura", "Coelemu", "Ninhue", "Portezuelo", "Ránquil", "Treguaco", "San Carlos", "Coihueco", "Ñiquén", "San Fabián", "San Nicolás"],
-    "Biobío": ["Concepción", "Coronel", "Chiguayante", "Florida", "Hualpén", "Hualqui", "Lota", "Penco", "San Pedro de la Paz", "Santa Juana", "Talcahuano", "Tomé", "Los Ángeles", "Antuco", "Cabrero", "Laja", "Mulchén", "Nacimiento", "Negrete", "Quilaco", "Quilleco", "San Rosendo", "Santa Bárbara", "Tucapel", "Yumbel", "Alto Biobío", "Lebú", "Arauco", "Cañete", "Contulmo", "Curanilahue", "Los Álamos", "Tirúa"],
-    "Araucanía": ["Temuco", "Carahue", "Cunco", "Curarrehue", "Freire", "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Melipeuco", "Nueva Imperial", "Padre las Casas", "Perquenco", "Pitrufquén", "Pucón", "Saavedra", "Teodoro Schmidt", "Toltén", "Vilcún", "Villarrica", "Cholchol", "Angol", "Collipulli", "Curacautín", "Ercilla", "Lonquimay", "Los Sauces", "Lumaco", "Purén", "Renaico", "Traiguén", "Victoria"],
-    "Los Ríos": ["Valdivia", "Corral", "Lanco", "Los Lagos", "Máfil", "Mariquina", "Paillaco", "Panguipulli", "La Unión", "Futrono", "Lago Ranco", "Río Bueno"],
-    "Los Lagos": ["Puerto Montt", "Calbuco", "Cochamó", "Fresia", "Frutillar", "Los Muermos", "Llanquihue", "Maullín", "Puerto Varas", "Castro", "Ancud", "Chonchi", "Curaco de Vélez", "Dalcahue", "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao", "Osorno", "Puerto Octay", "Purranque", "Puyehue", "Río Negro", "San Juan de la Costa", "San Pablo", "Chaitén", "Futaleufú", "Hualaihué", "Palena"],
-    "Aysén": ["Coihaique", "Lago Verde", "Aysén", "Cisnes", "Guaitecas", "Cochrane", "O'Higgins", "Tortel", "Chile Chico", "Río Ibáñez"],
-    "Magallanes": ["Punta Arenas", "Laguna Blanca", "Río Verde", "San Gregorio", "Cabo de Hornos", "Antártica", "Porvenir", "Primavera", "Timaukel", "Natales", "Torres del Paine"]
-};
-
 // ==============================================================
 // 1. INICIALIZACIÓN
 // ==============================================================
@@ -53,9 +36,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==============================================================
-// 2. FUNCIÓN DE AUTOCOMPLETADO (LA CLAVE)
+// 2. FUNCIÓN DE AUTOCOMPLETADO INTELIGENTE
 // ==============================================================
 function autoFillUserData() {
+    console.log("🚀 Iniciando autocompletado...");
     const usuarioStr = localStorage.getItem('usuario');
     if (!usuarioStr) return; 
 
@@ -63,14 +47,14 @@ function autoFillUserData() {
     try {
         usuario = JSON.parse(usuarioStr);
     } catch (e) {
+        console.error("Error leyendo datos del usuario:", e);
         return;
     }
 
     // --- A. DATOS PERSONALES ---
     const camposPersonales = {
         'nombre': usuario.nombre || '',
-        // Busca en 'apellidos' (plural) O 'apellido' (singular) por seguridad
-        'apellidos': usuario.apellidos || usuario.apellido || '', 
+        'apellidos': usuario.apellidos || usuario.apellido || '',
         'correo': usuario.correo || ''
     };
 
@@ -86,82 +70,103 @@ function autoFillUserData() {
     }
 
     // --- B. DATOS DE DIRECCIÓN ---
-    // Usamos el objeto usuario directamente
     const dir = usuario;
 
     // 1. Calle y Número
     if (dir.calle) {
         const inputCalle = document.getElementById('calle');
         if (inputCalle) {
-            // Concatena número si existe
-            inputCalle.value = dir.calle + (dir.numero ? ` #${dir.numero}` : '');
+            const numeroStr = dir.numero ? ` #${dir.numero}` : '';
+            inputCalle.value = dir.calle + numeroStr;
         }
     }
 
-    // 2. Departamento e Indicaciones (Si existen)
-    if (dir.departamento) {
-        const inputDepto = document.getElementById('departamento');
-        if (inputDepto) inputDepto.value = dir.departamento;
-    }
-    
-    // Si en tu HTML o BD no tienes indicaciones, esto simplemente se ignora
-    if (dir.indicaciones) {
-        const inputIndic = document.getElementById('indicaciones');
-        if (inputIndic) inputIndic.value = dir.indicaciones;
-    }
+    if (dir.departamento) document.getElementById('departamento').value = dir.departamento;
+    if (dir.indicaciones) document.getElementById('indicaciones').value = dir.indicaciones || "";
 
-    // 3. Región y Comuna (Con retardo de seguridad)
-    if (dir.region) {
+    // --- C. LÓGICA DE REGIÓN Y COMUNA ---
+    const regionUsuario = (dir.region || dir.Region || "").trim();
+    const comunaUsuario = (dir.comuna || dir.Comuna || "").trim();
+
+    if (regionUsuario) {
         const regionSelect = document.getElementById('region');
-        if (regionSelect) {
-            regionSelect.value = dir.region;
-            
-            // Dispara la carga de comunas
-            cargarComunas(dir.region);
+        
+        // Buscamos la región en nuestra lista IMPORTADA
+        const regionEncontrada = regionesYComunas.regiones.find(r => {
+            const nombreBD = regionUsuario.toLowerCase();
+            const nombreLista = r.nombre.toLowerCase();
+            return nombreBD === nombreLista || nombreLista.includes(nombreBD) || nombreBD.includes(nombreLista);
+        });
 
-            // Selecciona comuna
-            if (dir.comuna) {
+        if (regionEncontrada && regionSelect) {
+            // 1. Seleccionamos la región
+            regionSelect.value = regionEncontrada.nombre;
+            
+            // 2. Cargamos las comunas para esa región
+            cargarComunas(regionEncontrada.nombre);
+
+            // 3. Seleccionamos la comuna
+            if (comunaUsuario) {
                 setTimeout(() => {
                     const comunaSelect = document.getElementById('comuna');
-                    if (comunaSelect) {
-                        comunaSelect.value = dir.comuna;
+                    const comunaEncontrada = regionEncontrada.comunas.find(c => 
+                        c.toLowerCase().trim() === comunaUsuario.toLowerCase()
+                    );
+
+                    if (comunaEncontrada) {
+                        comunaSelect.value = comunaEncontrada;
                         comunaSelect.disabled = false;
                     }
-                }, 500); // 500ms para asegurar que la lista cargó
+                }, 200);
             }
         }
     }
 }
 
 // ==============================================================
-// 3. FUNCIONES EXISTENTES (SIN CAMBIOS)
+// 3. FUNCIONES DE CARGA (Usando la variable importada)
 // ==============================================================
 
 function cargarRegiones() {
     const selectRegion = document.getElementById('region');
     if (!selectRegion) return;
-    const regionesOrdenadas = Object.keys(regionesComunas).sort();
-    regionesOrdenadas.forEach(region => {
+    
+    selectRegion.innerHTML = '<option value="">-- Seleccione Región --</option>';
+
+    // Usamos la variable importada 'regionesYComunas'
+    regionesYComunas.regiones.forEach(region => {
         const option = document.createElement('option');
-        option.value = region;
-        option.textContent = region;
+        option.value = region.nombre; 
+        option.textContent = region.nombre;
         selectRegion.appendChild(option);
     });
 }
 
-function cargarComunas(region) {
+function cargarComunas(nombreRegion) {
     const selectComuna = document.getElementById('comuna');
     if (!selectComuna) return;
-    const comunas = regionesComunas[region] || [];
+    
     selectComuna.innerHTML = '<option value="">Selecciona una comuna</option>';
-    comunas.sort().forEach(comuna => {
-        const option = document.createElement('option');
-        option.value = comuna;
-        option.textContent = comuna;
-        selectComuna.appendChild(option);
-    });
-    selectComuna.disabled = false;
+    
+    const regionObj = regionesYComunas.regiones.find(r => r.nombre === nombreRegion);
+    
+    if (regionObj) {
+        const comunas = regionObj.comunas || [];
+        comunas.sort().forEach(comuna => {
+            const option = document.createElement('option');
+            option.value = comuna;
+            option.textContent = comuna;
+            selectComuna.appendChild(option);
+        });
+        selectComuna.disabled = false;
+    } else {
+        selectComuna.disabled = true;
+    }
 }
+
+// ==============================================================
+// 4. FUNCIONES DEL CARRITO Y PAGO (Sin cambios)
+// ==============================================================
 
 function inicializarCheckout() {
     renderizarProductosCheckout();
@@ -195,16 +200,16 @@ function actualizarTotales() {
     if (totalPagar) totalPagar.textContent = '$' + total.toLocaleString('es-CL');
     if (montoPagar) montoPagar.textContent = '$' + total.toLocaleString('es-CL');
     localStorage.setItem('cartTotal', total);
-    actualizarCarritoHeader();
-}
-
-function actualizarCarritoHeader() {
+    
+    // Usamos window porque import crea su propio scope
     if (typeof window.actualizarHeaderCartGlobal === 'function') {
         window.actualizarHeaderCartGlobal();
     }
 }
 
-async function procesarPago() {
+// Exponemos la función al objeto window para que el HTML pueda llamarla si es necesario
+// aunque aquí usamos addEventListener así que no es estrictamente necesario, es buena práctica en módulos
+window.procesarPago = async function() {
     if (carrito.length === 0) return alert('No hay productos en el carrito');
     if (!validarFormularios()) return alert('Por favor completa todos los campos obligatorios');
     const btnPagar = document.getElementById('btnPagarAhora');
@@ -224,7 +229,7 @@ async function procesarPago() {
             numeroOrden: generarNumeroOrden()
         };
         const docRef = await db.collection('compras').add(compra);
-        // Simulación de pago
+        
         if (Math.random() > 0.5) {
             await db.collection('compras').doc(docRef.id).update({ estado: 'completada' });
             localStorage.setItem('carrito', JSON.stringify([]));
@@ -240,7 +245,7 @@ async function procesarPago() {
         btnPagar.disabled = false;
         btnPagar.textContent = 'Pagar ahora';
     }
-}
+};
 
 function validarFormularios() {
     return document.getElementById('formCliente').checkValidity() && document.getElementById('formDireccion').checkValidity();
@@ -270,7 +275,8 @@ function generarNumeroOrden() {
 
 function configurarEventosCheckout() {
     const btnPagar = document.getElementById('btnPagarAhora');
-    if (btnPagar) btnPagar.addEventListener('click', procesarPago);
+    // Usamos la función global o local
+    if (btnPagar) btnPagar.addEventListener('click', window.procesarPago);
     
     const selectRegion = document.getElementById('region');
     if(selectRegion) {
@@ -284,7 +290,6 @@ function configurarEventosCheckout() {
         });
     }
     
-    // Validación visual
     const inputs = document.querySelectorAll('#formCliente input[required], #formDireccion input[required], #formDireccion select[required]');
     inputs.forEach(input => {
         input.addEventListener('input', function() {
