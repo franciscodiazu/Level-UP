@@ -21,14 +21,35 @@
     <main class="container">
         <h1 class="page-title">Historial de Compras</h1>
         <p>Aquí verás la lista de tus compras anteriores.</p>
-        <div style="border: 1px dashed #555; padding: 20px; margin-top: 20px; text-align: center; color: var(--text-secondary);">
-            (Contenido del historial de compras próximamente)
+        <div id="historial-container" class="profile-history-container">
+            Cargando historial...
         </div>
-    </main>
+        </main>
 
     <footer>
        <div class="footer-container">...</div> 
     </footer>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+            authDomain: "tienda-level-up.firebaseapp.com",
+            projectId: "tienda-level-up",
+            storageBucket: "tienda-level-up.appspot.com",
+            messagingSenderId: "210482166049",
+            appId: "1:210482166049:web:15dadb935d28d9f7d02660",
+            measurementId: "G-85R23XKYYM"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+    </script>
+    
     <script src="../js/saludo-perfil.js"></script> 
+    <script src="../js/perfil-data.js"></script> 
 </body>
 </html>

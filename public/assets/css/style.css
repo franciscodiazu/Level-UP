@@ -2516,3 +2516,65 @@ main.main {
     transform: scale(1.05);
     background-color: #fff;
 }
+.card-dashboard {
+    background-color: #1a1a1a; /* Fondo oscuro */
+    border: 1px solid var(--color-accent-blue); /* Borde de acento */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra suave */
+    margin-bottom: 20px;
+}
+.profile-content .page-title {
+    color: var(--color-accent-green); /* Títulos en color de acento verde */
+    border-bottom: 2px solid var(--color-accent-blue);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+/* Estilos para el panel de usuario */
+.user-info {
+    text-align: center;
+    padding: 20px 10px;
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--color-accent-blue);
+}
+
+#saludo-nombre {
+    font-size: 1.3em;
+    margin: 0 0 10px 0;
+    color: var(--color-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.user-info hr {
+    border-color: var(--color-accent-blue);
+    opacity: 0.5;
+    margin: 15px 0;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+/* Efecto hover para el saludo */
+.user-info:hover #saludo-nombre {
+    transform: scale(1.05);
+    color: #fff;
+}
+
+/* Animación de carga */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+#saludo-nombre:empty::after {
+    content: 'Cargando...';
+    color: #888;
+    animation: pulse 1.5s infinite;
+}

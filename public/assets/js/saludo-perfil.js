@@ -1,156 +1,246 @@
-/**
- * LÓGICA DE INICIO
- * Detectamos si el DOM ya está listo o si debemos esperar.
- * Esto es crucial porque este script se carga dinámicamente.
- */
-if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", mainEjecucion);
-} else {
-    // Si la página ya cargó (caso común al venir desde loadHeader.js), ejecutamos directo.
-    mainEjecucion();
-}
+// Archivo: public/assets/js/saludo-perfil.js
+// Script para mostrar saludo personalizado y manejar cierre de sesión
 
-function mainEjecucion() {
-    // 1. Intentar actualizar el header (Icono del usuario)
-    actualizarHeaderUsuario();
+// Función principal que se ejecuta al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarPanelUsuario();
+});
 
-    // 2. Intentar cargar lógica del perfil (Solo funcionará si estamos en perfil-cliente.html)
-    iniciarPaginaPerfil();
+function inicializarPanelUsuario() {
+    mostrarSaludoPersonalizado();
+    configurarBotonCerrarSesion();
+    actualizarEstadoSesion();
 }
 
 /**
- * Busca el header y reemplaza los botones de Login/Registro 
- * por el nombre e icono del usuario si hay sesión activa.
+ * Muestra el saludo personalizado con el nombre del usuario
  */
-function actualizarHeaderUsuario() {
-    // Buscamos el contenedor de botones. 
-    // Como loadHeader.js acaba de inyectar el HTML, esto debería existir.
-    const headerAuth = document.querySelector(".header-auth-buttons");
+function mostrarSaludoPersonalizado() {
+    const saludoElement = document.getElementById('saludo-nombre');
     
-    // Verificación de seguridad: si por alguna razón no existe, no hacemos nada.
-    if (!headerAuth) return;
-
-    // Verificamos si hay usuario guardado en localStorage
-    const usuarioStr = localStorage.getItem("usuario");
+    if (!saludoElement) {
+        console.warn('Elemento #saludo-nombre no encontrado');
+        return;
+    }
     
-    if (usuarioStr) {
-        try {
-            const usuario = JSON.parse(usuarioStr);
-            const nombre = usuario.nombre || usuario.correo || "Mi Cuenta";
-            
-            // Ruta de la imagen (Ajusta si moviste tu imagen nueva)
-            // Nota: Usamos una ruta absoluta '/assets/...' para que funcione en cualquier carpeta
-            const imagenPerfil = "/assets/img/dev1.png"; 
-
-            // REEMPLAZO: Cambiamos el HTML de los botones por el del perfil
-            // Importante: Usamos rutas absolutas (empezando con /) para los enlaces
-            headerAuth.innerHTML = `
-                <a href="/assets/html/perfil-cliente.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white;">
-                    <img src="${imagenPerfil}" alt="Perfil" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid white;">
-                    <span style="font-weight: bold; font-size: 0.95rem;">${nombre}</span>
-                </a>
-            `;
-        } catch (e) {
-            console.error("Error leyendo datos del usuario para el header:", e);
-        }
-    }
-}
-
-/**
- * Lógica original de tu panel de perfil. 
- * Solo se ejecuta si existen los elementos del DOM específicos del perfil.
- */
-function iniciarPaginaPerfil() {
-    const saludoElement = document.getElementById("saludoUsuario");
-    const btnCerrarSesion = document.getElementById("btnCerrarSesion");
-    const sidebarNav = document.querySelector(".sidebar-nav ul");
-    const contentArea = document.getElementById("profileContentArea");
-
-    // Si falta algún elemento esencial, asumimos que NO estamos en la página de perfil
-    if (!saludoElement || !btnCerrarSesion || !sidebarNav || !contentArea) {
-        return; 
-    }
-
-    // --- Mostrar Saludo en el Perfil ---
-    let nombreUsuario = "Cliente"; 
-    try {
-        const usuarioStr = localStorage.getItem("usuario");
-        if (usuarioStr) {
-            const usuario = JSON.parse(usuarioStr);
-            nombreUsuario = usuario.nombre || usuario.correo || "Cliente";
-            saludoElement.innerHTML = `Bienvenido, <strong>${nombreUsuario}</strong>`;
+    // Verificar Firebase Auth primero
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            // Usuario autenticado en Firebase
+            mostrarNombreUsuario(user, saludoElement);
         } else {
-            saludoElement.textContent = "Bienvenido.";
-        }
-    } catch (error) {
-        console.error("Error al leer usuario:", error);
-    }
-
-    // --- Lógica de Cerrar Sesión ---
-    btnCerrarSesion.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("usuario");
-        
-        const accionCierre = () => window.location.href = '/index.html'; // Ruta absoluta al inicio
-
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: 'Cerrando sesión...',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(accionCierre);
-        } else {
-            accionCierre();
-        }
-    });
-
-    // --- Carga Dinámica de Contenido ---
-    async function loadContent(pageName) {
-        if (pageName === 'inicio-perfil') {
-            contentArea.innerHTML = `
-                <div class="fade-in">
-                    <h2>Inicio Perfil</h2>
-                    <p>Bienvenido a tu panel de control, <strong>${nombreUsuario}</strong>.</p>
-                    <p>Aquí puedes gestionar tu cuenta y ver tus actividades recientes.</p>
-                </div>`;
-            contentArea.classList.remove('loading');
-            return;
-        }
-
-        const url = `${pageName}.html`;
-        contentArea.innerHTML = '';
-        contentArea.classList.add('loading');
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Error ${response.status}`);
-            
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const mainContent = doc.querySelector('main .container') || doc.querySelector('main');
-            
-            if (mainContent) {
-                contentArea.innerHTML = mainContent.innerHTML;
+            // Intentar con localStorage
+            const usuarioJson = localStorage.getItem('usuario');
+            if (usuarioJson) {
+                try {
+                    const usuario = JSON.parse(usuarioJson);
+                    mostrarNombreDesdeLocalStorage(usuario, saludoElement);
+                } catch (error) {
+                    mostrarSaludoGenerico(saludoElement);
+                }
             } else {
-                contentArea.innerHTML = '<p>Contenido no encontrado.</p>';
+                mostrarSaludoGenerico(saludoElement);
             }
-        } catch (error) {
-            console.error("Error carga dinámica:", error);
-            contentArea.innerHTML = `<p style="color: red;">No se pudo cargar la sección.</p>`;
-        } finally {
-            contentArea.classList.remove('loading');
-        }
-    }
-
-    sidebarNav.addEventListener("click", (e) => {
-        const btn = e.target.closest('button');
-        if (btn && btn.dataset.page) {
-            sidebarNav.querySelectorAll('button.nav-button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            loadContent(btn.dataset.page);
         }
     });
-
-    loadContent('inicio-perfil');
 }
+
+/**
+ * Muestra el nombre del usuario desde Firebase Auth
+ */
+function mostrarNombreUsuario(user, saludoElement) {
+    let nombre = '';
+    
+    // Prioridad: displayName de Firebase > email > nombre en localStorage
+    if (user.displayName) {
+        nombre = user.displayName;
+    } else if (user.email) {
+        // Extraer solo el nombre del email (antes del @)
+        nombre = user.email.split('@')[0];
+        nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    } else {
+        // Intentar con localStorage
+        const usuarioJson = localStorage.getItem('usuario');
+        if (usuarioJson) {
+            try {
+                const usuario = JSON.parse(usuarioJson);
+                nombre = usuario.nombre || 'Usuario';
+            } catch (error) {
+                nombre = 'Usuario';
+            }
+        } else {
+            nombre = 'Usuario';
+        }
+    }
+    
+    saludoElement.innerHTML = `
+        <i class="fas fa-user-circle" style="margin-right: 8px;"></i>
+        ¡Hola, <span style="color: var(--color-primary); font-weight: bold;">${nombre}</span>!
+    `;
+    saludoElement.style.fontSize = '1.2em';
+    
+    // También actualizar localStorage si es necesario
+    guardarUsuarioEnLocalStorage(user);
+}
+
+/**
+ * Muestra el nombre del usuario desde localStorage
+ */
+function mostrarNombreDesdeLocalStorage(usuario, saludoElement) {
+    const nombre = usuario.nombre || usuario.correo?.split('@')[0] || 'Usuario';
+    
+    saludoElement.innerHTML = `
+        <i class="fas fa-user-circle" style="margin-right: 8px;"></i>
+        ¡Hola, <span style="color: var(--color-primary); font-weight: bold;">${nombre}</span>!
+    `;
+    saludoElement.style.fontSize = '1.2em';
+}
+
+/**
+ * Muestra un saludo genérico para invitados
+ */
+function mostrarSaludoGenerico(saludoElement) {
+    saludoElement.innerHTML = `
+        <i class="fas fa-user" style="margin-right: 8px;"></i>
+        ¡Hola, Invitado!
+    `;
+    saludoElement.style.color = '#888';
+}
+
+/**
+ * Guarda información del usuario en localStorage
+ */
+function guardarUsuarioEnLocalStorage(user) {
+    try {
+        const usuarioData = {
+            uid: user.uid,
+            correo: user.email,
+            nombre: user.displayName || user.email?.split('@')[0] || 'Usuario',
+            idUsuario: user.uid
+        };
+        
+        localStorage.setItem('usuario', JSON.stringify(usuarioData));
+    } catch (error) {
+        console.error('Error al guardar usuario en localStorage:', error);
+    }
+}
+
+/**
+ * Configura el botón de cerrar sesión
+ */
+function configurarBotonCerrarSesion() {
+    const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+    
+    if (btnCerrarSesion) {
+        // Añadir estilos al botón si no los tiene
+        if (!btnCerrarSesion.style.backgroundColor) {
+            btnCerrarSesion.style.cssText = `
+                background: linear-gradient(135deg, #ff416c, #ff4b2b);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                margin-left: 10px;
+            `;
+            
+            btnCerrarSesion.innerHTML = `
+                <i class="fas fa-sign-out-alt" style="margin-right: 5px;"></i>
+                Cerrar Sesión
+            `;
+        }
+        
+        btnCerrarSesion.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(255, 75, 43, 0.3)';
+        });
+        
+        btnCerrarSesion.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+        
+        btnCerrarSesion.addEventListener('click', cerrarSesion);
+    }
+}
+
+/**
+ * Función para cerrar sesión
+ */
+function cerrarSesion() {
+    // Mostrar diálogo de confirmación
+    const confirmar = confirm('¿Estás seguro de que deseas cerrar sesión?');
+    
+    if (confirmar) {
+        // Mostrar mensaje de carga
+        const originalText = document.getElementById('btnCerrarSesion').innerHTML;
+        document.getElementById('btnCerrarSesion').innerHTML = `
+            <i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i>
+            Cerrando...
+        `;
+        document.getElementById('btnCerrarSesion').disabled = true;
+        
+        // Cerrar sesión de Firebase
+        firebase.auth().signOut()
+            .then(() => {
+                console.log('Sesión cerrada exitosamente');
+                
+                // Limpiar datos locales
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('carrito');
+                
+                // Mostrar mensaje de éxito
+                alert('Sesión cerrada exitosamente');
+                
+                // Redirigir al inicio
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 500);
+                
+            })
+            .catch((error) => {
+                console.error('Error al cerrar sesión:', error);
+                
+                // Restaurar botón
+                document.getElementById('btnCerrarSesion').innerHTML = originalText;
+                document.getElementById('btnCerrarSesion').disabled = false;
+                
+                // Mostrar error
+                alert(`Error al cerrar sesión: ${error.message}`);
+            });
+    }
+}
+
+/**
+ * Actualiza el estado de la sesión periódicamente
+ */
+function actualizarEstadoSesion() {
+    // Verificar cada 5 minutos si la sesión sigue activa
+    setInterval(() => {
+        firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true)
+            .catch(() => {
+                // Si falla, la sesión podría haber expirado
+                console.log('La sesión podría haber expirado');
+                // Opcional: redirigir a login
+                // window.location.href = 'login.html';
+            });
+    }, 5 * 60 * 1000); // 5 minutos
+}
+
+// Función para actualizar el saludo manualmente (útil después de editar perfil)
+function actualizarSaludo(nuevoNombre) {
+    const saludoElement = document.getElementById('saludo-nombre');
+    if (saludoElement && nuevoNombre) {
+        saludoElement.innerHTML = `
+            <i class="fas fa-user-circle" style="margin-right: 8px;"></i>
+            ¡Hola, <span style="color: var(--color-primary); font-weight: bold;">${nuevoNombre}</span>!
+        `;
+    }
+}
+
+// Hacer funciones disponibles globalmente
+window.mostrarSaludoPersonalizado = mostrarSaludoPersonalizado;
+window.actualizarSaludo = actualizarSaludo;
+window.cerrarSesion = cerrarSesion;

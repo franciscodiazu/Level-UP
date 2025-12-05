@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // --- CONSTRUCCIÓN DEL USUARIO CORREGIDA ---
                 const usuario = {
+                    idUsuario: doc.id,
                     ...userData, // Copia todo lo que venga de Firebase
                     rol: "cliente",
                     nombre: userData.nombre || "Cliente",
