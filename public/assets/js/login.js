@@ -87,6 +87,46 @@ document.addEventListener("DOMContentLoaded", () => {
             return; // Detiene la ejecución si es admin
         }
 
+        // Lógica para el Vendedor
+        if (correo === "vendedor@duoc.com") {
+            try {
+                // 1. Autenticar con Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(correo, clave);
+                const user = userCredential.user;
+
+                // 2. Obtener datos del vendedor desde Firestore para el saludo
+                const userDoc = await db.collection("usuario").doc(user.uid).get();
+                const userData = userDoc.exists ? userDoc.data() : {};
+
+                // 3. Guardar datos del vendedor en localStorage
+                const usuario = { 
+                    idUsuario: user.uid,
+                    nombre: userData.nombre || "Vendedor", 
+                    correo, 
+                    rol: "vendedor" 
+                };
+                localStorage.setItem("usuario", JSON.stringify(usuario));
+
+                // 4. Mostrar éxito y redirigir
+                Swal.fire({
+                    icon: 'success',
+                    title: `¡Bienvenido, ${usuario.nombre}!`,
+                    text: 'Serás redirigido a tu panel.',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = `vendedor-dashboard.html`;
+                });
+
+            } catch (error) {
+                console.error("Error login vendedor:", error);
+                Swal.close();
+                mostrarError("Credenciales incorrectas para vendedor.");
+            }
+            return; // Detiene la ejecución si es vendedor
+        }
+
         // 4. Lógica para el Cliente (usando Firestore)
         try {
             // Busca al usuario por correo Y clave

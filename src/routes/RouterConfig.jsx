@@ -16,8 +16,6 @@ import Checkout from '../component/pages/checkout';
 import CompraExitosa from '../component/pages/CompraExitosa';
 import ErrorPago from '../component/pages/ErrorPago';
 import PerfilCliente from '../component/pages/PerfilCliente';
-
-// ** NUEVA IMPORTACIÓN **
 import HistorialCompras from '../component/pages/HistorialCompras'; 
 
 // --- Vistas de Administración (Protegidas) ---
@@ -34,10 +32,17 @@ import AdminUsuarioForm from '../component/pages/AdminUsuarioForm';
 // CRUD de Categorías 
 import AdminCategorias from '../component/pages/AdminCategorias';
 import AdminCategoriaForm from '../component/pages/AdminCategoriaForm';
-
 // CRUD de Órdenes 
 import AdminOrdenes from '../component/pages/AdminOrdenes';
 import AdminOrdenDetalle from '../component/pages/AdminOrdenDetalle';
+
+// --- NUEVAS VISTAS DE VENDEDOR (Protegidas) ---
+// ASUMIDO: Debes crear estos archivos en 'src/component/pages/'
+import VendedorLayout from '../layout/vendedor/VendedorLayout'; // ⚠️ DEBES CREAR ESTE LAYOUT
+import VendedorRoute from './VendedorRoute'; // ⚠️ DEBES CREAR ESTA RUTA PROTEGIDA
+import VendedorDashboard from '../component/pages/VendedorDashboard'; // ⚠️ DEBES CREAR ESTE COMPONENTE
+import VendedorOrdenes from '../component/pages/VendedorOrdenes'; // ⚠️ DEBES CREAR ESTE COMPONENTE
+import VendedorProductos from '../component/pages/VendedorProductos'; // ⚠️ DEBES CREAR ESTE COMPONENTE
 
 const AdminReportes = () => <div><h2>Reportes (Próximamente)</h2></div>;
 
@@ -45,7 +50,9 @@ const RouterConfig = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ---------------------------------------- */}
         {/* --- Rutas Públicas y de Cliente --- */}
+        {/* ---------------------------------------- */}
         <Route path="/" element={<Home />} />
         <Route path="/catalogo" element={<Catalogo />} />
         <Route path="/producto/:productoId" element={<DetalleProducto />} />
@@ -62,13 +69,12 @@ const RouterConfig = () => {
         <Route path="/compra-exitosa" element={<CompraExitosa />} />
         <Route path="/error-pago" element={<ErrorPago />} />
         <Route path="/perfil" element={<PerfilCliente />} /> 
-        
-        {/* ** NUEVA RUTA DE HISTORIAL ** */}
-        {/* Proteger esta ruta con tu lógica de autenticación si es necesario (ej: <PrivateRoute element={<HistorialCompras />} />) */}
-        <Route path="/historial-compras" element={<HistorialCompras />} /> 
+        <Route path="/historial-compras" element={<HistorialCompras />} /> 
 
 
+        {/* ---------------------------------------- */}
         {/* --- Rutas Protegidas de Administrador --- */}
+        {/* ---------------------------------------- */}
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} /> 
@@ -96,6 +102,27 @@ const RouterConfig = () => {
 
             <Route path="reportes" element={<AdminReportes />} />
             <Route path="perfil" element={<PerfilAdmin />} />
+          </Route>
+        </Route>
+        
+        {/* -------------------------------------- */}
+        {/* --- Rutas Protegidas de Vendedor --- */}
+        {/* -------------------------------------- */}
+        <Route element={<VendedorRoute />}> {/* Usar VendedorRoute para proteger */}
+          <Route path="/vendedor" element={<VendedorLayout />}> {/* Usar VendedorLayout para estructura */}
+            <Route index element={<Navigate to="dashboard" replace />} /> 
+            
+            <Route path="dashboard" element={<VendedorDashboard />} />
+            
+            {/* Rutas de Órdenes de Compra (Solo Ver) */}
+            <Route path="ordenes" element={<VendedorOrdenes />} />
+            {/* Si el vendedor puede ver el detalle de la orden: */}
+            <Route path="ordenes/detalle/:orderId" element={<AdminOrdenDetalle />} /> 
+            
+            {/* Rutas de Productos (Solo Ver) */}
+            <Route path="productos" element={<VendedorProductos />} />
+            
+            <Route path="perfil" element={<PerfilCliente />} /> {/* Asumo que el vendedor usa la vista de perfil de cliente */}
           </Route>
         </Route>
 

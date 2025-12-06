@@ -21,24 +21,8 @@ if (!firebase.apps?.length) {
 }
 
 // 3. Obtener la instancia de la base de datos
+const auth = firebase.auth();
 const db = firebase.firestore();
-
-/**
- * 4. Función para guardar el usuario en la colección "usuario"
- */
-async function guardarUsuarioEnFirebase(usuario) {
-    try {
-        const docRef = await db.collection("usuario").add({
-            ...usuario,
-            createdAt: new Date()
-        });
-        console.log("Usuario Registrado con ID: ", docRef.id);
-        return { success: true, id: docRef.id };
-    } catch (error) {
-        console.error("Error al registrar usuario: ", error);
-        return { success: false, error: error };
-    }
-}
 
 // --- FIN DE CÓDIGO FIREBASE ---
 
@@ -199,48 +183,63 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Crear el objeto de usuario
-        const nuevoUsuario = {
-            run,
-            nombre,
-            apellidos,
-            correo: email,
-            fechaNacimiento,
-            clave: password,
-            telefono: telefono || "",
-            region,
-            comuna,
-            direccion,
-            rol: email.toLowerCase() === "admin@duoc.cl" ? "admin" : "cliente"
-        };
-        
-        // Intentar guardar en Firebase
-        const resultado = await guardarUsuarioEnFirebase(nuevoUsuario);
+        // --- LÓGICA DE REGISTRO CORREGIDA ---
+        try {
+            // 1. Crear el usuario en Firebase Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            console.log("Usuario creado en Firebase Auth con UID:", user.uid);
 
-        if (resultado.success) {
-            // Si se guardó con éxito
+            // 2. Crear el objeto de perfil para Firestore (SIN la contraseña)
+            const perfilUsuario = {
+                run,
+                nombre,
+                apellidos,
+                correo: email,
+                fechaNacimiento,
+                telefono: telefono || "",
+                region,
+                comuna,
+                direccion,
+                rol: email.toLowerCase() === "admin@duoc.cl" ? "admin" : "cliente",
+                createdAt: new Date()
+            };
+
+            // 3. Guardar el perfil en Firestore usando el UID de Auth como ID del documento
+            await db.collection("usuario").doc(user.uid).set(perfilUsuario);
+            console.log("Perfil de usuario guardado en Firestore con ID:", user.uid);
+
+            // 4. Mostrar éxito y redirigir
             Swal.fire({
                 icon: 'success',
                 title: '¡Registro Exitoso!',
-                text: 'Serás redirigido a tu perfil.',
+                text: 'Serás redirigido al inicio de sesión.',
                 timer: 2000,
                 showConfirmButton: false,
                 timerProgressBar: true
             }).then(() => {
-                const usuarioParaStorage = { nombre, correo: email, rol: nuevoUsuario.rol };
-                localStorage.setItem("usuario", JSON.stringify(usuarioParaStorage));
-                
-                const destino = nuevoUsuario.rol === "admin"
-                    ? "admin-dashboard.html" 
-                    : "perfil-cliente.html";
-                window.location.href = destino;
+                // Redirigir a la página de login para que inicie sesión
+                window.location.href = "login.html";
             });
-        } else {
-            // Si falló el guardado en Firebase
+
+        } catch (error) {
+            console.error("Error en el registro:", error);
+            Swal.close();
+
+            let mensajeError = "Ocurrió un error inesperado durante el registro.";
+            // Errores comunes de Firebase Auth
+            if (error.code === 'auth/email-already-in-use') {
+                mensajeError = "Este correo electrónico ya está registrado. Por favor, intenta con otro.";
+            } else if (error.code === 'auth/weak-password') {
+                mensajeError = "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
+            } else if (error.code === 'auth/invalid-email') {
+                mensajeError = "El formato del correo electrónico no es válido.";
+            }
+
             Swal.fire({
                 icon: 'error',
-                title: 'Error al Guardar',
-                text: `No se pudo crear el usuario en la base de datos. ${resultado.error.message}`,
+                title: 'Error de Registro',
+                text: mensajeError,
                 confirmButtonColor: '#1E90FF'
             });
         }
