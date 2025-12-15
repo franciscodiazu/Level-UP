@@ -1,43 +1,31 @@
 /* ==========================================
- * ARCHIVO: js/checkout.js
- * (Versión Profesional: Usando Import)
+ * ARCHIVO: js/checkout.js (VERSIÓN CORREGIDA)
+ * Guarda productos en localStorage antes de limpiar carrito
  * ==========================================
 */
 
-// 1. IMPORTAMOS LAS REGIONES (No las copiamos)
 import { regionesYComunas } from './regiones.js';
 
-// Configuración de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
     authDomain: "tienda-level-up.firebaseapp.com",
     projectId: "tienda-level-up"
 };
 
-// Inicializar Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
 
-// Variables globales
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// ==============================================================
-// 1. INICIALIZACIÓN
-// ==============================================================
 document.addEventListener('DOMContentLoaded', function() {
     inicializarCheckout();
     configurarEventosCheckout();
     cargarRegiones(); 
-    
-    // 🔥 LÓGICA DE AUTOCOMPLETADO
     autoFillUserData();
 });
 
-// ==============================================================
-// 2. FUNCIÓN DE AUTOCOMPLETADO INTELIGENTE
-// ==============================================================
 function autoFillUserData() {
     console.log("🚀 Iniciando autocompletado...");
     const usuarioStr = localStorage.getItem('usuario');
@@ -51,7 +39,6 @@ function autoFillUserData() {
         return;
     }
 
-    // --- A. DATOS PERSONALES ---
     const camposPersonales = {
         'nombre': usuario.nombre || '',
         'apellidos': usuario.apellidos || usuario.apellido || '',
@@ -69,10 +56,8 @@ function autoFillUserData() {
         }
     }
 
-    // --- B. DATOS DE DIRECCIÓN ---
     const dir = usuario;
 
-    // 1. Calle y Número
     if (dir.calle) {
         const inputCalle = document.getElementById('calle');
         if (inputCalle) {
@@ -84,14 +69,12 @@ function autoFillUserData() {
     if (dir.departamento) document.getElementById('departamento').value = dir.departamento;
     if (dir.indicaciones) document.getElementById('indicaciones').value = dir.indicaciones || "";
 
-    // --- C. LÓGICA DE REGIÓN Y COMUNA ---
     const regionUsuario = (dir.region || dir.Region || "").trim();
     const comunaUsuario = (dir.comuna || dir.Comuna || "").trim();
 
     if (regionUsuario) {
         const regionSelect = document.getElementById('region');
         
-        // Buscamos la región en nuestra lista IMPORTADA
         const regionEncontrada = regionesYComunas.regiones.find(r => {
             const nombreBD = regionUsuario.toLowerCase();
             const nombreLista = r.nombre.toLowerCase();
@@ -99,13 +82,9 @@ function autoFillUserData() {
         });
 
         if (regionEncontrada && regionSelect) {
-            // 1. Seleccionamos la región
             regionSelect.value = regionEncontrada.nombre;
-            
-            // 2. Cargamos las comunas para esa región
             cargarComunas(regionEncontrada.nombre);
 
-            // 3. Seleccionamos la comuna
             if (comunaUsuario) {
                 setTimeout(() => {
                     const comunaSelect = document.getElementById('comuna');
@@ -123,17 +102,12 @@ function autoFillUserData() {
     }
 }
 
-// ==============================================================
-// 3. FUNCIONES DE CARGA (Usando la variable importada)
-// ==============================================================
-
 function cargarRegiones() {
     const selectRegion = document.getElementById('region');
     if (!selectRegion) return;
     
     selectRegion.innerHTML = '<option value="">-- Seleccione Región --</option>';
 
-    // Usamos la variable importada 'regionesYComunas'
     regionesYComunas.regiones.forEach(region => {
         const option = document.createElement('option');
         option.value = region.nombre; 
@@ -163,10 +137,6 @@ function cargarComunas(nombreRegion) {
         selectComuna.disabled = true;
     }
 }
-
-// ==============================================================
-// 4. FUNCIONES DEL CARRITO Y PAGO (Sin cambios)
-// ==============================================================
 
 function inicializarCheckout() {
     renderizarProductosCheckout();
@@ -201,24 +171,24 @@ function actualizarTotales() {
     if (montoPagar) montoPagar.textContent = '$' + total.toLocaleString('es-CL');
     localStorage.setItem('cartTotal', total);
     
-    // Usamos window porque import crea su propio scope
     if (typeof window.actualizarHeaderCartGlobal === 'function') {
         window.actualizarHeaderCartGlobal();
     }
 }
 
-// Exponemos la función al objeto window para que el HTML pueda llamarla si es necesario
-// aunque aquí usamos addEventListener así que no es estrictamente necesario, es buena práctica en módulos
 window.procesarPago = async function() {
     if (carrito.length === 0) return alert('No hay productos en el carrito');
     if (!validarFormularios()) return alert('Por favor completa todos los campos obligatorios');
     const btnPagar = document.getElementById('btnPagarAhora');
     btnPagar.disabled = true;
     btnPagar.textContent = 'Procesando...';
+    
     try {
         const datosCliente = obtenerDatosCliente();
         const datosDireccion = obtenerDatosDireccion();
         const total = carrito.reduce((sum, p) => sum + ((p.precio || 0) * (p.cantidad || 1)), 0);
+        
+        // Crear objeto de compra para Firebase
         const compra = {
             fecha: new Date(),
             cliente: datosCliente,
@@ -228,15 +198,41 @@ window.procesarPago = async function() {
             estado: 'pendiente',
             numeroOrden: generarNumeroOrden()
         };
+
+        // IMPORTANTE: Guardar datos COMPLETOS en localStorage ANTES de limpiar carrito
+        const datosParaBoleta = {
+            cliente: datosCliente,
+            direccion: datosDireccion,
+            productos: [...carrito], // Copia completa del carrito
+            total: total,
+            fecha: new Date().toISOString(),
+            numeroOrden: compra.numeroOrden
+        };
+        localStorage.setItem('datosCheckout', JSON.stringify(datosParaBoleta));
+        console.log("Datos guardados para boleta:", datosParaBoleta);
+
+        // Guardar en Firebase
         const docRef = await db.collection('compras').add(compra);
         
+        // Simulación de pago
         if (Math.random() > 0.5) {
+            // PAGO EXITOSO
             await db.collection('compras').doc(docRef.id).update({ estado: 'completada' });
-            localStorage.setItem('carrito', JSON.stringify([]));
-            localStorage.setItem('cartTotal', 0);
-            window.location.href = `compraexitosa.html?orden=${compra.numeroOrden}`;
+            
+            // NO limpiar carrito aquí - se hace en boleta.html después de mostrar
+            console.log("Pago exitoso, redirigiendo a boleta...");
+            
+            // Redirigir a la NUEVA BOLETA
+            window.location.href = `boleta.html?orden=${compra.numeroOrden}`;
+            
         } else {
+            // PAGO FALLIDO
             await db.collection('compras').doc(docRef.id).update({ estado: 'error_pago' });
+            
+            // Guardar datos para página de error
+            localStorage.setItem('datosCheckoutError', JSON.stringify(datosParaBoleta));
+            
+            console.log("Pago fallido, redirigiendo a error...");
             window.location.href = `errorPago.html?orden=${compra.numeroOrden}`;
         }
     } catch (error) {
@@ -270,12 +266,16 @@ function obtenerDatosDireccion() {
 }
 
 function generarNumeroOrden() {
-    return `ORDEN${new Date().getTime()}${Math.floor(Math.random() * 1000)}`;
+    const fecha = new Date();
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `ORDEN-${year}${month}${day}-${random}`;
 }
 
 function configurarEventosCheckout() {
     const btnPagar = document.getElementById('btnPagarAhora');
-    // Usamos la función global o local
     if (btnPagar) btnPagar.addEventListener('click', window.procesarPago);
     
     const selectRegion = document.getElementById('region');

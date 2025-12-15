@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boleta de Compra - Level-Up Gamer</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* ESTILOS ESPECÍFICOS PARA LA BOLETA */
+    :root {
+      --color-primary: #1a73e8;
+      --color-success: #0d8a3e;
+      --color-light-bg: #000000;
+      --color-border: #000000;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .boleta-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+    
+    .boleta-header {
+      background: linear-gradient(135deg, var(--color-primary), #0b5bb1);
+      color: white;
+      padding: 25px 30px;
+      position: relative;
+    }
+    
+    .boleta-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-success), #ffc107);
+    }
+    
+    .boleta-status {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .status-icon {
+      font-size: 28px;
+      background: white;
+      color: var(--color-success);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .status-text h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
+    .status-text p {
+      margin: 5px 0 0;
+      opacity: 0.9;
+      font-size: 15px;
+    }
+    
+    .order-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .order-number {
+      font-size: 18px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+      padding: 8px 16px;
+      border-radius: 20px;
+    }
+    
+    .order-date {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .boleta-content {
+      padding: 30px;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color-primary);
+      margin: 30px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--color-border);
+      font-size: 18px;
+    }
+    
+    .section-title::before {
+      content: '✓';
+      background: var(--color-primary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .info-card {
+      background: var(--color-light-bg);
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid var(--color-border);
+    }
+    
+    .info-card h3 {
+      margin-top: 0;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-field {
+      margin-bottom: 15px;
+    }
+    
+    .info-field label {
+      display: block;
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .info-field .value {
+      font-weight: 500;
+      color: #222;
+      font-size: 15px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+    }
+    
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    
+    .products-table thead {
+      background: var(--color-primary);
+      color: rgb(0, 0, 0);
+    }
+    
+    .products-table th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .products-table td {
+      padding: 15px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    
+    .products-table tbody tr:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+    
+    .product-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+    
+    .total-section {
+      background: linear-gradient(135deg, #000000, #e9ecef);
+      border-radius: 10px;
+      padding: 25px;
+      margin: 30px 0;
+      border: 2px solid var(--color-border);
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #ccc;
+    }
+    
+    .total-row.final {
+      border-bottom: 2px solid var(--color-primary);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-success);
+      margin-top: 15px;
+      padding-top: 15px;
+    }
+    
+    .boleta-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .btn-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-boleta {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    
+    .btn-print {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-print:hover {
+      background: #0b5bb1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+    }
+    
+    .btn-email {
+      background: var(--color-success);
+      color: white;
+    }
+    
+    .btn-email:hover {
+      background: #0a6e32;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(13, 138, 62, 0.3);
+    }
+    
+    .btn-back {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-back:hover {
+      background: #545b62;
+      transform: translateY(-2px);
+    }
+    
+    .thank-you {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(13, 138, 62, 0.1), rgba(26, 115, 232, 0.1));
+      border-radius: 10px;
+      margin-top: 30px;
+      border: 1px solid rgba(13, 138, 62, 0.2);
+    }
+    
+    .thank-you h3 {
+      color: var(--color-success);
+      margin-top: 0;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .boleta-container {
+        margin: 10px;
+        border-radius: 8px;
+      }
+      
+      .boleta-header, .boleta-content {
+        padding: 20px;
+      }
+      
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .order-info {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      
+      .boleta-footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .btn-actions {
+        justify-content: center;
+      }
+      
+      .products-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER (Usando el mismo de tu sitio) -->
+  <div id="header-placeholder"></div>
+
+  <!-- BOLETA DE COMPRA -->
+  <main class="boleta-container">
+    <!-- Encabezado de la boleta -->
+    <div class="boleta-header">
+      <div class="boleta-status">
+        <div class="status-icon">✓</div>
+        <div class="status-text">
+          <h1>¡Compra Exitosa!</h1>
+          <p>Tu pedido ha sido confirmado y está siendo procesado</p>
+        </div>
+      </div>
+      
+      <div class="order-info">
+        <div>
+          <div class="order-number" id="orderNumber">ORDEN-20241216-001</div>
+          <div class="order-date" id="orderDate">16 de Diciembre, 2024 - 14:30 hrs</div>
+        </div>
+        <div>
+          <div style="font-size: 14px; opacity: 0.9;">Estado:</div>
+          <div style="background: rgba(255,255,255,0.2); padding: 6px 15px; border-radius: 20px; display: inline-block; font-weight: 600; margin-top: 5px;">
+            ✅ Pagado
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contenido de la boleta -->
+    <div class="boleta-content">
+      <!-- Información del cliente -->
+      <div class="section-title">Información del Cliente</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>👤 Datos Personales</h3>
+          <div class="info-field">
+            <label>Nombre Completo</label>
+            <div class="value" id="customerName">Juan Pérez González</div>
+          </div>
+          <div class="info-field">
+            <label>Correo Electrónico</label>
+            <div class="value" id="customerEmail">juan.perez@email.com</div>
+          </div>
+          <div class="info-field">
+            <label>Teléfono</label>
+            <div class="value" id="customerPhone">+56 9 1234 5678</div>
+          </div>
+        </div>
+        
+        <div class="info-card">
+          <h3>📍 Dirección de Entrega</h3>
+          <div class="info-field">
+            <label>Dirección</label>
+            <div class="value" id="deliveryAddress">Av. Principal 1234, Depto 501</div>
+          </div>
+          <div class="info-field">
+            <label>Región / Comuna</label>
+            <div class="value" id="deliveryRegion">Región Metropolitana, Santiago</div>
+          </div>
+          <div class="info-field">
+            <label>Indicaciones Especiales</label>
+            <div class="value" id="deliveryNotes">Dejar con conserje si no hay nadie</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Productos comprados -->
+      <div class="section-title">📦 Productos Comprados</div>
+      <table class="products-table" id="productsTable">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio Unitario</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Los productos se cargarán dinámicamente aquí -->
+        </tbody>
+      </table>
+      
+      <!-- Resumen de pago -->
+      <div class="section-title">💰 Resumen de Pago</div>
+      <div class="total-section">
+        <div class="total-row">
+          <span>Subtotal Productos:</span>
+          <span id="subtotal">$45.990</span>
+        </div>
+        <div class="total-row">
+          <span>Costo de Envío:</span>
+          <span id="shipping">$2.990</span>
+        </div>
+        <div class="total-row">
+          <span>Descuento:</span>
+          <span id="discount">-$3.500</span>
+        </div>
+        <div class="total-row final">
+          <span>TOTAL PAGADO:</span>
+          <span id="totalPaid">$45.480</span>
+        </div>
+        <div class="total-row" style="font-size: 13px; color: #666; border: none; margin-top: 10px;">
+          <span>Método de Pago:</span>
+          <span id="paymentMethod">Tarjeta de Crédito (Visa) ·●●● 1234</span>
+        </div>
+      </div>
+      
+      <!-- Mensaje de agradecimiento -->
+      <div class="thank-you">
+        <h3>🎮 ¡Gracias por tu compra en Level-Up Gamer!</h3>
+        <p>Hemos enviado un correo con los detalles de tu compra. Tu pedido será enviado en un plazo de 2-3 días hábiles.</p>
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">Número de seguimiento: <strong id="trackingNumber">TRK-LUG-20241216-001</strong></p>
+      </div>
+      
+      <!-- Acciones -->
+      <div class="boleta-footer">
+        <div>
+          <button class="btn-boleta btn-back" onclick="window.location.href='catalogo.html'">
+            ← Volver al Catálogo
+          </button>
+        </div>
+        <div class="btn-actions">
+          <button class="btn-boleta btn-print" id="btnPrintPDF">
+            <span>🖨️</span> Imprimir Boleta
+          </button>
+          <button class="btn-boleta btn-email" id="btnSendEmail">
+            <span>📧</span> Enviar por Email
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Cargar el header
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cargar header (si tienes una función para esto)
+      if (typeof loadHeader === 'function') {
+        loadHeader();
+      }
+      
+      // Cargar datos de la compra desde localStorage o parámetros URL
+      cargarDatosCompra();
+      configurarEventos();
+    });
+    
+    function cargarDatosCompra() {
+    // Intentar obtener datos de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('orden') || 'ORDEN-' + new Date().getTime();
+    
+    // NUEVO: Obtener datos del localStorage que guardamos en checkout
+    const datosCheckout = JSON.parse(localStorage.getItem('datosCheckout')) || {};
+    
+    // NUEVO: También intentar obtener del carrito si no hay datosCheckout
+    const carrito = datosCheckout.productos || JSON.parse(localStorage.getItem('carrito')) || [];
+    const totalCompra = datosCheckout.total || localStorage.getItem('cartTotal') || 0;
+    
+    console.log("Datos checkout:", datosCheckout); // Para depuración
+    console.log("Carrito:", carrito); // Para depuración
+    
+    // Actualizar elementos de la página
+    document.getElementById('orderNumber').textContent = orderId;
+    document.getElementById('orderDate').textContent = new Date().toLocaleDateString('es-CL', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Datos del cliente
+    if (datosCheckout.cliente) {
+        document.getElementById('customerName').textContent = 
+            `${datosCheckout.cliente.nombre || ''} ${datosCheckout.cliente.apellidos || ''}`.trim();
+        document.getElementById('customerEmail').textContent = datosCheckout.cliente.correo || '';
+    } else {
+        // Intentar obtener del usuario logueado
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+        document.getElementById('customerName').textContent = 
+            `${usuario.nombre || ''} ${usuario.apellidos || ''}`.trim();
+        document.getElementById('customerEmail').textContent = usuario.correo || '';
+    }
+    
+    // Dirección
+    if (datosCheckout.direccion) {
+        const dir = datosCheckout.direccion;
+        document.getElementById('deliveryAddress').textContent = 
+            `${dir.calle || ''}${dir.departamento ? ', ' + dir.departamento : ''}`;
+        document.getElementById('deliveryRegion').textContent = 
+            `${dir.region || ''}${dir.comuna ? ', ' + dir.comuna : ''}`;
+        document.getElementById('deliveryNotes').textContent = dir.indicaciones || 'Sin indicaciones especiales';
+    }
+    
+    // Productos
+    const tbody = document.querySelector('#productsTable tbody');
+    let subtotal = 0;
+    
+    if (carrito && carrito.length > 0) {
+        tbody.innerHTML = carrito.map(producto => {
+            const precio = producto.precio || 0;
+            const cantidad = producto.cantidad || 1;
+            const productSubtotal = precio * cantidad;
+            subtotal += productSubtotal;
+            
+            return `
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="${producto.imagen || 'https://via.placeholder.com/60'}" 
+                                 alt="${producto.nombre}" 
+                                 class="product-img">
+                            <div>
+                                <strong>${producto.nombre || 'Producto sin nombre'}</strong>
+                                ${producto.categoria ? `<div style="font-size: 12px; color: #666;">${producto.categoria}</div>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td>$${precio.toLocaleString('es-CL')}</td>
+                    <td>${cantidad}</td>
+                    <td><strong>$${productSubtotal.toLocaleString('es-CL')}</strong></td>
+                </tr>
+            `;
+        }).join('');
+    } else {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 30px; color: #666;">
+                    <div style="margin-bottom: 10px;">🛒</div>
+                    <div>No se encontraron productos en esta compra</div>
+                    <div style="font-size: 12px; margin-top: 10px;">
+                        ID de orden: ${orderId}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+    
+    // Calcular totales
+    const envio = 2990;
+    const descuento = subtotal > 30000 ? 3500 : 0;
+    const total = datosCheckout.total || (subtotal + envio - descuento);
+    
+    document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-CL')}`;
+    document.getElementById('shipping').textContent = `$${envio.toLocaleString('es-CL')}`;
+    document.getElementById('discount').textContent = descuento > 0 ? `-$${descuento.toLocaleString('es-CL')}` : '$0';
+    document.getElementById('totalPaid').textContent = `$${total.toLocaleString('es-CL')}`;
+    
+    // Número de seguimiento
+    const trackingNumber = 'TRK-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    document.getElementById('trackingNumber').textContent = trackingNumber;
+    
+    // NUEVO: Limpiar datos después de mostrarlos (opcional)
+    setTimeout(() => {
+        // Solo limpia si la página se carga correctamente
+        localStorage.removeItem('datosCheckout');
+        localStorage.setItem('carrito', JSON.stringify([]));
+        localStorage.setItem('cartTotal', 0);
+        
+        // Actualizar header del carrito
+        if (typeof window.actualizarHeaderCartGlobal === 'function') {
+            window.actualizarHeaderCartGlobal();
+        }
+    }, 2000);
+}
+    
+    // Función para imprimir la página
+    window.printBoleta = function() {
+      window.print();
+    };
+  </script>
+</body>
+</html>

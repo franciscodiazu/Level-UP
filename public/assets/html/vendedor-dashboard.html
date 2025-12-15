@@ -3,82 +3,489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Vendedor - Level UP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/style.css"> 
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Panel de Vendedor - Level-Up</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* --- ESTILOS IGUALES AL ADMIN (MODO OSCURO) --- */
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Roboto', sans-serif; margin: 0; }
+        .vendedor-layout { display: flex; min-height: 100vh; }
+        
+        /* Sidebar IDÉNTICO al admin pero color naranja */
+        .vendedor-sidebar { 
+            width: 250px; 
+            background-color: #000000; 
+            color: white; 
+            padding: 1.5em; 
+            display: flex; 
+            flex-direction: column; 
+            border-right: 1px solid #333; 
+        }
+        .vendedor-sidebar h2 { 
+            text-align: center; 
+            color: #FF9800; /* Naranja en lugar de verde */
+            margin-bottom: 30px; 
+            letter-spacing: 2px; 
+        }
+        .vendedor-sidebar nav a { 
+            color: #aaa; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 12px; 
+            margin-bottom: 8px; 
+            border-radius: 8px; 
+            transition: 0.3s; 
+            font-size: 0.95em; 
+        }
+        .vendedor-sidebar nav a:hover, .vendedor-sidebar nav a.active { 
+            background-color: rgba(255, 152, 0, 0.15); /* Naranja translúcido */
+            color: #FF9800; 
+            font-weight: bold; 
+        }
+        .vendedor-sidebar nav a i { width: 25px; text-align: center; }
+        
+        .vendedor-main-content { flex-grow: 1; padding: 2em; overflow-y: auto; }
+
+        /* --- SECCIÓN DE BIENVENIDA (HEADER) IDÉNTICO --- */
+        .welcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(145deg, #1e1e1e, #252525);
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            border: 1px solid #333;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .user-profile { display: flex; align-items: center; gap: 20px; }
+        
+        .profile-avatar { 
+            width: 65px; height: 65px; 
+            border-radius: 50%; 
+            border: 3px solid #FF9800; /* Naranja */
+            object-fit: cover; 
+            background: #333;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .profile-text h1 { margin: 0; font-size: 1.6em; color: white; font-weight: 700; }
+        .profile-text h1 span { color: #FF9800; } /* Naranja */
+        .profile-text p { margin: 5px 0 0; color: #888; font-size: 0.9em; display: flex; align-items: center; gap: 5px; }
+        .status-badge { width: 8px; height: 8px; background-color: #FF9800; border-radius: 50%; display: inline-block; }
+
+        .header-actions { display: flex; gap: 15px; }
+        
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-shop { background-color: #2c2c2c; color: white; border: 1px solid #444; }
+        .btn-shop:hover { background-color: #FF9800; color: black; border-color: #FF9800; transform: translateY(-2px); }
+
+        .btn-logout { background-color: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
+        .btn-logout:hover { background-color: #ff4444; color: white; transform: translateY(-2px); }
+
+        /* --- TARJETAS DE ESTADÍSTICAS (COLORES SIMILARES) --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 35px; }
+        
+        .stat-card { 
+            padding: 20px; border-radius: 16px; color: white; position: relative; overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        
+        .stat-card.orange { background: linear-gradient(135deg, #FF9800, #FF5722); }
+        .stat-card.blue { background: linear-gradient(135deg, #2196F3, #21CBF3); }
+        .stat-card.green { background: linear-gradient(135deg, #00b09b, #96c93d); }
+        
+        .stat-icon { position: absolute; right: 20px; top: 20px; font-size: 2.5em; opacity: 0.3; }
+        .stat-value { font-size: 2.5em; font-weight: 800; margin: 10px 0 5px 0; }
+        .stat-label { font-size: 0.9em; opacity: 0.9; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- GRID DE ACCESOS RÁPIDOS --- */
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        
+        .module-item { 
+            background-color: #1e1e1e; padding: 25px; text-align: center; 
+            border-radius: 16px; border: 1px solid #333; 
+            transition: all 0.3s ease; cursor: pointer; text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .module-item:hover { 
+            border-color: #FF9800; 
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.15); 
+            background-color: #252525; 
+            transform: translateY(-3px);
+        }
+        
+        .module-icon { 
+            font-size: 2.2em; 
+            margin-bottom: 15px; 
+            color: #FF9800; 
+            display: block; 
+            background: rgba(255, 152, 0, 0.1);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 152, 0, 0.2);
+        }
+        .module-title { color: white; font-weight: bold; font-size: 1.1em; margin-bottom: 8px; }
+        .module-desc { color: #888; font-size: 0.85em; }
+
+        /* Badge para rol vendedor */
+        .badge-vendedor {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .vendedor-layout { flex-direction: column; }
+            .vendedor-sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; }
+            .welcome-header { flex-direction: column; text-align: center; gap: 20px; }
+            .user-profile { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .modules-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .modules-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-    <div class="d-flex" id="wrapper">
-        <div class="bg-dark border-right" id="sidebar-wrapper">
-            <div class="sidebar-heading text-white p-3">Panel Vendedor</div>
-            <div class="list-group list-group-flush">
-                <a href="vendedor-dashboard.html" class="list-group-item list-group-item-action bg-dark text-white active"><i class="fas fa-home me-2"></i> Dashboard</a>
-                <a href="vendedor-ordenes.html" class="list-group-item list-group-item-action bg-dark text-white"><i class="fas fa-receipt me-2"></i> Órdenes de Compra</a>
-                <a href="vendedor-productos.html" class="list-group-item list-group-item-action bg-dark text-white"><i class="fas fa-box me-2"></i> Productos</a>
-                <a href="#" class="list-group-item list-group-item-action bg-dark text-white" id="logout-btn"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a>
-            </div>
-        </div>
-        <div id="page-content-wrapper">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <button class="btn btn-primary" id="menu-toggle"><i class="fas fa-bars"></i></button>
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="vendedor-perfil-link">Perfil</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
 
-            <div class="container-fluid p-4">
-                <h1 class="mt-4">👋 Bienvenido, <span id="vendedor-name">Vendedor</span></h1>
-                <p class="lead">Panel de control de acceso a tus herramientas de gestión.</p>
+    <div class="vendedor-layout">
+        <aside class="vendedor-sidebar">
+            <h2>VENDEDOR</h2>
+            <nav>
+                <a href="vendedor-dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="vendedor-ordenes.html"><i class="fas fa-box-open"></i> Órdenes</a>
+                <a href="vendedor-productos.html"><i class="fas fa-gamepad"></i> Productos</a>
+                <a href="vendedor-perfil.html"><i class="fas fa-user-circle"></i> Mi Perfil</a>
+                <a href="vendedor-reportes.html"><i class="fas fa-chart-line"></i> Reportes</a>
+            </nav>
+        </aside>
+
+        <main class="vendedor-main-content">
+            
+            <div class="welcome-header">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Vendedor&background=FF9800&color=fff" id="header-avatar" class="profile-avatar" alt="Avatar">
+                    <div class="profile-text">
+                        <h1>Hola, <span id="header-username">Vendedor</span> <span class="badge-vendedor">VENDEDOR</span></h1>
+                        <p><span class="status-badge"></span> Panel de Control Vendedor</p>
+                    </div>
+                </div>
                 
-                <div class="row">
-                    <div class="col-lg-6 mb-4">
-                        <div class="card bg-primary text-white shadow">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-receipt"></i> Órdenes de Compra</h5>
-                                <p class="card-text" id="total-ordenes">Cargando total...</p>
-                                <a href="vendedor-ordenes.html" class="btn btn-light">Ver Órdenes</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-lg-6 mb-4">
-                        <div class="card bg-success text-white shadow">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-box"></i> Productos</h5>
-                                <p class="card-text" id="total-productos">Cargando total...</p>
-                                <a href="vendedor-productos.html" class="btn btn-light">Ver Productos</a>
-                            </div>
+                <div class="header-actions">
+                    <a href="../../index.html" class="action-btn btn-shop">
+                        <i class="fas fa-store"></i> Ir a Tienda
+                    </a>
+                    <button onclick="cerrarSesionVendedor()" class="action-btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estadísticas principales -->
+            <div class="stats-grid">
+                <div class="stat-card orange">
+                    <i class="fas fa-shopping-cart stat-icon"></i>
+                    <div class="stat-label">Órdenes Hoy</div>
+                    <div class="stat-value" id="stat-ordenes-hoy">0</div>
+                </div>
+                <div class="stat-card blue">
+                    <i class="fas fa-boxes stat-icon"></i>
+                    <div class="stat-label">Productos Activos</div>
+                    <div class="stat-value" id="stat-productos">0</div>
+                </div>
+                <div class="stat-card green">
+                    <i class="fas fa-dollar-sign stat-icon"></i>
+                    <div class="stat-label">Ventas del Mes</div>
+                    <div class="stat-value" id="stat-ventas-mes">$0</div>
+                </div>
+            </div>
+
+            <h3 style="color:white; margin-bottom:20px;">Accesos Rápidos</h3>
+            <div class="modules-grid">
+                <a href="vendedor-ordenes.html" class="module-item">
+                    <i class="fas fa-clipboard-list module-icon"></i>
+                    <div class="module-title">Gestionar Órdenes</div>
+                    <div class="module-desc">Revisa y actualiza estado de pedidos</div>
+                </a>
+                <a href="vendedor-productos.html" class="module-item">
+                    <i class="fas fa-tag module-icon"></i>
+                    <div class="module-title">Inventario</div>
+                    <div class="module-desc">Administra productos y stock</div>
+                </a>
+                <a href="#" class="module-item" onclick="crearProductoRapido()">
+                    <i class="fas fa-plus-circle module-icon"></i>
+                    <div class="module-title">Nuevo Producto</div>
+                    <div class="module-desc">Agrega productos al catálogo</div>
+                </a>
+                
+                <a href="vendedor-perfil.html" class="module-item">
+                    <i class="fas fa-user-edit module-icon"></i>
+                    <div class="module-title">Mi Perfil</div>
+                    <div class="module-desc">Actualiza tus datos personales</div>
+                </a>
+                <a href="vendedor-reportes.html" class="module-item">
+                    <i class="fas fa-chart-bar module-icon"></i>
+                    <div class="module-title">Reportes</div>
+                    <div class="module-desc">Ver análisis y métricas</div>
+                </a>
+                <a href="#" class="module-item" onclick="verTutorial()">
+                    <i class="fas fa-question-circle module-icon"></i>
+                    <div class="module-title">Ayuda</div>
+                    <div class="module-desc">Guías y tutoriales</div>
+                </a>
+            </div>
+
+            <!-- Sección de órdenes recientes -->
+            <div style="margin-top: 40px;">
+                <h3 style="color:white; margin-bottom:20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Órdenes Recientes</span>
+                    <a href="vendedor-ordenes.html" style="font-size: 0.9em; color: #FF9800; text-decoration: none;">
+                        <i class="fas fa-external-link-alt me-1"></i>Ver todas
+                    </a>
+                </h3>
+                
+                <div style="background-color: #1e1e1e; border-radius: 12px; padding: 20px; border: 1px solid #333;">
+                    <div id="ordenes-recientes">
+                        <div style="text-align: center; padding: 30px; color: #888;">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                            <p>Cargando órdenes recientes...</p>
                         </div>
                     </div>
                 </div>
-                </div>
-        </div>
-        </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
+            </div>
+
+        </main>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <script src="../js/vendedor-logic.js"></script> 
-    
+    <script src="../js/vendedor-logic.js"></script>
+
     <script>
-        // Toggle de menú para dispositivos móviles
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
+        // Configuración Firebase (si no está en vendedor-logic.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+            authDomain: "tienda-level-up.firebaseapp.com",
+            projectId: "tienda-level-up",
+            storageBucket: "tienda-level-up.appspot.com",
+            messagingSenderId: "210482166049",
+            appId: "1:210482166049:web:15dadb935d28d9f7d02660",
+            measurementId: "G-85R23XKYYM"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Cargar datos del dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarInfoUsuario();
+            cargarEstadisticas();
+            cargarOrdenesRecientes();
         });
 
-        $(document).ready(function() {
-            cargarDashboardData();
-        });
+        // Función para cargar info del usuario
+        function cargarInfoUsuario() {
+            const usuarioStr = localStorage.getItem('usuario');
+            if (usuarioStr) {
+                try {
+                    const usuario = JSON.parse(usuarioStr);
+                    document.getElementById('header-username').textContent = usuario.nombre || 'Vendedor';
+                    
+                    if (usuario.avatar) {
+                        document.getElementById('header-avatar').src = usuario.avatar;
+                    } else if (usuario.nombre) {
+                        document.getElementById('header-avatar').src = 
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(usuario.nombre)}&background=FF9800&color=fff`;
+                    }
+                } catch (e) {
+                    console.error('Error cargando usuario:', e);
+                }
+            }
+        }
+
+        // Función para cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                // Órdenes del día
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                
+                const ordenesSnap = await db.collection('compras')
+                    .where('fecha', '>=', hoy)
+                    .get();
+                
+                document.getElementById('stat-ordenes-hoy').textContent = ordenesSnap.size;
+
+                // Productos activos
+                const productosSnap = await db.collection('producto')
+                    .where('activo', '==', true)
+                    .get();
+                
+                document.getElementById('stat-productos').textContent = productosSnap.size;
+
+                // Ventas del mes
+                const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                const ordenesMes = await db.collection('compras')
+                    .where('fecha', '>=', inicioMes)
+                    .get();
+                
+                let totalVentas = 0;
+                ordenesMes.forEach(doc => {
+                    totalVentas += doc.data().total || 0;
+                });
+                
+                document.getElementById('stat-ventas-mes').textContent = 
+                    '$' + totalVentas.toLocaleString('es-CL');
+
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+                document.getElementById('stat-ordenes-hoy').textContent = '0';
+                document.getElementById('stat-productos').textContent = '0';
+                document.getElementById('stat-ventas-mes').textContent = '$0';
+            }
+        }
+
+        // Función para cargar órdenes recientes
+        async function cargarOrdenesRecientes() {
+            const contenedor = document.getElementById('ordenes-recientes');
+            
+            try {
+                const snapshot = await db.collection('compras')
+                    .orderBy('fecha', 'desc')
+                    .limit(5)
+                    .get();
+                
+                if (snapshot.empty) {
+                    contenedor.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: #888;">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No hay órdenes recientes</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+                
+                snapshot.forEach(doc => {
+                    const orden = doc.data();
+                    const fecha = orden.fecha && orden.fecha.toDate ? 
+                        orden.fecha.toDate().toLocaleDateString('es-CL') : 'Fecha no disponible';
+                    
+                    // Color según estado
+                    let estadoColor = '#888';
+                    if (orden.estado === 'completado') estadoColor = '#4CAF50';
+                    if (orden.estado === 'pendiente') estadoColor = '#FF9800';
+                    if (orden.estado === 'cancelado') estadoColor = '#F44336';
+                    
+                    html += `
+                        <div style="
+                            display: flex; 
+                            justify-content: space-between; 
+                            align-items: center; 
+                            padding: 15px; 
+                            background-color: #252525; 
+                            border-radius: 8px;
+                            border-left: 4px solid ${estadoColor};
+                        ">
+                            <div>
+                                <div style="font-weight: bold; color: white; margin-bottom: 5px;">
+                                    ${orden.cliente?.nombre || 'Cliente'} - $${(orden.total || 0).toLocaleString('es-CL')}
+                                </div>
+                                <div style="font-size: 0.9em; color: #aaa;">
+                                    ${fecha} • ${orden.items?.length || 0} productos
+                                </div>
+                            </div>
+                            <div>
+                                <span style="
+                                    background-color: ${estadoColor}20; 
+                                    color: ${estadoColor}; 
+                                    padding: 4px 12px; 
+                                    border-radius: 20px; 
+                                    font-size: 0.85em;
+                                    font-weight: bold;
+                                ">
+                                    ${orden.estado || 'Pendiente'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                contenedor.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando órdenes recientes:', error);
+                contenedor.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #f44336;">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <p>Error al cargar órdenes</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Función para cerrar sesión
+        function cerrarSesionVendedor() {
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                localStorage.removeItem('usuario');
+                window.location.href = '../../index.html';
+            }
+        }
+
+        // Función para crear producto rápido
+        function crearProductoRapido() {
+            alert('Función para crear producto rápido - Implementar');
+            // Puedes implementar un modal similar al admin
+        }
+
+        // Función para ver tutorial
+        function verTutorial() {
+            alert('Guías y tutoriales del panel vendedor');
+        }
+
+        // Actualizar datos cada 30 segundos
+        setInterval(() => {
+            cargarEstadisticas();
+            cargarOrdenesRecientes();
+        }, 30000);
     </script>
+
 </body>
 </html>

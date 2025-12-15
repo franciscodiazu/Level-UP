@@ -1,4 +1,51 @@
-// public/assets/js/vendedor-logic.js
+function verificarSesionVendedor() {
+    const usuarioStr = localStorage.getItem('usuario');
+    if (!usuarioStr) {
+        window.location.href = 'login-vendedor.html';
+        return null;
+    }
+    
+    try {
+        const usuario = JSON.parse(usuarioStr);
+        
+        // Verificar que sea vendedor
+        if (usuario.rol !== 'vendedor' && usuario.rol !== 'admin') {
+            alert('Acceso denegado. Solo vendedores pueden acceder.');
+            window.location.href = '../../index.html';
+            return null;
+        }
+        
+        return usuario;
+        
+    } catch (error) {
+        console.error('Error verificando sesión:', error);
+        window.location.href = '../../index.html';
+        return null;
+    }
+}
+
+// Luego modificar el $(document).ready():
+$(document).ready(() => {
+    console.log('Vendedor Logic Cargado');
+    
+    // Verificar sesión
+    const usuario = verificarSesionVendedor();
+    if (!usuario) return;
+    
+    // Cargar info del usuario
+    cargarInfoSesion(usuario);
+    $('#logout-btn').on('click', cerrarSesion);
+    
+    // Resto de tu código...
+});
+
+// Modificar cargarInfoSesion para usar el usuario:
+function cargarInfoSesion(usuario) {
+    const nameElement = document.getElementById('vendedor-name');
+    if (nameElement) {
+        nameElement.textContent = usuario.nombre || 'Vendedor';
+    }
+}// public/assets/js/vendedor-logic.js
 
 // ==========================================
 // 1. CONFIGURACIÓN FIREBASE (API v8 - Compatible con scripts)
