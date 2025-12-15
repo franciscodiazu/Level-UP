@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Vendedor - Level Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .registro-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            background: white;
+        }
+        .registro-header {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .form-control:focus {
+            border-color: #FF9800;
+            box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25);
+        }
+        .btn-registro {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            border: none;
+            color: white;
+            padding: 10px 30px;
+            font-weight: bold;
+        }
+        .btn-registro:hover {
+            background: linear-gradient(135deg, #FF5722, #FF9800);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="registro-container">
+        <div class="registro-header text-center">
+            <h2><i class="fas fa-user-tie me-2"></i>Registro de Vendedor</h2>
+            <p class="mb-0">Crea una cuenta para gestionar productos y órdenes</p>
+        </div>
+        
+        <form id="registroForm">
+            <div class="mb-3">
+                <label class="form-label">Nombre Completo *</label>
+                <input type="text" class="form-control" id="nombre" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Email *</label>
+                <input type="email" class="form-control" id="email" required>
+                <div class="form-text">Será tu usuario para ingresar</div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Contraseña *</label>
+                    <input type="password" class="form-control" id="password" minlength="6" required>
+                    <div class="form-text">Mínimo 6 caracteres</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Confirmar Contraseña *</label>
+                    <input type="password" class="form-control" id="confirmPassword" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="telefono">
+            </div>
+            
+            <div class="mb-4">
+                <label class="form-label">Dirección</label>
+                <textarea class="form-control" id="direccion" rows="2"></textarea>
+            </div>
+            
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="terminos" required>
+                <label class="form-check-label" for="terminos">
+                    Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#modalTerminos">términos y condiciones</a> *
+                </label>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-registro btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Registrar Vendedor
+                </button>
+            </div>
+            
+            <div class="text-center mt-3">
+                <a href="admin-dashboard.html" class="text-muted">
+                    <i class="fas fa-arrow-left me-1"></i>Volver al Panel Admin
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Modal Términos -->
+    <div class="modal fade" id="modalTerminos">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Términos y Condiciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Como vendedor en Level Up, aceptas:</p>
+                    <ul>
+                        <li>Gestionar productos de forma responsable</li>
+                        <li>Actualizar stock regularmente</li>
+                        <li>Procesar órdenes de compra puntualmente</li>
+                        <li>Mantener información precisa de productos</li>
+                        <li>Respetar políticas de precios y promociones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <script>
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+            authDomain: "tienda-level-up.firebaseapp.com",
+            projectId: "tienda-level-up",
+            storageBucket: "tienda-level-up.appspot.com",
+            messagingSenderId: "210482166049",
+            appId: "1:210482166049:web:15dadb935d28d9f7d02660",
+            measurementId: "G-85R23XKYYM"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Manejar formulario
+        document.getElementById('registroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const telefono = document.getElementById('telefono').value;
+            const direccion = document.getElementById('direccion').value;
+            
+            // Validaciones
+            if (password !== confirmPassword) {
+                Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                Swal.fire('Error', 'La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
+            }
+            
+            // Mostrar carga
+            const btnSubmit = this.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Registrando...';
+            btnSubmit.disabled = true;
+            
+            try {
+                // 1. Crear usuario en Authentication
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // 2. Guardar en Firestore
+                await db.collection('usuario').doc(userCredential.user.uid).set({
+                    nombre: nombre,
+                    email: email,
+                    rol: 'vendedor',
+                    telefono: telefono,
+                    direccion: direccion,
+                    activo: true,
+                    registradoDesde: 'pagina_registro',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 3. Mostrar éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Vendedor Registrado!',
+                    html: `
+                        <div class="text-start">
+                            <p><strong>Nombre:</strong> ${nombre}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Contraseña:</strong> ${password}</p>
+                            <p><strong>Rol:</strong> <span class="badge bg-warning">Vendedor</span></p>
+                            <hr>
+                            <p class="mb-0">Ahora puede iniciar sesión en el panel de vendedor.</p>
+                        </div>
+                    `,
+                    confirmButtonText: 'Entendido'
+                }).then(() => {
+                    // Redirigir a login o dashboard
+                    window.location.href = 'admin-dashboard.html';
+                });
+                
+            } catch (error) {
+                console.error('Error registro:', error);
+                
+                let mensaje = 'Error al registrar: ';
+                if (error.code === 'auth/email-already-in-use') {
+                    mensaje += 'El email ya está registrado.';
+                } else if (error.code === 'auth/invalid-email') {
+                    mensaje += 'Email inválido.';
+                } else if (error.code === 'auth/weak-password') {
+                    mensaje += 'Contraseña muy débil.';
+                } else {
+                    mensaje += error.message;
+                }
+                
+                Swal.fire('Error', mensaje, 'error');
+                
+            } finally {
+                // Restaurar botón
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Vendedor - Level Up</title>
+    <!-- Estilos similares a tu login admin -->
+</head>
+<body>
+    <form id="loginForm">
+        <h2>Login Vendedor</h2>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Ingresar</button>
+        
+        <div class="credentiales-demo">
+            <p><strong>Credenciales demo:</strong></p>
+            <p>📧 vendedor@levelup.com</p>
+            <p>🔑 Vendedor123</p>
+        </div>
+    </form>
+    
+    <script src="setup-vendedor.js"></script>
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // Buscar en localStorage
+        const vendedores = JSON.parse(localStorage.getItem('vendedoresUsers') || '[]');
+        const vendedor = vendedores.find(v => 
+            v.email === email && v.password === password && v.activo === true
+        );
+        
+        if (vendedor) {
+            // Guardar sesión
+            localStorage.setItem('usuario_actual', JSON.stringify(vendedor));
+            alert('¡Bienvenido ' + vendedor.nombre + '!');
+            window.location.href = 'vendedor-dashboard.html';
+        } else {
+            alert('Credenciales incorrectas');
+        }
+    });
+    </script>
+</body>
+</html>

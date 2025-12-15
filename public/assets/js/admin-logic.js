@@ -675,3 +675,766 @@ window.eliminarProducto = async function(id) {
         }
     }
 }
+// ==========================================
+// FUNCIONES CRUD PARA USUARIOS - CORREGIDAS (P1)
+// ==========================================
+
+/**
+ * ABRIR MODAL PARA EDITAR USUARIO
+ */
+window.abrirModalUsuario = async function(userId) {
+    console.log('Editando usuario ID:', userId);
+    
+    try {
+        // Obtener datos del usuario desde Firestore
+        const userDoc = await db.collection("usuario").doc(userId).get();
+        
+        if (!userDoc.exists) {
+            Swal.fire('Error', 'Usuario no encontrado', 'error');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        
+        // Llenar el formulario del modal (debes tener un modal similar al de productos)
+        document.getElementById('usuarioId').value = userId;
+        document.getElementById('usuarioNombre').value = userData.nombre || '';
+        document.getElementById('usuarioEmail').value = userData.email || '';
+        
+        // IMPORTANTE: Campo email como READONLY para seguridad
+        document.getElementById('usuarioEmail').readOnly = true;
+        
+        document.getElementById('usuarioTelefono').value = userData.telefono || '';
+        document.getElementById('usuarioDireccion').value = userData.direccion || '';
+        
+        // Campo de rol (debes tener select con opciones)
+        const rolSelect = document.getElementById('usuarioRol');
+        if (rolSelect) {
+            rolSelect.value = userData.rol || 'cliente';
+        }
+        
+        // Campo de estado
+        const estadoSelect = document.getElementById('usuarioActivo');
+        if (estadoSelect) {
+            estadoSelect.value = userData.activo === false ? 'false' : 'true';
+        }
+        
+        // Mostrar el modal (debes tener un modal similar al de productos)
+        const modalEl = document.getElementById('modalUsuario');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        } else {
+            console.error('No se encontró el modal de usuario');
+            // Mostrar un modal simple si no existe
+            abrirModalSimpleUsuario(userData, userId);
+        }
+        
+    } catch (error) {
+        console.error('Error al cargar usuario:', error);
+        Swal.fire('Error', 'No se pudo cargar el usuario: ' + error.message, 'error');
+    }
+};
+
+/**
+ * FUNCIÓN DE EMERGENCIA SI NO TIENES MODAL
+ */
+function abrirModalSimpleUsuario(userData, userId) {
+    const nuevoNombre = prompt('Nuevo nombre:', userData.nombre || '');
+    if (nuevoNombre !== null) {
+        const nuevoRol = prompt('Nuevo rol (admin/vendedor/cliente):', userData.rol || 'cliente');
+        if (nuevoRol !== null) {
+            const nuevoActivo = confirm('¿Usuario activo?');
+            actualizarUsuario(userId, {
+                nombre: nuevoNombre,
+                rol: nuevoRol,
+                activo: nuevoActivo
+            });
+        }
+    }
+}
+
+/**
+ * ACTUALIZAR USUARIO (PUT) - CORREGIDA
+ */
+window.actualizarUsuario = async function(userId, datosActualizados) {
+    try {
+        console.log('Actualizando usuario:', userId, datosActualizados);
+        
+        // Validar que el usuario existe
+        const userRef = db.collection("usuario").doc(userId);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) {
+            throw new Error('Usuario no encontrado');
+        }
+        
+        // Preparar datos para actualizar (SEGURIDAD)
+        const camposPermitidos = {
+            nombre: datosActualizados.nombre || userDoc.data().nombre,
+            telefono: datosActualizados.telefono || userDoc.data().telefono,
+            direccion: datosActualizados.direccion || userDoc.data().direccion,
+            rol: datosActualizados.rol || userDoc.data().rol,
+            activo: datosActualizados.activo !== undefined ? datosActualizados.activo : userDoc.data().activo,
+            actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        // CRÍTICO: NO permitir cambiar email (SEGURIDAD P2)
+        // Si viene email en los datos, lo ignoramos
+        if (datosActualizados.email) {
+            console.warn('Intento de modificar email bloqueado');
+            delete datosActualizados.email;
+        }
+        
+        // Actualizar en Firestore
+        await userRef.update(camposPermitidos);
+        
+        console.log('Usuario actualizado correctamente');
+        
+        // Mostrar éxito y recargar
+        Swal.fire('¡Éxito!', 'Usuario actualizado correctamente', 'success');
+        cargarUsuarios(); // Recargar la tabla
+        
+        // Cerrar modal si existe
+        const modalEl = document.getElementById('modalUsuario');
+        if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Error al actualizar usuario:', error);
+        Swal.fire('Error', 'No se pudo actualizar el usuario: ' + error.message, 'error');
+        return false;
+    }
+};
+
+/**
+ * ELIMINAR USUARIO (DELETE) - CORREGIDA
+ */
+window.eliminarUsuario = async function(userId) {
+    // Confirmación de seguridad
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción eliminará permanentemente al usuario",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!result.isConfirmed) return;
+    
+    try {
+        console.log('Eliminando usuario:', userId);
+        
+        // Opción 1: Eliminar completamente
+        await db.collection("usuario").doc(userId).delete();
+        
+        // Opción 2: Marcar como inactivo (RECOMENDADO para auditoría)
+        // await db.collection("usuario").doc(userId).update({
+        //     activo: false,
+        //     eliminadoEn: firebase.firestore.FieldValue.serverTimestamp()
+        // });
+        
+        console.log('Usuario eliminado correctamente');
+        
+        Swal.fire('Eliminado', 'El usuario ha sido eliminado correctamente', 'success');
+        cargarUsuarios(); // Recargar la tabla
+        
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        Swal.fire('Error', 'No se pudo eliminar el usuario: ' + error.message, 'error');
+    }
+};
+
+/**
+ * MANEJADOR DEL FORMULARIO DE USUARIO
+ */
+if (document.getElementById('formUsuario')) {
+    document.getElementById('formUsuario').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const userId = document.getElementById('usuarioId').value;
+        const datosActualizados = {
+            nombre: document.getElementById('usuarioNombre').value,
+            email: document.getElementById('usuarioEmail').value, // Solo lectura
+            telefono: document.getElementById('usuarioTelefono').value,
+            direccion: document.getElementById('usuarioDireccion').value,
+            rol: document.getElementById('usuarioRol').value,
+            activo: document.getElementById('usuarioActivo').value === 'true'
+        };
+        
+        await actualizarUsuario(userId, datosActualizados);
+    });
+}
+
+/**
+ * CREAR NUEVO USUARIO (POST) - Para completar el CRUD
+ */
+window.crearNuevoUsuario = async function() {
+    try {
+        const { value: formValues } = await Swal.fire({
+            title: 'Crear Nuevo Usuario',
+            html: `
+                <input id="swal-nombre" class="swal2-input" placeholder="Nombre" required>
+                <input id="swal-email" type="email" class="swal2-input" placeholder="Email" required>
+                <input id="swal-password" type="password" class="swal2-input" placeholder="Contraseña" required minlength="6">
+                <select id="swal-rol" class="swal2-input">
+                    <option value="cliente">Cliente</option>
+                    <option value="vendedor">Vendedor</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Crear',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                return {
+                    nombre: document.getElementById('swal-nombre').value,
+                    email: document.getElementById('swal-email').value,
+                    password: document.getElementById('swal-password').value,
+                    rol: document.getElementById('swal-rol').value
+                };
+            }
+        });
+        
+        if (formValues) {
+            // Crear usuario en Authentication (si usas Firebase Auth)
+            const userCredential = await firebase.auth().createUserWithEmailAndPassword(
+                formValues.email, 
+                formValues.password
+            );
+            
+            const userId = userCredential.user.uid;
+            
+            // Guardar datos adicionales en Firestore
+            await db.collection("usuario").doc(userId).set({
+                nombre: formValues.nombre,
+                email: formValues.email,
+                rol: formValues.rol,
+                activo: true,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            Swal.fire('¡Éxito!', 'Usuario creado correctamente', 'success');
+            cargarUsuarios(); // Recargar tabla
+        }
+        
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        Swal.fire('Error', 'No se pudo crear el usuario: ' + error.message, 'error');
+    }
+};
+
+// ==========================================
+// VERIFICACIÓN DE CONEXIÓN FIRESTORE
+// ==========================================
+
+/**
+ * DIAGNÓSTICO: Verificar conexión con Firestore
+ */
+window.diagnosticarConexion = async function() {
+    try {
+        console.log('=== DIAGNÓSTICO DE CONEXIÓN FIRESTORE ===');
+        
+        // 1. Verificar inicialización
+        console.log('Firebase inicializado:', firebase.apps.length > 0);
+        
+        // 2. Verificar colección "usuario"
+        const usuariosSnapshot = await db.collection("usuario").limit(1).get();
+        console.log('Colección "usuario" accesible:', !usuariosSnapshot.empty);
+        console.log('Número de usuarios:', usuariosSnapshot.size);
+        
+        // 3. Verificar una operación de escritura simple
+        const testDoc = db.collection("test").doc("conexion");
+        await testDoc.set({
+            test: true,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('Escritura en Firestore: OK');
+        
+        // 4. Verificar una operación de lectura
+        await testDoc.get();
+        console.log('Lectura en Firestore: OK');
+        
+        // 5. Limpiar documento de prueba
+        await testDoc.delete();
+        console.log('Eliminación en Firestore: OK');
+        
+        Swal.fire('Conexión Exitosa', 'Firestore está funcionando correctamente', 'success');
+        
+        return true;
+        
+    } catch (error) {
+        console.error('Error en diagnóstico:', error);
+        
+        let mensaje = 'Error: ' + error.message;
+        if (error.code === 'permission-denied') {
+            mensaje += '\n\nProblema: Permisos de Firestore insuficientes.';
+            mensaje += '\nSolución: Revisa las reglas de seguridad en Firebase Console.';
+        } else if (error.code === 'not-found') {
+            mensaje += '\n\nProblema: Colección no encontrada.';
+            mensaje += '\nSolución: Verifica que la colección "usuario" existe.';
+        }
+        
+        Swal.fire('Error de Conexión', mensaje, 'error');
+        return false;
+    }
+};
+// ==========================================
+// FUNCIÓN PARA CREAR VENDEDOR CORRECTAMENTE
+// ==========================================
+
+window.crearVendedorCorrectamente = async function() {
+    try {
+        console.log('=== CREANDO VENDEDOR EN AMBOS SISTEMAS ===');
+        
+        // 1. SOLICITAR DATOS
+        const { value: formValues } = await Swal.fire({
+            title: 'Crear Nuevo Vendedor',
+            html: `
+                <div class="text-start">
+                    <label class="form-label">Nombre Completo *</label>
+                    <input id="swal-nombre" class="swal2-input" placeholder="Ej: Carlos Vendedor" required>
+                    
+                    <label class="form-label mt-3">Email *</label>
+                    <input id="swal-email" type="email" class="swal2-input" placeholder="vendedor@empresa.com" required>
+                    
+                    <label class="form-label mt-3">Contraseña *</label>
+                    <input id="swal-password" type="password" class="swal2-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    
+                    <small class="text-muted d-block mt-2">
+                        <i class="fas fa-info-circle"></i> Se creará en Firebase Authentication y Firestore
+                    </small>
+                </div>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Crear Vendedor',
+            cancelButtonText: 'Cancelar',
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                const nombre = document.getElementById('swal-nombre').value.trim();
+                const email = document.getElementById('swal-email').value.trim();
+                const password = document.getElementById('swal-password').value;
+                
+                // VALIDACIONES
+                if (!nombre) {
+                    Swal.showValidationMessage('El nombre es requerido');
+                    return false;
+                }
+                if (!email.includes('@') || !email.includes('.')) {
+                    Swal.showValidationMessage('Email inválido');
+                    return false;
+                }
+                if (!password || password.length < 6) {
+                    Swal.showValidationMessage('Contraseña mínima: 6 caracteres');
+                    return false;
+                }
+                
+                return { nombre, email, password };
+            }
+        });
+        
+        if (!formValues) return;
+        
+        console.log('Datos recibidos:', formValues);
+        
+        // 2. VERIFICAR QUE FIREBASE ESTÉ INICIALIZADO
+        if (!firebase.apps.length) {
+            console.error('Firebase no está inicializado');
+            Swal.fire('Error', 'Firebase no está configurado', 'error');
+            return;
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // 3. VERIFICAR SI EL EMAIL YA EXISTE EN AUTH (OPCIONAL)
+        try {
+            console.log('Verificando si email existe...');
+            // Intentar iniciar sesión para ver si existe
+            await auth.signInWithEmailAndPassword(formValues.email, 'tempPassword123');
+            // Si llega aquí, el usuario existe
+            Swal.fire('Error', 'Este email ya está registrado en Authentication', 'error');
+            return;
+        } catch (authError) {
+            // Error esperado si el usuario no existe
+            console.log('Email no existe en Auth, procediendo...');
+        }
+        
+        // 4. CREAR EN FIREBASE AUTHENTICATION (CRÍTICO)
+        console.log('Creando en Firebase Authentication...');
+        let userCredential;
+        try {
+            userCredential = await auth.createUserWithEmailAndPassword(
+                formValues.email, 
+                formValues.password
+            );
+            console.log('✅ CREADO EN AUTHENTICATION:', userCredential.user.uid);
+        } catch (authError) {
+            console.error('Error creando en Auth:', authError);
+            
+            let mensaje = 'Error en Authentication: ';
+            switch(authError.code) {
+                case 'auth/email-already-in-use':
+                    mensaje = 'El email YA ESTÁ REGISTRADO en Firebase Authentication. Ve a Firebase Console → Authentication → Users';
+                    break;
+                case 'auth/invalid-email':
+                    mensaje = 'Email inválido';
+                    break;
+                case 'auth/weak-password':
+                    mensaje = 'Contraseña muy débil (mínimo 6 caracteres)';
+                    break;
+                case 'auth/operation-not-allowed':
+                    mensaje = 'Registro con email/contraseña no está habilitado. Ve a Firebase Console → Authentication → Métodos de inicio de sesión';
+                    break;
+                default:
+                    mensaje += authError.message;
+            }
+            
+            Swal.fire('Error Authentication', mensaje, 'error');
+            return;
+        }
+        
+        const userId = userCredential.user.uid;
+        console.log('User ID generado:', userId);
+        
+        // 5. CREAR EN FIRESTORE
+        console.log('Creando en Firestore...');
+        try {
+            const vendedorData = {
+                // DATOS BÁSICOS
+                id: userId,
+                nombre: formValues.nombre,
+                email: formValues.email,
+                rol: 'vendedor',
+                
+                // METADATOS
+                activo: true,
+                verificado: false,
+                requiereCambioPassword: true,
+                
+                // AUDITORÍA
+                creadoPor: 'admin_panel',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+                
+                // ESTADÍSTICAS INICIALES
+                totalVentas: 0,
+                ordenesAtendidas: 0
+            };
+            
+            await db.collection('usuario').doc(userId).set(vendedorData);
+            console.log('✅ CREADO EN FIRESTORE');
+            
+        } catch (firestoreError) {
+            console.error('Error en Firestore:', firestoreError);
+            
+            // Si falla Firestore, eliminar el usuario de Auth para mantener consistencia
+            try {
+                await userCredential.user.delete();
+                console.log('Usuario eliminado de Auth por fallo en Firestore');
+            } catch (deleteError) {
+                console.error('Error eliminando usuario:', deleteError);
+            }
+            
+            Swal.fire('Error Firestore', 'No se pudo guardar en base de datos: ' + firestoreError.message, 'error');
+            return;
+        }
+        
+        // 6. PROBAR LOGIN INMEDIATAMENTE
+        console.log('Probando login automático...');
+        try {
+            // Cerrar sesión actual
+            await auth.signOut();
+            
+            // Intentar login con las nuevas credenciales
+            const testLogin = await auth.signInWithEmailAndPassword(
+                formValues.email, 
+                formValues.password
+            );
+            
+            console.log('✅ LOGIN DE PRUEBA EXITOSO:', testLogin.user.email);
+            
+            // Cerrar sesión de prueba
+            await auth.signOut();
+            
+        } catch (loginError) {
+            console.error('Error en login de prueba:', loginError);
+            // Continuar aunque falle la prueba
+        }
+        
+        // 7. MOSTRAR RESULTADO FINAL
+        Swal.fire({
+            icon: 'success',
+            title: '✅ Vendedor Creado Correctamente',
+            html: `
+                <div class="text-start">
+                    <h5>Credenciales Generadas:</h5>
+                    <div class="alert alert-success">
+                        <p><strong>📧 Email:</strong> ${formValues.email}</p>
+                        <p><strong>🔑 Contraseña:</strong> ${formValues.password}</p>
+                        <p><strong>👤 Rol:</strong> <span class="badge bg-warning">Vendedor</span></p>
+                        <p><strong>🆔 ID:</strong> <code>${userId.substring(0, 10)}...</code></p>
+                    </div>
+                    
+                    <h5>Próximos pasos:</h5>
+                    <ol class="text-start small">
+                        <li>El vendedor debe iniciar sesión en <strong>vendedor-dashboard.html</strong></li>
+                        <li>Cambiar contraseña en primer inicio (recomendado)</li>
+                        <li>Verificar que aparece en Firebase Console → Authentication</li>
+                    </ol>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-primary btn-sm" onclick="probarLoginVendedor('${formValues.email}', '${formValues.password}')">
+                            <i class="fas fa-sign-in-alt"></i> Probar Login Ahora
+                        </button>
+                        <button class="btn btn-info btn-sm ms-2" onclick="verificarEnFirebaseConsole()">
+                            <i class="fas fa-external-link-alt"></i> Ver en Firebase Console
+                        </button>
+                    </div>
+                </div>
+            `,
+            width: 600,
+            confirmButtonText: 'Entendido'
+        });
+        
+    } catch (error) {
+        console.error('Error general:', error);
+        Swal.fire('Error Inesperado', 'Error: ' + error.message, 'error');
+    }
+};
+
+// ==========================================
+// FUNCIONES AUXILIARES
+// ==========================================
+
+// Función para probar login
+window.probarLoginVendedor = async function(email, password) {
+    try {
+        Swal.fire({
+            title: 'Probando Login...',
+            text: 'Verificando credenciales',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        const auth = firebase.auth();
+        
+        // Cerrar cualquier sesión activa
+        await auth.signOut();
+        
+        // Intentar login
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        
+        Swal.fire({
+            icon: 'success',
+            title: '✅ Login Exitoso',
+            html: `
+                <div class="text-start">
+                    <p><strong>Usuario:</strong> ${userCredential.user.email}</p>
+                    <p><strong>ID:</strong> ${userCredential.user.uid.substring(0, 10)}...</p>
+                    <p><strong>Email verificado:</strong> ${userCredential.user.emailVerified ? 'Sí' : 'No'}</p>
+                    <hr>
+                    <p>Las credenciales funcionan correctamente.</p>
+                </div>
+            `,
+            confirmButtonText: 'Continuar'
+        }).then(() => {
+            // Cerrar sesión de prueba
+            auth.signOut();
+        });
+        
+    } catch (error) {
+        console.error('Error probando login:', error);
+        
+        let mensaje = 'Error: ' + error.message;
+        if (error.code === 'auth/user-not-found') {
+            mensaje = 'Usuario NO EXISTE en Firebase Authentication';
+        } else if (error.code === 'auth/wrong-password') {
+            mensaje = 'Contraseña incorrecta o usuario no existe';
+        } else if (error.code === 'auth/user-disabled') {
+            mensaje = 'Usuario deshabilitado en Firebase Console';
+        }
+        
+        Swal.fire('Error Login', mensaje, 'error');
+    }
+};
+
+// Función para verificar en Firebase Console
+window.verificarEnFirebaseConsole = function() {
+    Swal.fire({
+        title: 'Verificar en Firebase Console',
+        html: `
+            <div class="text-start">
+                <p>Sigue estos pasos:</p>
+                <ol>
+                    <li>Ve a <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                    <li>Selecciona tu proyecto "tienda-level-up"</li>
+                    <li>Ve a <strong>Authentication → Users</strong></li>
+                    <li>Busca el email del vendedor</li>
+                    <li>Verifica que esté en la lista</li>
+                </ol>
+                <p class="text-muted">Si no aparece, el usuario no se creó en Authentication</p>
+            </div>
+        `,
+        confirmButtonText: 'Entendido'
+    });
+};
+
+// ==========================================
+// FUNCIÓN PARA MIGRAR USUARIOS EXISTENTES
+// ==========================================
+
+/**
+ * Si ya tienes usuarios en Firestore pero NO en Authentication,
+ * usa esta función para crearlos en Authentication
+ */
+window.migrarUsuariosAAuthentication = async function() {
+    try {
+        console.log('=== MIGRANDO USUARIOS A AUTHENTICATION ===');
+        
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // Obtener todos los usuarios de Firestore
+        const usuariosSnap = await db.collection('usuario').get();
+        
+        if (usuariosSnap.empty) {
+            Swal.fire('Info', 'No hay usuarios en Firestore', 'info');
+            return;
+        }
+        
+        let resultados = {
+            exitos: 0,
+            errores: 0,
+            existentes: 0
+        };
+        
+        let detalleHTML = '<h6>Resultados de migración:</h6><ul>';
+        
+        for (const doc of usuariosSnap.docs) {
+            const usuario = doc.data();
+            const email = usuario.email;
+            
+            if (!email) {
+                detalleHTML += `<li>❌ ${usuario.nombre || 'Sin nombre'}: Sin email</li>`;
+                resultados.errores++;
+                continue;
+            }
+            
+            try {
+                // Verificar si ya existe en Auth
+                try {
+                    // Intentar crear contraseña temporal
+                    const passwordTemporal = 'Temp123456';
+                    await auth.createUserWithEmailAndPassword(email, passwordTemporal);
+                    
+                    // Actualizar en Firestore con ID de Auth
+                    await db.collection('usuario').doc(doc.id).update({
+                        authId: auth.currentUser.uid,
+                        requiereCambioPassword: true,
+                        actualizadoEn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // Cerrar sesión
+                    await auth.signOut();
+                    
+                    detalleHTML += `<li>✅ ${usuario.nombre} (${email}): CREADO</li>`;
+                    resultados.exitos++;
+                    
+                } catch (authError) {
+                    if (authError.code === 'auth/email-already-in-use') {
+                        detalleHTML += `<li>⚠️ ${usuario.nombre} (${email}): YA EXISTE</li>`;
+                        resultados.existentes++;
+                    } else {
+                        detalleHTML += `<li>❌ ${usuario.nombre} (${email}): ${authError.message}</li>`;
+                        resultados.errores++;
+                    }
+                }
+                
+            } catch (error) {
+                console.error(`Error con ${email}:`, error);
+                detalleHTML += `<li>❌ ${usuario.nombre} (${email}): ${error.message}</li>`;
+                resultados.errores++;
+            }
+        }
+        
+        detalleHTML += '</ul>';
+        
+        Swal.fire({
+            title: 'Migración Completa',
+            html: `
+                <div class="text-start">
+                    <p><strong>Total procesado:</strong> ${usuariosSnap.size} usuarios</p>
+                    <p><strong>✅ Creados en Auth:</strong> ${resultados.exitos}</p>
+                    <p><strong>⚠️ Ya existían:</strong> ${resultados.existentes}</p>
+                    <p><strong>❌ Errores:</strong> ${resultados.errores}</p>
+                    <hr>
+                    ${detalleHTML}
+                </div>
+            `,
+            width: 700,
+            confirmButtonText: 'Cerrar'
+        });
+        
+    } catch (error) {
+        console.error('Error en migración:', error);
+        Swal.fire('Error', 'Error en migración: ' + error.message, 'error');
+    }
+    
+};
+// En admin-logic.js
+window.crearVendedorLocal = function() {
+    const nombre = prompt('Nombre del vendedor:');
+    if (!nombre) return;
+    
+    const email = prompt('Email:');
+    if (!email) return;
+    
+    const password = prompt('Contraseña:');
+    if (!password) return;
+    
+    // Generar ID único
+    const id = 'vendedor_' + Date.now();
+    
+    // Obtener vendedores existentes
+    const vendedores = JSON.parse(localStorage.getItem('vendedoresUsers') || '[]');
+    
+    // Agregar nuevo
+    vendedores.push({
+        id: id,
+        email: email,
+        password: password,
+        nombre: nombre,
+        rol: 'vendedor',
+        activo: true,
+        createdAt: new Date().toISOString()
+    });
+    
+    // Guardar
+    localStorage.setItem('vendedoresUsers', JSON.stringify(vendedores));
+    
+    alert(`Vendedor creado:\n\nEmail: ${email}\nContraseña: ${password}`);
+    
+    // Opcional: También guardar en Firestore para consistencia
+    if (typeof db !== 'undefined') {
+        db.collection('usuario').doc(id).set({
+            nombre: nombre,
+            email: email,
+            rol: 'vendedor',
+            activo: true,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
+};

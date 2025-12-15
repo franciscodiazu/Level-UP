@@ -21,6 +21,12 @@
         .bg-secondary { background-color: #1e1e1e !important; }
         .modal-content { background-color: #1e1e1e; color: white; border: 1px solid #333; }
         .btn-close-white { filter: invert(1); }
+        .badge-rol-admin { background-color: #dc3545; color: white; }
+        .badge-rol-vendedor { background-color: #ffc107; color: black; }
+        .badge-rol-cliente { background-color: #0dcaf0; color: white; }
+        .btn-diagnostico { background-color: #17a2b8; color: white; }
+        .btn-estructura { background-color: #ffc107; color: black; }
+        .btn-crear { background-color: #39FF14; color: black; font-weight: bold; }
     </style>
 </head>
 <body class="bg-dark text-light">
@@ -42,15 +48,31 @@
         <main class="admin-main-content">
             <div class="container-fluid">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="text-white">Gestión de Usuarios</h2>
-                    <button class="btn btn-lg" style="background-color: #39FF14; color: black; font-weight: bold;" onclick="window.abrirModalUsuario()">
-                        <i class="fas fa-user-plus"></i> Nuevo Usuario
-                    </button>
+                    <h2 class="text-white">
+                        <i class="fas fa-users me-2"></i>Gestión de Usuarios
+                    </h2>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-diagnostico me-2" onclick="diagnosticarConexion()">
+                            <i class="fas fa-bug"></i> Diagnosticar
+                        </button>
+                        <button class="btn btn-estructura me-2" onclick="verificarEstructuraUsuarios()">
+                            <i class="fas fa-database"></i> Estructura
+                        </button>
+                        <button class="btn btn-crear" onclick="crearNuevoUsuario()">
+                            <i class="fas fa-user-plus"></i> Nuevo Usuario
+                        </button>
+                    </div>
                 </div>
                 <hr style="border-color: #333;">
 
                 <div class="mb-3">
-                    <input type="text" id="searchInput" class="form-control bg-dark text-white border-secondary" placeholder="Buscar usuario por nombre o email..." onkeyup="window.filtrarUsuarios()">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-light">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control bg-dark text-white border-secondary" 
+                               placeholder="Buscar usuario por nombre o email..." onkeyup="window.filtrarUsuarios()">
+                    </div>
                 </div>
 
                 <div class="table-responsive bg-dark rounded shadow" style="border: 1px solid #333;">
@@ -65,7 +87,11 @@
                             </tr>
                         </thead>
                         <tbody id="usuarios-tbody">
-                            <tr><td colspan="5" class="text-center p-5 text-muted"><i class="fas fa-spinner fa-spin"></i> Cargando usuarios...</td></tr>
+                            <tr>
+                                <td colspan="5" class="text-center p-5 text-muted">
+                                    <i class="fas fa-spinner fa-spin"></i> Cargando usuarios...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -73,62 +99,103 @@
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <span id="pagination-info" class="text-muted">Mostrando 0 usuarios</span>
                     <div>
-                        <button class="btn btn-outline-secondary btn-sm" id="btn-prev" onclick="window.cambiarPagina(-1)">Anterior</button>
-                        <button class="btn btn-outline-secondary btn-sm" id="btn-next" onclick="window.cambiarPagina(1)">Siguiente</button>
+                        <button class="btn btn-outline-secondary btn-sm me-2" id="btn-prev" onclick="window.cambiarPagina(-1)">
+                            <i class="fas fa-chevron-left"></i> Anterior
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" id="btn-next" onclick="window.cambiarPagina(1)">
+                            Siguiente <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Modal para Editar Usuario -->
     <div class="modal fade" id="modalUsuario" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header border-secondary">
-            <h5 class="modal-title text-white" id="modalTitle">Usuario</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="usuarioForm" onsubmit="window.guardarUsuario(event)">
-              <input type="hidden" id="userId">
-              <div class="mb-3">
-                <label class="form-label">Nombre Completo</label>
-                <input type="text" class="form-control bg-dark text-white border-secondary" id="userNombre" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control bg-dark text-white border-secondary" id="userEmail" required>
-              </div>
-              <div class="row">
-                  <div class="col-6 mb-3">
-                    <label class="form-label">Rol</label>
-                    <select class="form-select bg-dark text-white border-secondary" id="userRol">
-                        <option value="cliente">Cliente</option>
-                        <option value="admin">Administrador</option>
-                    </select>
-                  </div>
-                  <div class="col-6 mb-3">
-                    <label class="form-label">Estado</label>
-                    <select class="form-select bg-dark text-white border-secondary" id="userEstado">
-                        <option value="true">Activo</option>
-                        <option value="false">Inactivo</option>
-                    </select>
-                  </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Avatar URL (Opcional)</label>
-                <input type="text" class="form-control bg-dark text-white border-secondary" id="userAvatar">
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer border-secondary">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" form="usuarioForm" class="btn btn-primary" style="background-color: #39FF14; color: black; border: none;">Guardar</button>
-          </div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light border border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white">
+                        <i class="fas fa-user-edit me-2"></i>
+                        <span id="modalUsuarioTitle">Editar Usuario</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formUsuario">
+                        <input type="hidden" id="usuarioId">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" class="form-control bg-secondary border-secondary text-light" 
+                                       id="usuarioNombre" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control bg-secondary border-secondary text-light" 
+                                       id="usuarioEmail" readonly style="cursor: not-allowed;">
+                                <small class="text-warning mt-1 d-block">
+                                    <i class="fas fa-exclamation-triangle"></i> El email no se puede modificar por seguridad
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" class="form-control bg-secondary border-secondary text-light" 
+                                       id="usuarioTelefono">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Rol</label>
+                                <select class="form-select bg-secondary border-secondary text-light" id="usuarioRol">
+                                    <option value="cliente">Cliente</option>
+                                    <option value="vendedor">Vendedor</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control bg-secondary border-secondary text-light" 
+                                      id="usuarioDireccion" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select bg-secondary border-secondary text-light" id="usuarioActivo">
+                                <option value="true">Activo</option>
+                                <option value="false">Inactivo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-info bg-dark border-info">
+                            <small>
+                                <i class="fas fa-info-circle"></i> 
+                                <strong>Nota de seguridad:</strong> El campo email está bloqueado para prevenir 
+                                problemas con la integridad de los datos. Solo se pueden modificar los demás campos.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="guardarCambiosUsuario()">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
+    <!-- Scripts necesarios -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -137,5 +204,241 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
     <script src="../js/admin-logic.js"></script>
+    
+    <script>
+    // ==========================================
+    // FUNCIONES ESPECÍFICAS PARA ESTA PÁGINA
+    // ==========================================
+    
+    /**
+     * Función para guardar cambios desde el modal
+     */
+    window.guardarCambiosUsuario = async function() {
+        const userId = document.getElementById('usuarioId').value;
+        
+        if (!userId) {
+            Swal.fire('Error', 'ID de usuario no válido', 'error');
+            return;
+        }
+        
+        const datosActualizados = {
+            nombre: document.getElementById('usuarioNombre').value,
+            telefono: document.getElementById('usuarioTelefono').value,
+            direccion: document.getElementById('usuarioDireccion').value,
+            rol: document.getElementById('usuarioRol').value,
+            activo: document.getElementById('usuarioActivo').value === 'true'
+        };
+        
+        // Validación básica
+        if (!datosActualizados.nombre.trim()) {
+            Swal.fire('Error', 'El nombre es requerido', 'error');
+            return;
+        }
+        
+        await actualizarUsuario(userId, datosActualizados);
+    };
+    
+    /**
+     * Mejorar la función abrirModalUsuario para usar el modal Bootstrap
+     */
+    window.abrirModalUsuarioOriginal = window.abrirModalUsuario;
+    window.abrirModalUsuario = async function(userId) {
+        console.log('Abriendo modal para usuario:', userId);
+        
+        try {
+            // Obtener datos del usuario
+            const userDoc = await db.collection("usuario").doc(userId).get();
+            
+            if (!userDoc.exists) {
+                Swal.fire('Error', 'Usuario no encontrado', 'error');
+                return;
+            }
+            
+            const userData = userDoc.data();
+            
+            // Llenar campos del modal
+            document.getElementById('usuarioId').value = userId;
+            document.getElementById('usuarioNombre').value = userData.nombre || '';
+            document.getElementById('usuarioEmail').value = userData.email || '';
+            document.getElementById('usuarioTelefono').value = userData.telefono || '';
+            document.getElementById('usuarioDireccion').value = userData.direccion || '';
+            document.getElementById('usuarioRol').value = userData.rol || 'cliente';
+            document.getElementById('usuarioActivo').value = userData.activo === false ? 'false' : 'true';
+            
+            // Actualizar título del modal
+            document.getElementById('modalUsuarioTitle').textContent = `Editar: ${userData.nombre || 'Usuario'}`;
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+            modal.show();
+            
+        } catch (error) {
+            console.error('Error al abrir modal:', error);
+            Swal.fire('Error', 'No se pudo cargar el usuario: ' + error.message, 'error');
+        }
+    };
+    
+    /**
+     * Mejorar la función de filtrado para actualizar visualmente
+     */
+    window.filtrarUsuariosOriginal = window.filtrarUsuarios;
+    window.filtrarUsuarios = function() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        if (searchTerm) {
+            filteredUsers = allUsers.filter(user => 
+                (user.nombre && user.nombre.toLowerCase().includes(searchTerm)) ||
+                (user.email && user.email.toLowerCase().includes(searchTerm)) ||
+                (user.rol && user.rol.toLowerCase().includes(searchTerm))
+            );
+        } else {
+            filteredUsers = [...allUsers];
+        }
+        
+        currentPage = 1;
+        mostrarUsuariosPagina();
+        
+        // Actualizar información de paginación
+        document.getElementById('pagination-info').textContent = 
+            `Mostrando ${Math.min(filteredUsers.length, 1)}-${Math.min(currentPage * rowsPerPage, filteredUsers.length)} de ${filteredUsers.length} usuarios`;
+    };
+    
+    /**
+     * Mejorar la visualización de usuarios
+     */
+    window.mostrarUsuariosPaginaOriginal = window.mostrarUsuariosPagina;
+    window.mostrarUsuariosPagina = function() {
+        const tbody = document.getElementById('usuarios-tbody');
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedUsers = filteredUsers.slice(start, end);
+        
+        if (paginatedUsers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center p-5 text-muted">
+                        <i class="fas fa-user-slash fa-2x mb-3"></i><br>
+                        No se encontraron usuarios.
+                        ${filteredUsers.length === 0 && allUsers.length > 0 ? 
+                            'Prueba con otros términos de búsqueda.' : 
+                            'No hay usuarios registrados.'}
+                    </td>
+                </tr>
+            `;
+            document.getElementById('pagination-info').textContent = 'Mostrando 0 usuarios';
+            return;
+        }
+        
+        tbody.innerHTML = paginatedUsers.map(user => {
+            // Determinar clase del badge según el rol
+            let badgeClass = '';
+            switch(user.rol) {
+                case 'admin': badgeClass = 'badge-rol-admin'; break;
+                case 'vendedor': badgeClass = 'badge-rol-vendedor'; break;
+                case 'cliente': badgeClass = 'badge-rol-cliente'; break;
+                default: badgeClass = 'bg-secondary';
+            }
+            
+            // Determinar icono según el rol
+            let roleIcon = '';
+            switch(user.rol) {
+                case 'admin': roleIcon = 'fa-crown'; break;
+                case 'vendedor': roleIcon = 'fa-store'; break;
+                case 'cliente': roleIcon = 'fa-user'; break;
+                default: roleIcon = 'fa-user';
+            }
+            
+            return `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="${user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nombre || 'U')}&background=random&color=fff`}" 
+                                 class="rounded-circle me-3" style="width: 50px; height: 50px" alt="Avatar">
+                            <div>
+                                <p class="fw-bold mb-1 text-white">${user.nombre || 'Sin nombre'}</p>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-envelope me-1"></i>${user.email || 'Sin email'}
+                                </p>
+                                ${user.telefono ? `<small class="text-muted"><i class="fas fa-phone me-1"></i>${user.telefono}</small>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge ${badgeClass} rounded-pill p-2">
+                            <i class="fas ${roleIcon} me-1"></i>${user.rol || 'cliente'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge ${user.activo ? 'bg-success' : 'bg-danger'} rounded-pill p-2">
+                            <i class="fas ${user.activo ? 'fa-check-circle' : 'fa-times-circle'} me-1"></i>
+                            ${user.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>
+                        ${user.createdAt ? 
+                            `<span class="text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                ${user.createdAt.toDate ? user.createdAt.toDate().toLocaleDateString('es-CL') : 'N/A'}
+                            </span>` : 
+                            '<span class="text-muted">N/A</span>'
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button class="btn btn-warning" onclick="abrirModalUsuario('${user.id}')">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger" onclick="eliminarUsuario('${user.id}')">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        document.getElementById('pagination-info').textContent = 
+            `Mostrando ${start + 1}-${Math.min(end, filteredUsers.length)} de ${filteredUsers.length} usuarios`;
+        
+        // Habilitar/deshabilitar botones de paginación
+        document.getElementById('btn-prev').disabled = currentPage === 1;
+        document.getElementById('btn-next').disabled = end >= filteredUsers.length;
+    };
+    
+    /**
+     * Inicializar la página
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página de usuarios inicializada');
+        
+        // Verificar si las funciones CRUD están cargadas
+        setTimeout(() => {
+            console.log('Funciones disponibles:', {
+                abrirModalUsuario: typeof abrirModalUsuario,
+                actualizarUsuario: typeof actualizarUsuario,
+                eliminarUsuario: typeof eliminarUsuario,
+                crearNuevoUsuario: typeof crearNuevoUsuario,
+                diagnosticarConexion: typeof diagnosticarConexion
+            });
+        }, 1000);
+    });
+    
+    /**
+     * Función para manejar la creación de usuario (alternativa al modal)
+     */
+    window.abrirModalCrearUsuario = function() {
+        // Redirigir a la función crearNuevoUsuario que usa SweetAlert
+        crearNuevoUsuario();
+    };
+    
+    // Actualizar el botón "Nuevo Usuario" para usar la nueva función
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnCrear = document.querySelector('.btn-crear');
+        if (btnCrear) {
+            btnCrear.onclick = crearNuevoUsuario;
+        }
+    });
+    </script>
+
 </body>
 </html>

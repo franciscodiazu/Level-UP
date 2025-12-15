@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -173,6 +174,12 @@
 
             <h3 style="color:white; margin-bottom:20px;">Gestión Rápida</h3>
             <div class="modules-grid">
+                <!-- Cambia el onclick del módulo Nuevo Vendedor -->
+                <a href="javascript:void(0);" class="module-item" onclick="crearVendedorLocal()" style="background: linear-gradient(135deg, #FF9800, #FF5722); color: white;">
+                    <i class="fas fa-user-plus module-icon"></i>
+                    <div class="module-title">Nuevo Vendedor</div>
+                    <div class="module-desc">Crear vendedor en localStorage</div>
+                </a>
                 <a href="admin-pedidos.html" class="module-item">
                     <i class="fas fa-clipboard-list module-icon"></i>
                     <div class="module-title">Gestionar Órdenes</div>
@@ -209,6 +216,232 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     
     <script src="../js/admin-logic.js"></script>
-
+    <script>
+// Función para crear vendedor rápido
+async function crearVendedorRapido() {
+    const { value: formValues } = await Swal.fire({
+        title: 'Crear Nuevo Vendedor',
+        html: `
+            <div style="text-align: left; font-size: 12px; color: #666; margin-bottom: 10px;">
+                Complete todos los datos como en registro normal
+            </div>
+            
+            <!-- Datos Personales -->
+            <input id="swal-nombre" class="swal2-input" placeholder="Nombre *" required>
+            <input id="swal-apellidos" class="swal2-input" placeholder="Apellidos *" required>
+            <input id="swal-run" class="swal2-input" placeholder="RUN (sin puntos ni guión)">
+            <input id="swal-fechaNacimiento" type="date" class="swal2-input" placeholder="Fecha Nacimiento">
+            
+            <!-- Contacto -->
+            <input id="swal-correo" type="email" class="swal2-input" placeholder="Correo *" required>
+            <input id="swal-clave" type="password" class="swal2-input" placeholder="Clave (mín. 6) *" required minlength="6">
+            <input id="swal-numero" class="swal2-input" placeholder="Número celular *" required>
+            <input id="swal-telefono" class="swal2-input" placeholder="Teléfono fijo (opcional)">
+            
+            <!-- Dirección -->
+            <input id="swal-region" class="swal2-input" placeholder="Región *" required>
+            <input id="swal-comuna" class="swal2-input" placeholder="Comuna *" required>
+            <input id="swal-direccion" class="swal2-input" placeholder="Dirección *" required>
+            <input id="swal-departamento" class="swal2-input" placeholder="Departamento/Casa">
+            <input id="swal-indicaciones" class="swal2-input" placeholder="Indicaciones adicionales">
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Crear Vendedor',
+        cancelButtonText: 'Cancelar',
+        width: '600px',
+        preConfirm: () => {
+            const nombre = document.getElementById('swal-nombre').value;
+            const apellidos = document.getElementById('swal-apellidos').value;
+            const correo = document.getElementById('swal-correo').value;
+            const clave = document.getElementById('swal-clave').value;
+            const numero = document.getElementById('swal-numero').value;
+            const region = document.getElementById('swal-region').value;
+            const comuna = document.getElementById('swal-comuna').value;
+            const direccion = document.getElementById('swal-direccion').value;
+            
+            // Validaciones básicas
+            if (!nombre.trim() || !apellidos.trim()) {
+                Swal.showValidationMessage('Nombre y apellidos son requeridos');
+                return false;
+            }
+            if (!correo.includes('@') || !correo.includes('.')) {
+                Swal.showValidationMessage('Correo inválido');
+                return false;
+            }
+            if (clave.length < 6) {
+                Swal.showValidationMessage('Clave mínimo 6 caracteres');
+                return false;
+            }
+            if (!numero.trim()) {
+                Swal.showValidationMessage('Número celular requerido');
+                return false;
+            }
+            if (!region.trim() || !comuna.trim() || !direccion.trim()) {
+                Swal.showValidationMessage('Región, comuna y dirección requeridos');
+                return false;
+            }
+            
+            return {
+                nombre: nombre,
+                apellidos: apellidos,
+                run: document.getElementById('swal-run').value,
+                fechaNacimiento: document.getElementById('swal-fechaNacimiento').value,
+                correo: correo,
+                clave: clave,
+                numero: numero,
+                telefono: document.getElementById('swal-telefono').value,
+                region: region,
+                comuna: comuna,
+                direccion: direccion,
+                departamento: document.getElementById('swal-departamento').value,
+                indicaciones: document.getElementById('swal-indicaciones').value
+            };
+        }
+    });
+    
+    if (formValues) {
+        try {
+            // Inicializar Firebase si no está
+            if (!firebase.apps.length) {
+                firebase.initializeApp({
+                    apiKey: "AIzaSyA-pmoPDbvcwZBAw7cV04CiS5HmHc2TAAs",
+                    authDomain: "tienda-level-up.firebaseapp.com",
+                    projectId: "tienda-level-up",
+                    storageBucket: "tienda-level-up.appspot.com",
+                    messagingSenderId: "210482166049",
+                    appId: "1:210482166049:web:15dadb935d28d9f7d02660"
+                });
+            }
+            
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            
+            // Mostrar carga
+            Swal.fire({
+                title: 'Creando vendedor...',
+                text: 'Por favor espere',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => { Swal.showLoading(); }
+            });
+            
+            // 1. Crear en Firebase Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(
+                formValues.correo, 
+                formValues.clave
+            );
+            
+            const userId = userCredential.user.uid;
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+            
+            // 2. Guardar en Firestore con TODOS los campos del registro
+            await db.collection('usuario').doc(userId).set({
+                // Datos personales
+                nombre: formValues.nombre.trim(),
+                apellidos: formValues.apellidos.trim(),
+                run: formValues.run?.trim() || '',
+                
+                // Fecha nacimiento (convertir a timestamp si es necesario)
+                fechaNacimiento: formValues.fechaNacimiento || '',
+                
+                // Contacto
+                correo: formValues.correo.trim(),
+                email: formValues.correo.trim(), // Duplicado para compatibilidad
+                clave: formValues.clave,
+                numero: formValues.numero.trim(),
+                telefono: formValues.telefono?.trim() || '',
+                
+                // Dirección
+                region: formValues.region.trim(),
+                comuna: formValues.comuna.trim(),
+                direccion: formValues.direccion.trim(),
+                departamento: formValues.departamento?.trim() || '',
+                indicaciones: formValues.indicaciones?.trim() || '',
+                
+                // Rol y estado
+                rol: 'vendedor',
+                activo: true,
+                
+                // Metadata
+                creadoPor: 'admin_dashboard',
+                createdAt: timestamp,
+                updatedAt: timestamp,
+                actualizadoEn: timestamp // Campo adicional
+            });
+            
+            // 3. Mostrar éxito con todos los datos
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Vendedor Creado Correctamente',
+                html: `
+                    <div style="text-align: left; max-height: 400px; overflow-y: auto; padding-right: 10px;">
+                        <h5>Credenciales del Vendedor:</h5>
+                        <table class="table table-sm">
+                            <tr><td><strong>ID:</strong></td><td><code>${userId.substring(0, 12)}...</code></td></tr>
+                            <tr><td><strong>Nombre:</strong></td><td>${formValues.nombre} ${formValues.apellidos}</td></tr>
+                            <tr><td><strong>RUN:</strong></td><td>${formValues.run || 'No ingresado'}</td></tr>
+                            <tr><td><strong>Correo:</strong></td><td>${formValues.correo}</td></tr>
+                            <tr><td><strong>Clave:</strong></td><td><code>${formValues.clave}</code></td></tr>
+                            <tr><td><strong>Número:</strong></td><td>${formValues.numero}</td></tr>
+                            <tr><td><strong>Rol:</strong></td><td><span class="badge bg-warning">Vendedor</span></td></tr>
+                        </table>
+                        
+                        <h5 class="mt-3">Dirección:</h5>
+                        <p>${formValues.region}, ${formValues.comuna}<br>
+                        ${formValues.direccion}<br>
+                        ${formValues.departamento ? 'Depto: ' + formValues.departamento : ''}
+                        ${formValues.indicaciones ? '<br>Indicaciones: ' + formValues.indicaciones : ''}</p>
+                        
+                        <div class="alert alert-danger mt-3" style="font-size: 12px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Importante:</strong> Guarde estas credenciales. La contraseña no se puede recuperar después.
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Copiar Credenciales',
+                showCancelButton: true,
+                cancelButtonText: 'Cerrar',
+                width: '700px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Copiar credenciales al portapapeles
+                    const credenciales = `
+Nombre: ${formValues.nombre} ${formValues.apellidos}
+Correo: ${formValues.correo}
+Clave: ${formValues.clave}
+Número: ${formValues.numero}
+Rol: Vendedor
+                    `.trim();
+                    
+                    navigator.clipboard.writeText(credenciales).then(() => {
+                        Swal.fire('Copiado', 'Credenciales copiadas al portapapeles', 'success');
+                    });
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error creando vendedor:', error);
+            
+            let mensaje = 'Error: ' + error.message;
+            if (error.code === 'auth/email-already-in-use') {
+                mensaje = 'El correo ya está registrado. Use otro correo.';
+            } else if (error.code === 'auth/invalid-email') {
+                mensaje = 'Correo inválido. Verifique el formato.';
+            } else if (error.code === 'auth/weak-password') {
+                mensaje = 'Clave muy débil. Use al menos 6 caracteres.';
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al crear vendedor',
+                text: mensaje,
+                confirmButtonText: 'Entendido'
+            });
+        }
+    }
+}
+        
+        </script>
 </body>
 </html>
